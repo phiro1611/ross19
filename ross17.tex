@@ -1,0 +1,114 @@
+% Einfache LaTeX-Vorlage für Arbeiten am Lehrstuhl Kranzlmüller / MNM-Team
+% - optimiert für die Arbeit mit gängigen LaTeX-Editoren
+% - funktioniert ohne Makefile und Anpassungen der LaTeX-Verzeichnisstruktur
+% - verwendet Komaskript für ein (nach europäischen Gepflogenheiten) schöneres Layout
+% 
+% v1, 2007 (Michael Brenner)
+% Diese Version: v1.1, 2012 (Michael Brenner)
+
+
+
+\documentclass[bibliography=totoc,listof=totoc,BCOR=5mm,DIV=12]{scrbook} 
+
+%\usepackage{bibgerm}       % deutsche Literaturverzeichnisse
+\usepackage[utf8]{inputenc}
+ % Umlaute im Text
+\usepackage{graphicx} % Einfügen von Grafiken  - für PDF-Latex: .pdf und .png (.jpg möglich, sollte aber vermiedenwerden)
+\usepackage[hyphens]{url}          % URL's (z.B. in Literatur) schöner formatieren
+\usepackage{hyperref} % sorgt für für Hyperlinks in PDF-Dokumenten
+
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+%%%%%%%%%%%%%%%%
+\usetikzlibrary{calc,trees,positioning,arrows,chains,shapes.geometric,%
+    decorations.pathreplacing,decorations.pathmorphing,shapes,%
+    matrix,shapes.symbols}
+
+\tikzset{
+>=stealth',
+  punktchain/.style={
+    rectangle, 
+    rounded corners, 
+    % fill=black!10,
+    draw=black, very thick,
+    text width=10em, 
+    minimum height=3em, 
+    text centered, 
+    on chain},
+  line/.style={draw, thick, <-},
+  element/.style={
+    tape,
+    top color=white,
+    bottom color=blue!50!black!60!,
+    minimum width=8em,
+    draw=blue!40!black!90, very thick,
+    text width=10em, 
+    minimum height=3.5em, 
+    text centered, 
+    on chain},
+  every join/.style={->, thick,shorten >=1pt},
+  decoration={brace},
+  tuborg/.style={decorate},
+  tubnode/.style={midway, right=2pt},
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{ 
+%language=json,                 %choose the language of the code
+basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+numbers=none,                   % where to put the line-numbers
+numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+%stepnumber=2,   							  % the step between two line-numbers. If it is 1 each line will
+%firstnumber=1,
+%numberfirstline=true,                   
+numbersep=5pt,                  % how far the line-numbers are from the code
+backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=false,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+frame=shadowbox, 						  	 % adds a frame around the code
+rulesepcolor=\color{gray},         
+tabsize=2,          % sets default tabsize to 2 spaces
+captionpos=b,           % sets the caption-position to bottom
+breaklines=true,        % sets automatic line breaking
+breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)}          % if you want to add a comment within your code
+}
+\graphicspath{{./Bilder/}}
+
+\input{hyphenation} % in dieses File kommen Wörter die Latex nicht richtig trennt
+
+\begin{document}
+
+% ---------------------------------------------------------------
+\frontmatter % Titelblätter und Erklärung jeweils spezifisch für die jeweilige Uni einbinden
+    \include{./Titel/titel-lmu} % Titelblätter LMU - auskommentieren falls TUM-Arbeit
+%    \include{./Titel/titel-tum} % Titelblätter TUM - auskommentiert lassen falls LMU-Arbeit
+    \thispagestyle{empty}
+    \cleardoublepage
+    \include{./Titel/erklaerung-lmu} % Erklärung (Arbeit selbstständig verfasst) - auskommentieren falls TUM-Arbeit
+%    \include{./Titel/erklaerung-tum} % Erklärung (Arbeit selbstständig verfasst) - auskommentiert lassen falls LMUArbeit
+    \thispagestyle{empty}
+    \cleardoublepage
+    \include{abstract} % Abstract
+    \thispagestyle{empty}
+    \tableofcontents % Inhaltsverzeichnis
+
+% ---------------------------------------------------------------
+\mainmatter % die eigentliche Arbeit
+
+    \input{kapitel1}
+    \input{kapitel2}
+	\input{kapitel3}
+	\input{kapitel4}
+	\input{kapitel5}
+
+% ---------------------------------------------------------------
+\backmatter % ab hier keine Nummerierung mehr
+    \listoffigures
+    \bibliographystyle{geralpha}
+    \bibliography{./Bib/ross17}
+
+\end{document}
