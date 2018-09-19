@@ -1,29 +1,19 @@
 \chapter{Methodology}
 In this section a methodology is given how to describe the deployment of deep learning models on either edge devices or on a cloud-backend.
 \section{Problem Space}
+The inference performance of a deep learning model is mainly affected by two major parts, the model itels and the hardware environment where it gets deployed. A third factor is the serving framework.
 \begin{itemize}
     \item Warum die Frage Edge oder Cloud
 \end{itemize}
 \section{Deep Learning}
 Deep learning models describe neural network with many layers and hidden units, the most popular being convolutional neural networks and recurrent neural networks right now. This increased amount of layers leads to complex mathematical calculations.
 
+
 \begin{figure}[H]
 \centering
-\input{./Bilder/cloud.tex}
+\includegraphics[width=0.9\textwidth]{./Bilder/trade_offs.png}
 \caption{placeholder}
-\label{fig:cloud}
-\end{figure}
-\begin{figure}[H]
-\centering
-\input{./Bilder/edge.tex}
-\caption{placeholder}
-\label{fig:edge}
-\end{figure}
-\begin{figure}[H]
-\centering
-\input{./Bilder/trade_off.tex}
-\caption{placeholder}
-\label{fig:trade}
+\label{fig:trade_offs}
 \end{figure}
 \begin{figure}[H]
 \centering
@@ -50,6 +40,12 @@ Model deployment describes the process of deploying a trained machine learning m
 \section{Deployment Trade-offs}
 \begin{itemize}
     \item Unterschiede aus verschiedenen deployment optionen
+\end{itemize}
+Metriken:
+\begin{itemize}
+    \item Welche Metriken (inference time....)
+    \item Wie werden die Metriken gemessen?
+    \item Wo werden Metriken gemessen?
 \end{itemize}
 
 \endinput 

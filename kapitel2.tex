@@ -1,6 +1,6 @@
 \chapter{Related Work}
-This chapter will evaluate published work on the same topic
-\section{Model Trade-offs}
+This chapter will sum up and  evaluate published work on the topic of performance evaluation of deep learning inference.
+\section{Performance of Model Inference}
 \subsection{Speed/accuracy trade-offs for modern convolutional object detectors}
 In \cite{DBLP:journals/corr/HuangRSZKFFWSG016} the authors provide a guide for selecting the right convolutional object detection architecture for the desirable speed/memory/accuracy. To demonstrate this trade-offs the authors test various popular models such as Inception V2, MobileNet or Resnet 101. To create the benchmarks, "a machine with 32GB RAM,
 Intel Xeon E5-1650 v2 processor and an Nvidia GeForce
@@ -10,8 +10,41 @@ GTX Titan X GPU card"\cite{DBLP:journals/corr/HuangRSZKFFWSG016} gets used.
     \item Results
     \item Sachen die mir helfen
 \end{itemize}
+\subsection{Cloud-based or On-device:
+An Empirical Study of Mobile Deep Inference}
+Guo "evaluate[s] the inference performance of three Convolutional Neural Networks
+(CNNs) using a benchmark Android application" \cite{DBLP:conf/ic2e/Guo18}. The hardware and frameworks used for this process can be seenin table \ref{frameworks_hardware_1}.
 
-\section{Model Deployment}
-\cite{DBLP:conf/mmsys/2018}
-\cite{DBLP:conf/ic2e/2018}
+\begin{table}[H]
+\centering
+\caption{Used hardware and inference frameworks in \cite{DBLP:conf/ic2e/Guo18}}
+\begin{tabular}{|
+>{\columncolor[HTML]{C0C0C0}}l |l|l|}
+\hline
+                             & \cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Frameworks} & \cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Hardware}                                           \\ \hline
+{\color[HTML]{000000} Edge}  & Caffe Android Lib, CNNDroid                       & Nexus 5                                                                              \\ \hline
+{\color[HTML]{000000} Cloud} & Caffe                              & Intel Xeon E5-2670, Nvidia Grid K520, 15GB Memory \\ \hline
+\end{tabular}
+
+\label{frameworks_hardware_1}
+\end{table}
+\subsection{Latency and Throughput Characterization of Convolutional
+Neural Networks for Mobile Computer Vision}
+Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devides and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
+\begin{table}[H]
+\centering
+\caption{Used hardware and inference frameworks in \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}}
+\begin{tabular}{|
+>{\columncolor[HTML]{C0C0C0}}l |l|l|}
+\hline
+                             & \cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Frameworks} & \cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Hardware}                                           \\ \hline
+{\color[HTML]{000000} Edge}  & Tensorflow Java API, Snapdragon NPE                       & Nokia 8, Jetson TX 2                                                                              \\ \hline
+{\color[HTML]{000000} Cloud} & TensorFlow Serving, TensorRT                              & \begin{tabular}[c]{@{}l@{}}Intel i7 7700K, Nivida 1080GTX\\ i7 8700K, Nvidia Titan V\end{tabular} \\ \hline
+\end{tabular}
+
+\label{frameworks_hardware_2}
+\end{table}
+\section{Evaluation of the Related Work}
+While Guo comes to the conclusion that cloud-based inference at least for now provide better performance than edge-based inference, better edge devices, frameworks and neural networks are available in the meantime. For example neural networks like "MobileNet" are optimized for low latency while still providing predictions with high accuracy.
+
  \endinput 
