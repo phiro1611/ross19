@@ -2,19 +2,17 @@
 This chapter will sum up and  evaluate published work on the topic of performance evaluation of deep learning inference.
 \section{Performance of Model Inference}
 \subsection{Speed/accuracy trade-offs for modern convolutional object detectors}
-In \cite{DBLP:journals/corr/HuangRSZKFFWSG016} the authors provide a guide for selecting the right convolutional object detection architecture for the desirable speed/memory/accuracy. To demonstrate this trade-offs the authors test various popular models such as Inception V2, MobileNet or Resnet 101. To create the benchmarks, "a machine with 32GB RAM,
+In \cite{DBLP:journals/corr/HuangRSZKFFWSG016} the authors provide a guide for selecting the right convolutional object detection architecture for the desirable speed/memory/accuracy. To demonstrate this trade-offs the authors test various popular models such as Inception v2, MobileNet or Resnet 101. To create the benchmarks, "a machine with 32GB RAM,
 Intel Xeon E5-1650 v2 processor and an Nvidia GeForce
 GTX Titan X GPU card"\cite{DBLP:journals/corr/HuangRSZKFFWSG016} gets used.
 
-\begin{itemize}
-    \item Results
-    \item Sachen die mir helfen
-\end{itemize}
+
 \subsection{Cloud-based or On-device:
 An Empirical Study of Mobile Deep Inference}
 Guo "evaluate[s] the inference performance of three Convolutional Neural Networks
-(CNNs) using a benchmark Android application" \cite{DBLP:conf/ic2e/Guo18}. The hardware and frameworks used for this process can be seenin table \ref{frameworks_hardware_1}.
+(CNNs) using a benchmark Android application" \cite{DBLP:conf/ic2e/Guo18}. The hardware and frameworks used for this process can be seen in table \ref{frameworks_hardware_1}.
 
+For their experiment the authors use object recognition networks (AlexNet, NIN and SqueezeNet).
 \begin{table}[H]
 \centering
 \caption{Used hardware and inference frameworks in \cite{DBLP:conf/ic2e/Guo18}}
@@ -30,7 +28,10 @@ Guo "evaluate[s] the inference performance of three Convolutional Neural Network
 \end{table}
 \subsection{Latency and Throughput Characterization of Convolutional
 Neural Networks for Mobile Computer Vision}
-Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devides and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
+Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
+The authors use both object detection (MobileNet v1 and Inception v2) and object recognition (SSD Mobilenet v1 COCO, SSD Inception v2 COCO,
+and VGG16 FasterRCNN PASCAL VOC) networks for their experiments.
+In their experiments the batch size get incrementally increased to observe the effects on throughput and latency. 
 \begin{table}[H]
 \centering
 \caption{Used hardware and inference frameworks in \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}}
