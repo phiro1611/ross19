@@ -1,8 +1,15 @@
 \chapter{Experiments}
+This chapter deals with the experiments, their design, execution and results.
 \begin{itemize}
     \item Was wird getestet?
 \end{itemize}
 \section{Experimental Design}
+\begin{figure}[H]
+\centering
+\input{./Bilder/Exp_design.tex}
+\caption{placeholder}
+\label{fig:cloud}
+\end{figure}
 \begin{figure}[H]
 \centering
 \input{./Bilder/cloud.tex}
@@ -17,25 +24,51 @@
 \end{figure}
 \subsection{Hardware}
 \subsubsection{Edge}
-Pixel 3
+As the edge device we will use a state of the art android phone. 
 \subsubsection{Cloud}
-DGX-1
+The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 system memory.
 \subsection{Frameworks}
-\begin{itemize}
-    \item Tensorflow Serrving
-    \item Tensorflow Lite
-\end{itemize}
-\subsection{Models}
-\begin{itemize}
-    \item MobileNet
-    \item ResNet
-\end{itemize}
+Two open-source frameworks will be used for the experiments.
+\subsubsection{TensorFlow Lite}
+TensorFlow Lite was developed for mobile and embedded devices and is a lightweight solution of TensorFlow.
+At the moment only inference is supported and not the training of the models.
+It supports acceleration with GPU or other accelerators as well was portability to Android, iOS and other IoT devices.
 
+
+To use model in TensorFlow Lite models need to be converted to the \emph{tflite} format.
+\subsubsection{TensorFlow Serving}
+TensorFlow Serving is a framework to serve machine learning models in production envrionments. 
+
+TensorFlow Serving supports two APIs: gRPC and REST
+\subsection{Models}
+We will use two different image classification model for the experiment, one optimized for mobile deployment and the other optimized for the highest accuracy.
+
+\subsubsection{MobileNetV2}
+MobileNetV2 is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
+constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
+inverted residual with linear bottleneck" \cite{DBLP:journals/corr/abs-1801-04381}.
+
+\subsubsection{Resnet/Inception}
+%%Insert Tabelle mit overview über model specs
+
+For the experiments we both evaluate the normal float version as well as the quantized version using int8.
+\subsection{Android Benchmark application}
+In order to perform the inference process on the edge devices we developed a benchmark android application using Kotlin. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{./Bilder/FlowChart_App.png}
+\caption{Flowchart of the benchmark Application}
+\label{fig:app}
+\end{figure}
+In figure \ref{fig:app} the workflow to get perform the inference is seen. First, a image needs to be selected, either an existing one from the gallery or a new one shot with the camera of the phone. Afterwards the image classification model needs to be chosen. Finally the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. After the inference is finished the labels with the highest probabilities are presented to the user as the prediction for the given image.
 \section{Instantiation}
 \begin{itemize}
     \item Wie wurde was gtestestet?
+    \item wie metriken gemessen
+    \item wo metriken gemessen
 \end{itemize}
-\section{Evaluation}
+\section{Results and Evaluation}
 \begin{itemize}
     \item Haufen Graphen
     \item Was kann man aus Graphen schließen?
