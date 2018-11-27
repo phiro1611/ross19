@@ -25,7 +25,7 @@ In order to increase this performance various accelerators like better GPUs, TPU
 \subsubsection{Cloud Deployment}
 While the breakthroughs in deep learning is very interesting for AI applications on the edge devices, the computational demand needed for edge deployment often exceeds the available power to be viable.
 That is why the option of outsourcing the models to a cloud-backend has become a popular solution in the recent years.
-Cloud-backend offer a huge amount of computational power, especially suitable for deep learning in the form of GPUs,TPUs, etc..
+Cloud-backend offer a huge amount of computational power, especially suitable for deep learning in the form of GPUs, TPUs, etc.
 
 
 The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications that are critical like autonomous driving.
@@ -45,6 +45,7 @@ In the following the two most popular networks get analyzed.
     \item hidden units
     \item input size
     \item quantisation
+    \item number of operations
 \end{itemize}
 \subsubsection{Convolutional Neural Network}
 This special subclass of neural network achieved wide success in the field of object recognition and detection in images. Convolutional Neural Networks (CNN)
@@ -67,7 +68,9 @@ GRU, LTSM
 
 
 \section{Performance Model}
-All the aspects of both hardware and model have impact on the performance, thus are the inputs of the performance model (see figure \ref{fig:perfmodel}). These input affect various performance metrics, of which inference time and throughput are the most important ones for realtime AI applications. But as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other metrics are vital as well.
+All the aspects of both hardware and model have impact on the performance, thus are the inputs of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference time and throughput are the most important ones for realtime AI applications. But as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other metrics are vital as well.
+%5WHAT ABOUT ACCURACY?
+While accuracy is one of the most important metrics for computer vision networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./Bilder/trade_offs.png}
@@ -76,6 +79,7 @@ All the aspects of both hardware and model have impact on the performance, thus 
 \end{figure}
 \subsection{Performance Metrics}
 Several metrics are important to measure the inference performance.
+ 
 \subsubsection{Inference Time}
 Inference time describes the time needed from requesting a prediction from a deep learning model given an specific input until getting the prediction.
 This metrics is essential for the performance, since AI application often need predictions in realtime.
@@ -89,6 +93,8 @@ Similar to CPU usage, inference should not occupy the whole memory of system or 
 If a GPU or a another accelator is available their usage is of interest.
 \subsubsection{Throughput}
 In order to accomplish realtime AI a high enough throughput is essential. Therefore the number of processed predictions per second is a valuable metric.
+\subsubsection{Data Consumption}
+This metric is only relevant for cloud inference as the request has to be sent to the cloud-backend and the according response with prediction has to be sent back to the client. A high data consumption could slow down the inference time significantly if the up- and downstream of the network connection is too slow. 
 \begin{itemize}
     \item Unterschiede aus verschiedenen deployment optionen
 \end{itemize}

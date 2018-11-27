@@ -1,9 +1,7 @@
 \chapter{Experiments}
 This chapter deals with the experiments, their design, execution and results.
-\begin{itemize}
-    \item Was wird getestet?
-\end{itemize}
 \section{Experimental Design}
+This section deals the specification of the Android benchmark app, used hardware, used framework, used model and how the measurements are conducted. 
 \begin{figure}[H]
 \centering
 \input{./Bilder/Exp_design.tex}
@@ -24,9 +22,9 @@ This chapter deals with the experiments, their design, execution and results.
 \end{figure}
 \subsection{Hardware}
 \subsubsection{Edge}
-As the edge device we will use a state of the art android phone. 
+As the edge device we will use the Oneplus 6T. This state of the art smartphones is powered by Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS, which is based on Android 9.
 \subsubsection{Cloud}
-The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 system memory.
+The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 GB system memory.
 \subsection{Frameworks}
 Two open-source frameworks will be used for the experiments.
 \subsubsection{TensorFlow Lite}
@@ -48,11 +46,24 @@ MobileNetV2 is a successor of MobileNetV1 and is "specifically tailored for mobi
 constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
 inverted residual with linear bottleneck" \cite{DBLP:journals/corr/abs-1801-04381}.
 
-\subsubsection{Resnet/Inception}
+\subsubsection{Inception V4}
+Inception V4 is a large image classification model with high accuracy but also with a high number of parameters leading to higher inference times than MobileNet.
 %%Insert Tabelle mit overview über model specs
+\begin{table}[]
+\caption{Overview of used models}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\rowcolor[HTML]{C0C0C0} 
+ & {\color[HTML]{000000}Parameters} & {\color[HTML]{000000} Top-5 Accuracy \cite{modelspecs}} & Input Size & TF Lite Model Size \\ \hline
+\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Inception V4} & wet & 95.1\% & 299 & 107.7 MB \\ \hline
+\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Mobilenet V2 1.0} & 3470000 \cite{mobilenetspecs}& 90.6\% & 224 & 14.0 MB \\ \hline
+\cellcolor[HTML]{C0C0C0}\begin{tabular}[c]{@{}l@{}}Mobilenet V2 1.0\\ quantized\end{tabular} & 3470000 \cite{mobilenetspecs}& 89.9\% & 224 & 3.4 MB \\ \hline
+\end{tabular}
+\end{table}
+
 
 For the experiments we both evaluate the normal float version as well as the quantized version using int8.
-\subsection{Android Benchmark application}
+\subsection{Android Benchmark Application}
 In order to perform the inference process on the edge devices we developed a benchmark android application using Kotlin. 
 
 \begin{figure}[H]
@@ -61,13 +72,53 @@ In order to perform the inference process on the edge devices we developed a ben
 \caption{Flowchart of the benchmark Application}
 \label{fig:app}
 \end{figure}
-In figure \ref{fig:app} the workflow to get perform the inference is seen. First, a image needs to be selected, either an existing one from the gallery or a new one shot with the camera of the phone. Afterwards the image classification model needs to be chosen. Finally the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. After the inference is finished the labels with the highest probabilities are presented to the user as the prediction for the given image.
+In figure \ref{fig:app} the workflow to get perform the inference is seen. First, a image needs to be selected, either an existing one from the gallery or a new one shot with the camera of the phone. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. Afterwards the selected image needs to be preprocessed according to the selected model, inference mode (edge/cloud) and for the case of cloud inference, if the image should be preprocessed on the cloud or on the edge. Finally the inference is performed resulting and after finishing the labels with the highest probabilities are presented to the user as the prediction for the given image. The image preprocessing step and the inference step are seperated to allow better measurements of these steps.
+\subsubsection{Edge Inference}
+
+\subsubsection{Cloud Inference}
 \section{Instantiation}
-\begin{itemize}
-    \item Wie wurde was gtestestet?
-    \item wie metriken gemessen
-    \item wo metriken gemessen
-\end{itemize}
+We run parameter configuration 100 times to reduce 
+We change the configurations of the following parameters:
+\paragraph{Image Size}
+Image Size: We evaluate the performance of the small(YxY), medium(YxY) and large(YxY) images. This way the effect of image size on the performance of the preprocessing step can assessed.
+\paragraph{Batch Size}
+We experiment with the following batch sizes: 1, 2, 4 , 8, 16, 32, 64.
+\paragraph{NNAPI}
+The Android Neural Network API (NNAPI)
+is "designed for running computationally intensive operations for machine learning on mobile devices" \cite{NNAPI} and can be used by TensorFlow Lite to improve inference performance. Therefore we take a look into the effect of this framework.
+\paragraph{GPU Usage}
+Since the latest release of TensorFlow Lite(version xxx) GPU usage on Android is supported. 
+
+\subsection{Measurements}
+We conduct the measurement either directly in the source code or by using Android Studio Profiler.
+\subsubsection{Inference Time}
+To measure inference time we need to  distinguish between edge and cloud inference. To measure edge inference we measure the time the TensorFlow Lite interpreter needs to run the inference operation on the loaded model given the input image.
+To measure the cloud inference time we need to measure two latencies. The first latency is the server latency. This server latency describes the time difference between the point where TensorFlow Serving receives the inference request and the point in time where TensorFlow Serving send the response back to the client.
+
+
+
+The second latency is called the total latency and describes the time difference between the moment the client sent the request to TensorFlow Serving and the moment it received its response, including the network latency.
+These two latencies are illustrated in figure \ref{fig:serverLat}.
+The total latency is be measured by simply measure the time needed to call the \emph{predict} function of TensorFlow Serving.
+Since TensorFlow Serving does not output the server latency, we needed to tweak the source code of gRPC, which is the underlying protocol of TensorFlow Serving. gRPC already logs this latency, so we adjust the source code to out this latency when a call to TensorFlow Serving is finished, repackage the source code and change to dependencies of TensorFlow Serving accordingly.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{./Bilder/server_latency.png}
+\caption{Measurement of server and total latency for cloud inference}
+\label{fig:serverLat}
+\end{figure}
+\subsubsection{Energy Consumption}
+Since Android Studio Profiler only estimates the energy consumption in the form of low, medium and high, the tool is not fit to provide empiric measurements. The Trepn Power Profiler would provide such measurements, but does not support the device used for the experiments (Oneplus 6T).
+\subsubsection{CPU Usage}
+
+\subsubsection{Memory Usage}
+The Memory Profiler is part of Android Studio Profiler and shows the memory consumption of the app it is profiling. Memory allocations by the operating system or other apps are not recorded. Besides recording the total amount of memory allocated the profiler also tracks the different categories, for example memory allocated by Java/Kotlin code.
+\subsubsection{GPU Usage}
+If a GPU or a another accelator is available their usage is of interest.
+\subsubsection{Throughput}
+In order to measure throughput we 
+\subsubsection{Data Consumption}
+Android Studio Profiler provides a tool named Network Profiler, which displays all the data sent and recieved.
 \section{Results and Evaluation}
 \begin{itemize}
     \item Haufen Graphen
