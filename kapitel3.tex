@@ -1,4 +1,5 @@
 \chapter{Methodology}
+\label{chap:methodology}
 In this section a performance model for understanding the runtime characteristics of deep learning models is outlined. To understand these characteristics, the underlying factors that affect it need to be understood first. 
 
 
@@ -68,21 +69,23 @@ GRU, LTSM
 
 
 \section{Performance Model}
-All the aspects of both hardware and model have impact on the performance, thus are the inputs of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference time and throughput are the most important ones for realtime AI applications. But as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other metrics are vital as well.
-%5WHAT ABOUT ACCURACY?
-While accuracy is one of the most important metrics for computer vision networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
+All the aspects of both hardware and model have an impact on the performance, thus are the inputs of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference time and throughput are the most important ones for real-time AI applications. However, as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other metrics are vital as well.
+While accuracy is one of the most critical metrics for computer vision networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
+To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{./Bilder/trade_offs.png}
+\includegraphics[width=0.99\textwidth]{./Bilder/trade_offs.png}
 \caption{Performance Model}
 \label{fig:perfmodel}
 \end{figure}
 \subsection{Performance Metrics}
-Several metrics are important to measure the inference performance.
+Several metrics are important to measure the performance of the preprocessing and the inference steps. 
  
 \subsubsection{Inference Time}
+%%WALL CLOCK TIME ADD HERE
 Inference time describes the time needed from requesting a prediction from a deep learning model given an specific input until getting the prediction.
 This metrics is essential for the performance, since AI application often need predictions in realtime.
+\subsubsection{Preprocessing Time}
 \subsubsection{Energy Consumption}
 This metric is particular important for mobile edge devices, since they often are powered by batteries with a limited lifespan. So if the inference process of a model consumes too much energy, the application using the model is not viable.
 \subsubsection{CPU Usage}
@@ -90,7 +93,7 @@ Since the inference operation is most of the time not the only process running o
 \subsubsection{Memory Usage}
 Similar to CPU usage, inference should not occupy the whole memory of system or even demand more memory than the available memory of a edge devices.
 \subsubsection{GPU Usage}
-If a GPU or a another accelator is available their usage is of interest.
+If a GPU or a another accelerator is available their usage is of interest.
 \subsubsection{Throughput}
 In order to accomplish realtime AI a high enough throughput is essential. Therefore the number of processed predictions per second is a valuable metric.
 \subsubsection{Data Consumption}

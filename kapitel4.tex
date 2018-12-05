@@ -1,4 +1,5 @@
 \chapter{Experiments}
+\label{chap:experiments}
 This chapter deals with the experiments, their design, execution and results.
 \section{Experimental Design}
 This section deals the specification of the Android benchmark app, used hardware, used framework, used model and how the measurements are conducted. 
@@ -64,7 +65,7 @@ Inception V4 is a large image classification model with high accuracy but also w
 
 For the experiments we both evaluate the normal float version as well as the quantized version using int8.
 \subsection{Android Benchmark Application}
-In order to perform the inference process on the edge devices we developed a benchmark android application using Kotlin. 
+In order to perform the inference process on the edge devices we developed a benchmark android application written in Kotlin. 
 
 \begin{figure}[H]
 \centering
@@ -74,13 +75,20 @@ In order to perform the inference process on the edge devices we developed a ben
 \end{figure}
 In figure \ref{fig:app} the workflow to get perform the inference is seen. First, a image needs to be selected, either an existing one from the gallery or a new one shot with the camera of the phone. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. Afterwards the selected image needs to be preprocessed according to the selected model, inference mode (edge/cloud) and for the case of cloud inference, if the image should be preprocessed on the cloud or on the edge. Finally the inference is performed resulting and after finishing the labels with the highest probabilities are presented to the user as the prediction for the given image. The image preprocessing step and the inference step are seperated to allow better measurements of these steps.
 \subsubsection{Edge Inference}
-
+Preprocessing?
 \subsubsection{Cloud Inference}
 \section{Instantiation}
 We run parameter configuration 100 times to reduce 
 We change the configurations of the following parameters:
+%%%293,performance analysis buch
 \paragraph{Image Size}
-Image Size: We evaluate the performance of the small(YxY), medium(YxY) and large(YxY) images. This way the effect of image size on the performance of the preprocessing step can assessed.
+Image Size: We evaluate the performance of the 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP($3464\times2309$) and 16MP($4899\times3266$) images. This way the effect of image size on the performance of the preprocessing step can assessed. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{./Bilder/European_cat_02_16_mp.jpg}
+\caption{Example picture for the experiments \cite{cat}}
+\label{fig:cat}
+\end{figure}
 \paragraph{Batch Size}
 We experiment with the following batch sizes: 1, 2, 4 , 8, 16, 32, 64.
 \paragraph{NNAPI}
@@ -125,4 +133,13 @@ Android Studio Profiler provides a tool named Network Profiler, which displays a
     \item Was kann man aus Graphen schließen?
     \item Handlungsempfehlung
 \end{itemize}
+\begin{sidewaystable}
+
+
+    \centering
+\scalebox{0.5}{
+\input{./Bilder/table_test.tex}}
+\caption{Averages for all Metrics including standard deviation}
+
+\end{sidewaystable}
 \endinput 
