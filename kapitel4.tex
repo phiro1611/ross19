@@ -82,7 +82,7 @@ We run parameter configuration 100 times to reduce
 We change the configurations of the following parameters:
 %%%293,performance analysis buch
 \paragraph{Image Size}
-Image Size: We evaluate the performance of the 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP($3464\times2309$) and 16MP($4899\times3266$) images. This way the effect of image size on the performance of the preprocessing step can assessed. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
+We evaluate the performance of 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP($3464\times2309$) and 16MP($4899\times3266$) images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$/$299\times299$ depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{./Bilder/European_cat_02_16_mp.jpg}
@@ -122,11 +122,12 @@ Since Android Studio Profiler only estimates the energy consumption in the form 
 \subsubsection{Memory Usage}
 The Memory Profiler is part of Android Studio Profiler and shows the memory consumption of the app it is profiling. Memory allocations by the operating system or other apps are not recorded. Besides recording the total amount of memory allocated the profiler also tracks the different categories, for example memory allocated by Java/Kotlin code.
 \subsubsection{GPU Usage}
-If a GPU or a another accelator is available their usage is of interest.
+Neither Android Studio nor Trepn can provide GPU metrics for the Oneplut 6T. Hence no GPU measurements can be performed.
 \subsubsection{Throughput}
 In order to measure throughput we 
+$1000/inference/batchsieze$
 \subsubsection{Data Consumption}
-Android Studio Profiler provides a tool named Network Profiler, which displays all the data sent and recieved.
+We measure both transmitted and received data by using the TrafficsStats package by android
 \section{Results and Evaluation}
 \begin{itemize}
     \item Haufen Graphen
