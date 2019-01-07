@@ -1,6 +1,6 @@
-\documentclass[border=10pt]{standalone}
-\usepackage{tikz}
-\begin{document}
+%\documentclass[border=10pt]{standalone}
+%\usepackage{tikz}
+%\begin{document}
 \begin{tikzpicture}[sibling distance=10em,
   param/.style={shape=rectangle,
     draw, align=center,
@@ -28,13 +28,14 @@
                     }
                 child { node [conf]{8MP}
                 child { node [param]{Inference Mode}
+                        child { node[conf] {Edge}}
                         child { node [conf]{Cloud}
                             child { node [param]{Preprocessing}
                                child { node [conf]{On Edge}}
                                 child { node [conf]{On Cloud}}}}}}
                 child { node [conf]{16MP}}}}
-        child { node[conf] {4} }
-        child { node [conf]{...} }} }
+        child { node[conf] {16} }
+        child { node [conf]{32} }} }
     child { node [conf]{Mobilenet V2 quantized} };
 \end{tikzpicture}
-\end{document}
+%\end{document}
