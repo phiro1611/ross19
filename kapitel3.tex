@@ -94,14 +94,10 @@ Since the inference operation is most of the time not the only process running o
 \subsubsection{Memory Usage}
 Similar to CPU usage, inference should not occupy the whole memory of system or even demand more memory than the available memory of a edge devices.
 \subsubsection{GPU Usage}
-If a GPU or a another accelerator is available their usage is of interest.
+If a GPU or an another accelerator is available their usage is of interest.
 \subsubsection{Throughput}
 In order to accomplish realtime AI a high enough throughput is essential. Therefore the number of processed predictions per second is a valuable metric. This metric can,depending on the specification, either mean preprocessing and inference together or only one of the two.
 \subsubsection{Data Consumption}
 This metric is only relevant for cloud inference as the request has to be sent to the cloud-backend and the according response with prediction has to be sent back to the client. A high data consumption could slow down the inference time significantly if the up- and downstream of the network connection is too slow. 
-\begin{itemize}
-    \item Unterschiede aus verschiedenen deployment optionen
-\end{itemize}
-
 
 \endinput 

@@ -1,0 +1,61 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Straight Lines [id:da7072764839644827] 
+\draw    (149.5,277) -- (451.5,277) ;
+\draw [shift={(451.5,277)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(149.5,277)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+%Straight Lines [id:da9536138531960994] 
+\draw    (289.5,253) -- (450.5,253) ;
+\draw [shift={(450.5,253)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(289.5,253)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+%Shape: Rectangle [id:dp8902536871651789] 
+\draw  [fill={rgb, 255:red, 201; green, 201; blue, 201 }  ,fill opacity=1 ] (63.91,93.69) -- (132.34,93.69) -- (132.34,221.63) -- (63.91,221.63) -- cycle ;
+%Rounded Rect [id:dp41557214204551274] 
+\draw   (53.5,96.82) .. controls (53.5,86.88) and (61.56,78.82) .. (71.5,78.82) -- (125.5,78.82) .. controls (135.44,78.82) and (143.5,86.88) .. (143.5,96.82) -- (143.5,227.43) .. controls (143.5,237.37) and (135.44,245.43) .. (125.5,245.43) -- (71.5,245.43) .. controls (61.56,245.43) and (53.5,237.37) .. (53.5,227.43) -- cycle ;
+%Shape: Ellipse [id:dp8878397246816687] 
+\draw   (89.95,233.16) .. controls (89.95,228.43) and (93.78,224.6) .. (98.5,224.6) .. controls (103.22,224.6) and (107.05,228.43) .. (107.05,233.16) .. controls (107.05,237.88) and (103.22,241.71) .. (98.5,241.71) .. controls (93.78,241.71) and (89.95,237.88) .. (89.95,233.16) -- cycle ;
+%Straight Lines [id:da5813802620369573] 
+\draw    (151.48,149) -- (274,149) ;
+\draw [shift={(276,149)}, rotate = 540] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+
+%Straight Lines [id:da16220168680973557] 
+\draw    (149.48,197) -- (272,197) ;
+
+\draw [shift={(147.48,197)}, rotate = 360] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+%Shape: Rectangle [id:dp8411150472244695] 
+\draw  [fill={rgb, 255:red, 201; green, 201; blue, 201 }  ,fill opacity=1 ] (292,81) -- (450.5,81) -- (450.5,237) -- (292,237) -- cycle ;
+%Shape: Rectangle [id:dp13557861576626729] 
+\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (301,138) -- (441,138) -- (441,178) -- (301,178) -- cycle ;
+%Shape: Rectangle [id:dp5681963435258506] 
+\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (68.19,124.22) -- (128.07,124.22) -- (128.07,191.1) -- (68.19,191.1) -- cycle ;
+%Shape: Rectangle [id:dp7458124222136935] 
+\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (300,189) -- (440,189) -- (440,229) -- (300,229) -- cycle ;
+
+% Text Node
+\draw (370,245) node  [align=left] {server latency};
+% Text Node
+\draw (293,269) node  [align=left] {total latency};
+% Text Node
+\draw (210,127) node  [align=left] { \ \ \ \ \ \ \ Proto\\PredictRequest};
+% Text Node
+\draw (99,59) node  [align=left] {{\large Edge}};
+% Text Node
+\draw (371,59) node  [align=left] {{\large Cloud}};
+% Text Node
+\draw (372,109) node  [align=left] {{\Large TensorFlow}\\{\Large  \ \ Serving}};
+% Text Node
+\draw (372,157) node  [align=left] {Inference Model\\ \ \ \ \ (Servable)};
+% Text Node
+\draw (210,177) node  [align=left] { \ \ \ \ \ \ \ \ \ Proto\\PredictResponse};
+% Text Node
+\draw (98.13,157.66) node  [align=left] {gRPC\\ Stub};
+% Text Node
+\draw (370,209) node  [align=left] {gRPC Server};
+
+
+\end{tikzpicture}
