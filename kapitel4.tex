@@ -82,17 +82,25 @@ In figure \ref{fig:app} the workflow to perform the inference is seen. First, a 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{./Bilder/UML.png}
+\includegraphics[width=0.95\textwidth]{./Bilder/UML.png}
 \caption{UML class diagram of the benchmark Application}
 \label{fig:UML}
 \end{figure}
+Figure \ref{fig:UML} depicts an UML class diagram of the application featuring the most important classes, functions and variables. 
+The main class is called MainActivity and implements all of the graphical aspects. 
+The MainActivity handles requests for both cloud and edge inference by delegating the requests to instances of the classes TFServingClient and ImageClassifier, respectively. Both of these classes also take care of the preprocessing steps.
+The abstract class ImageClassifier has two subclasses FloatClassifier and QuantClassifier. The first class runs the inference for floating point models and the second for quantized models.
+This seperation is needed since these different model types require different input and output types.
+
+The MainActivity writes the collected measurements and the parameter configurations of a experiment to a instance of SingleExperiment. After the experiment is completed MainActivity tells a Logger instance to save the contents of the SingleExperiment object. The Logger then saves all collected data to a csv file.
+
 \subsubsection{Preprocessing}
 For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the rgb values need to be scaled to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.55\textwidth]{./Bilder/preprocessing.jpg}
 \caption{Preprocessing steps for image classifcation}
-\label{fig:app}
+\label{fig:prepro}
 \end{figure}
 \paragraph{Edge Preprocessing}
 In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural afterwards, either on the edge device itself or on a cloud-backend.
@@ -125,6 +133,7 @@ For the case of cloud inference the major parts of the needed preprocessing is e
 \paragraph{Inference Mode}
 The inference can either be performed on the edge or an a cloud-backend.
 
+
 \begin{figure}[H]
 \centering
  \scalebox{.7}{\input{./Bilder/tree.tex}}
@@ -132,9 +141,14 @@ The inference can either be performed on the edge or an a cloud-backend.
 \caption{Excerpt of the performed experiments configurations}
 \label{fig:tree}
 \end{figure}
-\subsection{Measurements}
+Figure \ref{fig:tree} shows a part of our experimentation tree. In theory there would be 240 different parameter configurations, but due to a number of reasons the number of different configurations reduced to 113 in total.
+
+First, the Usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for a single Image Size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference so we only carry out experiments without NNAPI for a batch size of one.
+We omit the cloud inference for the quantized Mobilenet because %INSERT REASON.
+Lastly due to reasons of limited capacity/time and lack of support of batch sizes larger than one in TensorFlow Lite for some models.
+\subsection{Performance Metrics}
 \label{chap:insta_measurements}
-We conduct the measurement either directly in the source code or by using Android Studio Profiler (Version 3.3). Since Android Studio cannot collect all metrics the way we wanted, we wanted to used Trepn as a secondary profiling application. But since Trepn does not support our test device, we had to omit these metrics.
+We conduct the measurements either directly in the source code or by using Android Studio Profiler (Version 3.3). Since Android Studio cannot collect all metrics the way we wanted, we wanted to used Trepn as a secondary profiling application. But since Trepn does not support our test device, we had to omit these metrics.
 \subsubsection{Inference Time}
 To measure inference time we need to  distinguish between edge and cloud inference.
 \paragraph{Edge Inference}To measure edge inference we measure the time the TensorFlow Lite interpreter needs to run the inference operation on the loaded model given the input image.
@@ -178,7 +192,7 @@ The little trash can at the bottom of the figure shows that the garbage collecti
 \subsubsection{GPU Usage}
 Neither Android Studio nor Trepn can provide GPU metrics for the OnePlus 6T. Hence no GPU measurements can be conducted.
 \subsubsection{Throughput}
-We differentiate two types of throughputs: the inference throughput and the total throughput, which also includes preprocessing besides inference.
+We differentiate two types of throughput: the inference throughput and the total throughput, which also includes preprocessing besides inference.
 We calculate throughput in operations per second by 
 
 \begin{equation*}
@@ -191,6 +205,8 @@ Throughput_{total}  =\frac{1000}{(time_{inference} + time_{preprocessing}) / bat
 We measure both transmitted and received data by using the Android TrafficStats package (https://developer.android.com/reference/android/net/TrafficStats). We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. 
 \section{Results and Evaluation}
 This section covers the results of the conducted experiments and their evaluation.
+
+First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. 
 \subsection{Edge}
 This section covers the results of the edge inference experiments.
 \subsubsection{Preprocessing}
