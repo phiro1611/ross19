@@ -40,12 +40,17 @@ Deep learning models are defined as neural networks with many layers and hidden 
 There are many different operators, which makes performance prediction very complex.
 In the following the two most popular networks get analyzed.
 %This increased amount of layers leads to complex mathematical calculations.
+\subsubsection{Quantization}
+Quantization is a technique that trades in model precision for better inference times, memory consumption during inference and model sizes.
+Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
+The weights/activations are either quantized after training the model with floats (Post Training Quantization) or the model is training with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
+efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these technique with the following results:
+8-bit quantization can lead to a model size reduction by a factor of 4, a 2x-3x latency speedup on CPUs and DSP, while reducing the model accuracies by 1\%
 
 \begin{itemize}
     \item layer
     \item hidden units
     \item input size
-    \item quantisation
     \item number of operations
 \end{itemize}
 \subsubsection{Convolutional Neural Network}

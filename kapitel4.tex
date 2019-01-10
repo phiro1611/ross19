@@ -68,13 +68,14 @@ This request and response process can also be seen in figure \ref{fig:cloud}
 \label{fig:cloud}
 \end{figure}
 \subsection{Models}
-We will use two different image classification model for the experiment, one optimized for mobile deployment and the other optimized for the highest accuracy.
+We will use two different image classification model for the experiment, one optimized for mobile deployment and the other optimized for high accuracy.
 
 \subsubsection{MobileNetV2}
-MobileNetV2 is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
+MobileNetV2 (1.0 224) is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
 constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
 inverted residual with linear bottleneck" \cite{DBLP:journals/corr/abs-1801-04381}.
-
+\paragraph{Quantization}
+The quantized version of MobileNetV2 looses 0.7\% in top-5 accuracy but also 75\% of its model size.
 \subsubsection{Inception V4}
 Inception V4 is a large image classification model with high accuracy but also with a high number of parameters leading to higher inference times than MobileNet.
 %%Insert Tabelle mit overview über model specs
@@ -91,7 +92,6 @@ Inception V4 is a large image classification model with high accuracy but also w
 \end{table}
 
 
-For the experiments we both evaluate the normal float version as well as the quantized version using int8.
 \subsection{Android Benchmark Application}
 In order to perform the inference process on the edge devices we developed a Android benchmark application written in Kotlin. 
 
