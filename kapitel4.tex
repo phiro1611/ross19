@@ -13,22 +13,29 @@ This section deals the specification of the Android benchmark app, used hardware
 
 \subsection{Hardware}
 \subsubsection{Edge}
-As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphones is powered by Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS 9.0.11, which is based on Android 9.
+As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS 9.0.11, which is based on Android 9.
 \subsubsection{Cloud}
 %The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 GB system memory.
 The virtual server has 32 cores (16 real cores with hyperthreading), 240 GB of memory, a Tesla P100 16 GB PCIe GPGPU and a 800 PCIe SSD.
 
 The server runs on Ubuntu 16.04 CUDA 9.1 PGI 17.9 nvidia-docker 2.0.3+docker18.03.1-1.
 \subsection{Frameworks}
-Two open-source frameworks will be used for the experiments.
+We use Two open-source frameworks based on TensorFlow for the experiments.
+This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite\cite{tfLite}  and TensorFlow Serving\cite{tfServing} websites, on which this section is based on, or the corresponding GitHub repositories.
 \subsubsection{TensorFlow Lite}
-TensorFlow Lite (Release 1.12.0)was developed for mobile and embedded devices and is a lightweight solution of TensorFlow.
+TensorFlow Lite (Release 1.12.0) was developed for mobile and embedded devices and is a lightweight solution of TensorFlow and thus will be used for the edge inference experiments.
+
+
 At the moment only inference is supported and not the training of the models.
 It supports acceleration with GPU or other accelerators as well was portability to Android, iOS and other IoT devices.
 
 
-To use model in TensorFlow Lite models need to be converted to the \emph{tflite} format.
 
+\paragraph{Hosting Models}
+TensorFlow Lite expects models in their own FlatBuffer file  format(\emph{.tflite}). Therefore models need to be converted to this format before TensorFlow Lite can load them. This conversion can be done using the TensorFlow Lite Converter, which supports various formats of trained TensorFlow models.
+The \emph{.tflite} model now can be loaded by a object of the Interpreter class.
+\paragraph{Run Prediction}
+To then run the inference process in TensorFlow Lite the run method of Interpreter object with a loaded model needs to be called. To call this function two objects need to be passed, first the input for the given model and second the output object, where the prediction response from the inference operation gets stored. 
 \begin{figure}[H]
 \centering
 \input{./Bilder/edge.tex}
@@ -36,17 +43,33 @@ To use model in TensorFlow Lite models need to be converted to the \emph{tflite}
 \label{fig:edge}
 \end{figure}
 \subsubsection{TensorFlow Serving}
-TensorFlow Serving (Release 1.12.0 VERIFY THIS AGAIN) is a framework to serve machine learning models in production envrionments. 
+As for cloud inference TensorFlow Serving (Release 1.12.0 VERIFY THIS AGAIN) will be used, since it provides a framework to serve machine learning models in production environments. 
 
-TensorFlow Serving supports two APIs: gRPC and REST. Since gRPC is supposed to deliver a better performance, we will use the gRPC API.
-\subsection{Models}
-We will use two different image classification model for the experiment, one optimized for mobile deployment and the other optimized for the highest accuracy.
+
+
+\paragraph{Hosting Models}
+In order to host a model as a Servable in TensorFlow Serving, first a TensorFlow model needs to exported using TensorFlow's SavedModelBuilder, resulting in a SavedModel protocol buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
+%%Wieviel schreiben über signature, predict function etc?
+
+Now the exported model can be loaded by a instance of Tensorflow Serving.
+We use docker to start that instance, specifically nvidia-docker that allows us to run the inference operations on a GPU. For that TensorFlow Serving provide two docker images of their framework, one with CPU and the other with GPU support.
+
+\paragraph{Run Prediction}
+TensorFlow Serving supports two API for clients to create predictions requests: gRPC and REST. Since the gRPC protocol is supposed to deliver a better performance, we will use the gRPC API.
+For a client to a request to the server a gRPC stub needs to be created in the first place, that allows us to call all methods implemented on the server. In our case we need to call TensorFlow Serving's Predict method to start the inference process. The method needs to be passed a PredictRequest object, which contains among other things the input data for the model, the shape of the input and the requested model.%model signature?
+
+After the request is sent and handled the server response by sending back a PredictResponse object. This object holds the predictions for the given input data in the form specified by the exported model.
+This request and response process can also be seen in figure \ref{fig:cloud}
+
 \begin{figure}[H]
 \centering
 \input{./Bilder/cloud.tex}
 \caption{Functionality of TensorFlow Serving}
 \label{fig:cloud}
 \end{figure}
+\subsection{Models}
+We will use two different image classification model for the experiment, one optimized for mobile deployment and the other optimized for the highest accuracy.
+
 \subsubsection{MobileNetV2}
 MobileNetV2 is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
 constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
