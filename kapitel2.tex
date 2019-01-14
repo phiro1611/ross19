@@ -2,10 +2,10 @@
 \label{chap:relatedWork}
 This chapter will give a brief outline and evaluation of related work on the topic of performance evaluation of deep learning inference. These related papers can be divided into two subcategories, on the one hand, papers that deal with the performance of deep learning models in general and on the other hand that deal with the trade-offs of either edge or cloud inference.
 \section{Performance of Model Inference}
-\subsection{Speed/accuracy trade-offs for modern convolutional object detectors}
-In \cite{DBLP:journals/corr/HuangRSZKFFWSG016} the authors provide a guide for selecting the right convolutional object detection architecture for the desirable speed/memory/accuracy. To demonstrate this trade-offs the authors test various popular models such as Inception v2, MobileNet or Resnet 101. To create the benchmarks, "a machine with 32GB RAM,
-Intel Xeon E5-1650 v2 processor and an Nvidia GeForce
-GTX Titan X GPU card \cite{DBLP:journals/corr/HuangRSZKFFWSG016} is used.
+%\subsection{Speed/accuracy trade-offs for modern convolutional object detectors}
+%In \cite{DBLP:journals/corr/HuangRSZKFFWSG016} the authors provide a guide for selecting the right convolutional object detection architecture for the desirable speed/memory/accuracy. To demonstrate this trade-offs the authors test various popular models such as Inception v2, MobileNet or Resnet 101. To create the benchmarks, "a machine with 32GB RAM,
+%Intel Xeon E5-1650 v2 processor and an Nvidia GeForce
+%GTX Titan X GPU card \cite{DBLP:journals/corr/HuangRSZKFFWSG016} is used.
 
 
 \subsection{Cloud-based or On-device:
@@ -46,16 +46,21 @@ very likely that on-device[edge] inference can be done efficiently in the near f
 \subsection{Latency and Throughput Characterization of Convolutional
 Neural Networks for Mobile Computer Vision}
 Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
-The authors use both object detection (MobileNet v1 and Inception v2) and object recognition (SSD Mobilenet v1 COCO, SSD Inception v2 COCO,
-and VGG16 FasterRCNN PASCAL VOC) networks for their experiments.
-The authors focus on the metrics inference time and system throughput.
+The authors use object recognition (MobileNet v1 and Inception v2) as well as object detection (SSD Mobilenet v1 COCO, SSD Inception v2 COCO,
+and VGG16 FasterRCNN PASCAL VOC) models for their experiments, but we only cover the object recognition models, since these are more relevant for this thesis.
+The authors focus on the metrics inference time and system throughput, in particular with regard to various batch sizes that they incrementally increase in the course of their experiments.
 
-In the case the Android experiments 480x640 jpeg images get captured that get resized, cropped and normalized during their preprocessing step.
+In the case of the Android experiments 480x640 jpeg images get captured. Afterwards they get resized, cropped and normalized during the preprocessing step before getting fed to the neural networks.
+
+Like Guo they also identify the model loading process as a bottleneck on the Android phone, contrary to the inference time, which they call "comparatively fast".
 
 
+For edge inference the authors also experiment with running two neural network instances simultaneously in separate threads instead of one. 
+This leads to a higher throughput in the case of the Android phone, but to a decrease for the Jetson TX 2. They claim this decrease originates from the "context switch overhead of scheduling
+the two processes".
 
+For both TensorFlow Serving and TensorRT the throughput increases with increasing batch size until a saturation point that depends on factors such as the model, hardware and the configuration.
 
-In their experiments the batch size get incrementally increased to observe the effects on throughput and latency. 
 \begin{table}[H]
 \centering
 \caption{Used hardware and inference frameworks in \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}}
@@ -70,7 +75,8 @@ In their experiments the batch size get incrementally increased to observe the e
 \label{frameworks_hardware_2}
 \end{table}
 
-The authors conclude "that CNNs for mobile computer vision have significant latency–throughput trade-offs, but the behavior is very complex" caused by a number of different factors affecting the performance.
+The authors conclude "that CNNs for mobile computer vision have significant latency–throughput trade-offs, but the behavior is very complex" caused by a number of different factors affecting the performance. This indicates that performance results can not be transferred to different model/hardware/framework settings.
+
 \subsection{MLPerf}
 MLPerf is a project that strives to create a "common set of benchmarks that enables the machine learning (ML) field to measure system performance for both training and inference from mobile devices to cloud services"\cite{mlperfWebsite}.
 They want to create these benchmarks with fair, useful and replicatable measurements using representative workloads \cite{mlperf}. 
@@ -80,7 +86,7 @@ They aim to benchmark a wide variety of model types(image classification, transl
 On December 12th 2018 the first results for model training were published, with results for inference yet to be released.
 \section{Evaluation of the Related Work}
 %%Add advantages of NNAPI,quant here
-For both the works of Guo\cite{\cite{DBLP:conf/ic2e/Guo18}} and Hanhirova and others\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks(TensorFlow Lite in combination with Android Neural Networks API(NNAPI)) providing optimized operators/kernels and accelerator support, edge devices with accelerators and models that are specifically developed for edge deployment(MobileNet). Furthermore these models can also be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latency and model sizes, while only taking minimal impact on model accuracy.
+For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova and others\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks(TensorFlow Lite in combination with Android Neural Networks API) providing optimized operators/kernels and accelerator support, edge devices with accelerators and models that are specifically developed for edge deployment(MobileNet). Furthermore these models can also be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latency and model sizes, while only taking minimal impact on model accuracy.
 
 MLPerf looks to be a promising project, but it is still in an early phase with no inference results presented so far. Hence it is still unclear which metrics besides inference time/throughput they measure and how they measure them.
 
