@@ -15,6 +15,7 @@ This section deals the specification of the Android benchmark app, used hardware
 
 \subsection{Hardware}
 \subsubsection{Edge}
+\label{chap:hardwareEdge}
 As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS 9.0.11, which is based on Android 9.
 \subsubsection{Cloud}
 %The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 GB system memory.
@@ -96,7 +97,11 @@ Inception V4 is a large image classification model with high accuracy but also w
 
 
 \subsection{Android Benchmark Application}
-In order to perform the inference process on the edge devices we developed a Android benchmark application written in Kotlin. 
+To conduct the experiments for both edge and cloud inference we developed and implemented an Android benchmark application using Kotlin.
+This application implements all function needed to preprocess real workload images and perform the inference on either the Android device itself or sent the image to a cloud-backend.
+For both the preprocess and inference operation the application logs metrics such as inference time, time of the experiments etc. and stores them to a csv file, which then can be used to analyze the experiments.
+
+Both edge and cloud inference implementations are based on the example implementations in the respective GitHub repositories to ensure optimal performance. 
 
 \begin{figure}[H]
 \centering
@@ -176,7 +181,7 @@ Lastly due to reasons of limited capacity/time and lack of support of batch size
 \label{chap:insta_measurements}
 We conduct the measurements either directly in the source code or by using Android Studio Profiler (Version 3.3). Since Android Studio cannot collect all metrics the way we wanted, we wanted to used Trepn as a secondary profiling application. But since Trepn does not support our test device, we had to omit these metrics.
 \subsubsection{Inference Time}
-To measure inference time we need to  distinguish between edge and cloud inference.
+To measure inference time we need to  distinguish between edge and cloud inference, since for the latter the network latency needs to be considered.
 \paragraph{Edge Inference}To measure edge inference we measure the time the TensorFlow Lite interpreter needs to run the inference operation on the loaded model given the input image.
 \paragraph{Cloud Inference}
 To measure the cloud inference time we need to measure two latencies. The first latency is the server latency. This server latency describes the time difference between the point where TensorFlow Serving receives the inference request and the point in time where TensorFlow Serving send the response back to the client.
@@ -232,16 +237,24 @@ We measure both transmitted and received data by using the Android TrafficStats 
 \section{Results and Evaluation}
 This section covers the results of the conducted experiments and their evaluation.
 
-First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. 
+First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. In each of these sections first the preprocessing and then the inference results are presented.
 \subsection{Edge}
-This section covers the results of the edge inference experiments.
+This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
 \subsubsection{Preprocessing}
 \subsubsection{Inference}
-\subsubsection{Effect of NNAPI on Inference}
+\subsubsection{Effect of NNAPI}
+The Android Neural Network API (NNAPI) is supposed to speed up inference of neural network on Android by introducing optimized kernels/operators. 
+
+The effect of this framework can be seen in figure \ref{fig:NNAPI} and show the significant performance improvement caused by the NNAPI, not only affecting inference time, but also memory consumption and CPU usage.
+%%Genauer factors einfügen : inferecen zweimal sos chnell...
+This effect can be observed across all tested models, but especially on the InceptionV4 network.
+
+
+Since the NNAPI leads to performance improvements in all measured metrics, it will be used for all further edge inference results.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./Bilder/single_plots/edge_inference_plots/NNAPI_behavior.pdf}
-\caption{Effect of NNAPI on Inference}
+\caption{Effect of NNAPI}
 \label{fig:NNAPI}
 \end{figure}
 \subsection{Cloud}
@@ -259,5 +272,7 @@ This section covers the results of the experiments with batch size equal or larg
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%Überleitung
 
 \endinput 

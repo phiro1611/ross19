@@ -120,4 +120,10 @@ This metric is only relevant for cloud inference as the request has to be sent t
 
 This is in particular important for the case where the input data for the model is preprocessed on the cloud, because the input data is often resized to a smaller shape during preprocessing. Therefore cloud preprocessing increased the amount of data that needs to be transmitted to the server. For slow network connections this could result in higher inference times.
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+This section presented the factors influencing the performance of cloud and edge inference and the for the performance significant metrics.
+To model the relation between these factors and metrics, we perform experiments on both edge and cloud inference using state of the art hardware, model and framework components. The setup and the result of these experiments are covered in the next section.
 \endinput 
