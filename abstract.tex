@@ -6,7 +6,7 @@
 
 \vspace*{1cm}
 
-
+\begin{comment}
 %\noindent When deploying realtime AI applications, a crucial aspect is the decision whether to deploy the underlying deep learning models on edge devices or on a cloud-backend.
 %For the deployment of a model various things need to be considered, most importantly accuracy and inference time, but also energy consumption, memory consumption, throughput and retraining
 \noindent When deploying real-time AI applications, a crucial aspect is the decision whether to deploy the underlying deep learning models on edge devices or on a cloud-backend.
@@ -17,6 +17,25 @@ In order to help with the optimal selection of cloud and edge inference to achie
 Based on this performance model, the most essential trade-offs of the different deployment options get demonstrated by conducting multiple experiments using image classification as a use case. After the evaluation of these experiments, recommendations for the deployment are proposed.
 
 
+
+-----------------------------------------------------------------------------
+\end{comment}
+
+
+
+
+\noindent When deploying real-time AI applications on edge devices, a crucial aspect is the decision whether to deploy the underlying deep learning models on edge devices or a cloud-backend.
+While edge devices often lack computational power to provide high inference throughput, outsourcing the inference to a cloud-backend raises concerns regarding security and consistent network connection.
+Although throughput is the most critical inference performance metric for real-time applications, other metrics like CPU usage, data, memory or energy consumption are affected by both cloud and edge inference and hence vital for the model deployment to consider.
+
+All these performance metrics are mainly affected by three factors: The model architecture, the inference framework and the hardware constraints.
+Significant research is being done in all three areas influencing the deployment question, resulting in the release of optimised frameworks(TensorFlow Lite, NNAPI, TensorFlow Serving), hardware accelerators (GPU, TPU, neuromorphic co-processors, FPGA) and models dedicated for edge devices (MobileNet, Quantization).
+
+
+In order to help with the optimal selection of cloud and edge inference to achieve real-time AI, this thesis proposes a performance model characterising the deployment of deep learning models and the resulting performance trade-offs.
+Based on this performance model, the essential trade-offs of the different deployment options get quantified by conducting multiple experiments using image classification as a use case. After the evaluation of these experiments, we propose recommendations for the deployment.
+
+%%Add preprocessing
 
 
 

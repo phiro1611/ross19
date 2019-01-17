@@ -56,7 +56,7 @@ In order to host a model as a Servable in TensorFlow Serving, first a TensorFlow
 %%Wieviel schreiben über signature, predict function etc?
 
 Now the exported model can be loaded by a instance of Tensorflow Serving.
-We use docker to start that instance, specifically nvidia-docker that allows us to run the inference operations on a GPU. For that TensorFlow Serving provide two docker images of their framework, one with CPU and the other with GPU support.
+We use docker to start that instance, specifically nvidia-docker that allows us to run the inference operations on a GPU. For that TensorFlow Serving provides two docker images of their framework, one with CPU and the other with GPU support.
 
 \paragraph{Run Prediction}
 TensorFlow Serving supports two API for clients to create predictions requests: gRPC and REST. Since the gRPC protocol is supposed to deliver a better performance, we will use the gRPC API.
@@ -72,26 +72,64 @@ This request and response process can also be seen in figure \ref{fig:cloud}
 \label{fig:cloud}
 \end{figure}
 \subsection{Models}
+\label{chap:models}
 We will use two different image classification model for the experiment, one optimized for mobile deployment and the other optimized for high accuracy.
-
+Both models are trained on a ImageNet dataset consisting of 1000 image classes.
 \subsubsection{MobileNetV2}
 MobileNetV2 (1.0 224) is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
 constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
 inverted residual with linear bottleneck" \cite{DBLP:journals/corr/abs-1801-04381}.
+This module is a combination of 
+
+Table \ref{table:mobilenetArchi} displays the design of the model, with each row being a layer repeated \emph{n} times. 
+\begin{table}[]
+
+\centering
+\caption{MobilenetV2 architecture \cite{DBLP:journals/corr/abs-1801-04381}}
+\label{table:mobilenetArchi}
+\begin{tabular}{@{}llllll@{}}
+
+\toprule
+Input & Operator & t & c & n & s \\ \midrule
+$224^2\times 3$ & conv2d & - & 32 & 1 & 2 \\
+$112^2\times 32$ & bottleneck & 1 & 16 & 1 & 1 \\
+$112^2\times 16$ & bottleneck & 6 & 24 & 2 & 2 \\
+$56^2\times 24$ & bottleneck & 6 & 32 & 3 & 2 \\
+$28^2\times 23$ & bottleneck & 6 & 64 & 4 & 2 \\
+$14^2\times 64$ & bottleneck & 6 & 96 & 3 & 1 \\
+$14^2\times 96$ & bottleneck & 6 & 160 & 3 & 2 \\
+$7^2\times 160$ & bottleneck & 6 & 320 & 1 & 1 \\
+$7^2\times 320$ & conv2d 1x1 & - & 1280 & 1 & 1 \\
+$7^2\times 1280$ & avgpool 7x7 & - & - & 1 & - \\
+$1\times 1\times 1280$ & conv2d 1x1 & - & k & - &  \\ \bottomrule
+\end{tabular}
+\end{table}
 \paragraph{Quantization}
 The quantized version of MobileNetV2 looses 0.7\% in top-5 accuracy but also 75\% of its model size.
 \subsubsection{Inception V4}
-Inception V4 is a large image classification model with high accuracy but also with a high number of parameters leading to higher inference times than MobileNet.
+%%Add infos about stem and reduction
+InceptionV4, published in \cite{InceptionV4}, is a large image classification network with high accuracy but also with a high number of parameters leading to higher inference times than MobileNetV2.
+
+In comparison to its previous versions InceptionV4 is built with "a more uniform simplified architecture and more inception modules". These inception modules consists of multiple convolutional, average pooling and filter concat layers.
+The general architecture of the network can be seen in figure \ref{fig:inceptionv4} with different Inception and Reduction building blocks. 
+\begin{figure}[]
+\centering
+\includegraphics[angle=90,width=0.94\textwidth]{./Bilder/inceptionV4_architecture.png}
+\caption{InceptionV4 architecture \cite{InceptionV4}}
+\label{fig:inceptionv4}
+\end{figure}
 %%Insert Tabelle mit overview über model specs
 \begin{table}[]
+%CITE inception params ned vergessen
 \caption{Overview of used models}
+\label{table:modelOverview}
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 \rowcolor[HTML]{C0C0C0} 
  & {\color[HTML]{000000}Parameters} & {\color[HTML]{000000} Top-5 Accuracy \cite{modelspecs}} & Input Size & TF Lite Model Size \\ \hline
-\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Inception V4} & wet & 95.1\% & 299x299 & 107.7 MB \\ \hline
-\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} Mobilenet V2 1.0} & 3470000 \cite{mobilenetspecs}& 90.6\% & 224x224 & 14.0 MB \\ \hline
-\cellcolor[HTML]{C0C0C0}\begin{tabular}[c]{@{}l@{}}Mobilenet V2 1.0\\ quantized\end{tabular} & 3470000 \cite{mobilenetspecs}& 89.9\% & 224x224 & 3.4 MB \\ \hline
+\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} InceptionV4} & 42.68M & 95.1\% & 299x299 & 107.7 MB \\ \hline
+\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} MobilenetV2 1.0} & 3.47M\cite{DBLP:journals/corr/abs-1801-04381}& 90.6\% & 224x224 & 14.0 MB \\ \hline
+\cellcolor[HTML]{C0C0C0}\begin{tabular}[c]{@{}l@{}}MobilenetV2 1.0\\ quantized\end{tabular} & 3.47M\cite{DBLP:journals/corr/abs-1801-04381}& 89.9\% & 224x224 & 3.4 MB \\ \hline
 \end{tabular}
 \end{table}
 
@@ -103,7 +141,7 @@ For both the preprocess and inference operation the application logs metrics suc
 
 Both edge and cloud inference implementations are based on the example implementations in the respective GitHub repositories to ensure optimal performance. 
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/FlowChart_App.png}
 \caption{Flowchart of the Benchmark Application}
@@ -111,7 +149,7 @@ Both edge and cloud inference implementations are based on the example implement
 \end{figure}
 In figure \ref{fig:app} the workflow to perform the inference is seen. First, a image needs to be selected. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. In the case of edge inference it needs to be decided if the NNAPI should be used by TensorFlow Lite. For cloud inference the preprocessing mode needs to be selected (edge/cloud). Now the preprocessing operations can be performed based on the previous selected options (Even for the case of clouf inference with cloud preprocessing some preprocessing needs to be done on the edge beforehand like building the Proto PredictRequest). Now, that the input is preprocessed, the actual inference is performed resulting in a prediction. For both preprocessing and inference the measurements mentioned in section \ref{chap:insta_measurements} are logged.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/UML.png}
 \caption{UML class diagram of the benchmark Application}
@@ -129,7 +167,7 @@ The MainActivity writes the collected measurements and the parameter configurati
 For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the rgb values need to be scaled to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.55\textwidth]{./Bilder/preprocessing.jpg}
+\includegraphics[width=0.6\textwidth]{./Bilder/preprocessing.jpg}
 \caption{Preprocessing steps for image classifcation}
 \label{fig:prepro}
 \end{figure}
@@ -141,9 +179,11 @@ In the case of cloud inference the images can also be preprocessed directly on t
 \paragraph{Edge Inference}
 \paragraph{Cloud Inference}
 \section{Instantiation}
-We run each parameter configuration 25 times to reduce variance.
+We run each parameter configuration 25 times to reduce variance. During the experiments no other applications are running on either the edge or the cloud device.
 In the course of the experiments we change the configurations of the following parameters:
 %%%293,performance analysis buch
+\paragraph{Model}
+We conduct experiments for all three models listed presented in \ref{chap:models}: InceptionV4, MobileNetV2 and MobileNetV2 quantized.
 \paragraph{Image Size}
 We evaluate the performance of 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP($3464\times2309$) and 16MP($4899\times3266$) images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$/$299\times299$ depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 \begin{figure}[H]
@@ -158,7 +198,10 @@ We experiment with the following batch sizes: 1, 2, 16, 32. Since at the point o
 The Android Neural Network API (NNAPI)
 is "designed for running computationally intensive operations for machine learning on mobile devices" \cite{NNAPI} and can be used by TensorFlow Lite to improve inference performance. Therefore we take a look into the effect of this framework.
 \paragraph{GPU Usage}
-Since the latest release of TensorFlow Lite(version xxx) GPU usage on Android is supported. 
+Since the latest release of TensorFlow Lite(version xxx) GPU usage on Android is supported.
+%experimental
+%only mobilenet supported
+%worse performance than NNAPI so far
 \paragraph{Preprocessing Mode}
 For the case of cloud inference the major parts of the needed preprocessing is either done on the edge before sending the image to the cloud or done on cloud.
 \paragraph{Inference Mode}
@@ -238,6 +281,8 @@ We measure both transmitted and received data by using the Android TrafficStats 
 This section covers the results of the conducted experiments and their evaluation.
 
 First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. In each of these sections first the preprocessing and then the inference results are presented.
+
+For precise mean values and standard deviations of all measured metrics refer to tables \ref{measurementsInception} and \ref{measurementsMobilenet}.
 \subsection{Edge}
 This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
 \subsubsection{Preprocessing}
