@@ -17,6 +17,7 @@ This section deals the specification of the Android benchmark app, used hardware
 \subsubsection{Edge}
 \label{chap:hardwareEdge}
 As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS 9.0.11, which is based on Android 9.
+%%Cite from AI bechmark paper
 \subsubsection{Cloud}
 %The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 GB system memory.
 The virtual server has 32 cores (16 real cores with hyperthreading), 240 GB of memory, a Tesla P100 16 GB PCIe GPGPU and a 800 PCIe SSD.
@@ -29,9 +30,14 @@ We chose these frameworks since they both support TensorFlow models, ...%INSERT 
 \subsubsection{TensorFlow Lite}
 TensorFlow Lite (Release 1.12.0) was developed for mobile and embedded devices and is a lightweight solution of TensorFlow and thus will be used for the edge inference experiments.
 
-
-At the moment only inference is supported and not the training of the models.
+%%Mention NNAPI support?
+At the moment only model inference can be done by TensorFlow Lite, not model training.
 It supports acceleration with GPU or other accelerators as well was portability to Android, iOS and other IoT devices.
+
+\paragraph{Android NNAPI}
+TensorFlow Lite is also compatible with the Android Neural Networks API (NNAPI). This API
+is designed to speed up computationally intensive machine learning operations and can be used by TensorFlow Lite to improve inference performance. During inference NNAPI "can
+efficiently distribute the computation workload across available on-device processors, including dedicated neural network chips, GPUs and DSPs"\cite{DBLP:journals/corr/abs-1810-01109}.
 
 
 
@@ -123,13 +129,14 @@ The general architecture of the network can be seen in figure \ref{fig:inception
 %CITE inception params ned vergessen
 \caption{Overview of used models}
 \label{table:modelOverview}
-\begin{tabular}{|l|l|l|l|l|}
-\hline
-\rowcolor[HTML]{C0C0C0} 
- & {\color[HTML]{000000}Parameters} & {\color[HTML]{000000} Top-5 Accuracy \cite{modelspecs}} & Input Size & TF Lite Model Size \\ \hline
-\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} InceptionV4} & 42.68M & 95.1\% & 299x299 & 107.7 MB \\ \hline
-\cellcolor[HTML]{C0C0C0}{\color[HTML]{000000} MobilenetV2 1.0} & 3.47M\cite{DBLP:journals/corr/abs-1801-04381}& 90.6\% & 224x224 & 14.0 MB \\ \hline
-\cellcolor[HTML]{C0C0C0}\begin{tabular}[c]{@{}l@{}}MobilenetV2 1.0\\ quantized\end{tabular} & 3.47M\cite{DBLP:journals/corr/abs-1801-04381}& 89.9\% & 224x224 & 3.4 MB \\ \hline
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Model & Parameters & Top-5 Accuracy\cite{modelspecs} & Input Size & TF Lite Model Size \\
+\midrule
+InceptionV4 & 42.68M & 95.1\% & 299x299 & 107.7MB \\
+MobileNetV2 1.0 & 3.47M\cite{DBLP:journals/corr/abs-1801-04381} & 90.6 & 224x224 & 14MB \\
+MobileNetV2 1.0 & 3.47M\cite{DBLP:journals/corr/abs-1801-04381} & 89.9\% & 224x224 & 3.4MB\\
+\bottomrule
 \end{tabular}
 \end{table}
 
@@ -195,8 +202,7 @@ We evaluate the performance of 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP
 \paragraph{Batch Size}
 We experiment with the following batch sizes: 1, 2, 16, 32. Since at the point of this experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobilenetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference.
 \paragraph{NNAPI}
-The Android Neural Network API (NNAPI)
-is "designed for running computationally intensive operations for machine learning on mobile devices" \cite{NNAPI} and can be used by TensorFlow Lite to improve inference performance. Therefore we take a look into the effect of this framework.
+NNAPI is supposed to enhance the inference performance of TensorFlow Lite. Therefore we take a look into the effect of this framework.
 \paragraph{GPU Usage}
 Since the latest release of TensorFlow Lite(version xxx) GPU usage on Android is supported.
 %experimental

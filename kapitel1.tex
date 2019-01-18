@@ -4,26 +4,35 @@
 %%ADD: android application
 
 With success in the past years in the field of deep learning models, for example in image recognition with the help convolutional neural networks, AI applications on edge devices such as cars and smartphones using these models have become more popular and viable.
-However, as the accuracy of these models has risen, the computational demands of them has also, and this has taken a toll on the performance on these models apart from the accuracy, in particular on aspects such as inference time, memory usage, energy consumption, CPU usage and throughput. 
+However, as the accuracy of these models have risen, the computational demands of them have also, and this has taken a toll on the performance on these models apart from the accuracy, in particular on aspects such as inference time, memory usage, energy consumption, CPU usage and throughput. 
 While inference time and throughput are the essential metrics to ensure real-time AI, memory usage, energy consumption and CPU usage are also crucial in order to avoid that one application consumes the majority of the system resources.
 This is a concern especially for edge devices, where hardware or energy with mobile devices is often limited, and that is why the question arose whether the models should be deployed directly on the edge devices or on a cloud-backend where more computational power is available. 
 
-%%real life?
-In order to support users in the decision to select the right deployment option this thesis proposes a performance model supported by measurements conducted using real workloads.
-Therefore the three significant factors on the performance are examined, the hardware specification of the deployment environment, the architecture of the deep learning model and the framework responsible for performing the operations of the model on the hardware components.
-There are many different neural network types like convolutional neural network or recurrent neural network that use different operations and thus have different impacts on performance.
-For example, in the case of convolutional neural networks (CNN), the number of convolutional/fully-connected layers have an impact on inference time, since more layers result in more matrix multiplications needed to get a prediction.
-Another aspect, aside from the actual inference, is the preprocessing step, which is needed to transform the input into the format required by the model. In the case of CNNs these steps often consist of image resizing and rescaling.
-This rich variety of configurations also applies to the hardware aspects, where in addition to better CPUs and GPUs a various number of specific accelerators such as TPUs, neuromorphic co-processors, FPGA has been developed for both edge and cloud.
+
+In order to support users in the decision to select the optimal deployment option, this thesis proposes a performance model by taking all factors influencing inference performance into account.
+There are mainly three factors influencing the inference performance: the hardware specification of the deployment environment, the architecture of the deep learning model and the framework responsible for performing the operations of the model on the hardware components.
+
+To quantify this relationship between these factors and the inference performance we conduct experiments on both edge and cloud inference using a self-developed Android benchmark application.
+During these experiments, we measure the performance metrics mentioned above, which are relevant for real-time AI applications running on edge devices.
+
+There exists a rich variety of different neural network types, with the most popular being convolutional neural networks(CNNs) and recurrent neural networks(RNNs).
+Many of these models use unique operators with different impact on inference performance
+Since it is not feasible to benchmark all these different network types, this thesis will focus on CNNs, specifically object recognition models classifying the contents of a given input image.
 
 
 
-%Verbesserungsbedarf
-To obtain real measurement of the above mentioned performance metrics, multiple experiments including both preprocessing and inference are performed, using state of the art image recognition models and hardware components. Therefore we developed a benchmark android application, where images can be selected, and these images then get classified either on the cloud-backend or on the edge device itself.
-TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these experiments, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite).
 
+This rich variety of configurations also applies to the hardware aspects, where in addition to better CPUs and GPUs a rising number of specific accelerators such as TPUs, neuromorphic co-processors, FPGA have been developed for both edge and cloud.
+For the experiments, we will use a OnePlus 6T, a state of the art smartphone, as our edge device and a server with a Tesla P100 as the cloud-backend.
+
+
+TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these experiments, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks supported many of the above-mentioned hardware accelerators as well as providing optimised operators used by object recognition models.
+
+Another aspect, aside from the actual inference, is the preprocessing step, which is needed to transform the input into the format required by the model. 
+In the case of CNNs these steps often consist of image resizing and rescaling.
+Since this step is vital for the inference, our experiments will also include preprocessing aside from the actual inference.
 
 \section{Structure of the Thesis}
-The rest of this thesis is structured as follows: Chapter \ref{chap:relatedWork} provides an outline and evaluation over existing related work on this topic. Next, a performance model that characterises the deployment by mapping the problem space, which is presented beforehand, to vital performance metrics is proposed.
-Chapter \ref{chap:experiments} deals with the experiments, their design, instantiation and evaluation of the results.
+The rest of this thesis is structured as follows: Chapter \ref{chap:relatedWork} provides an outline and evaluation of existing related work on this topic. Next, we propose a performance model characterising the deployment of deep learning models by mapping the problem space, which is presented beforehand, to important performance metrics.
+Chapter \ref{chap:experiments} deals with the experiments, their design, instantiation and presentation of the results including an evaluation.
 Finally, this thesis concludes with a conclusion and future work related to this thesis.
