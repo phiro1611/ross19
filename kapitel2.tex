@@ -2,6 +2,7 @@
 \label{chap:relatedWork}
 This chapter will give a brief outline and evaluation of related work on the topic of performance evaluation of deep learning inference. These related paper deal with the inference performance of either edge or cloud inference or both of them in a comparative evaluation.
 
+%%Change title to more fitting one
 \section{Performance of Edge vs Cloud Inference}
 %\subsection{Speed/accuracy trade-offs for modern convolutional object detectors}
 %In \cite{DBLP:journals/corr/HuangRSZKFFWSG016} the authors provide a guide for selecting the right convolutional object detection architecture for the desirable speed/memory/accuracy. To demonstrate this trade-offs the authors test various popular models such as Inception v2, MobileNet or Resnet 101. To create the benchmarks, "a machine with 32GB RAM,
@@ -48,8 +49,8 @@ very likely that on-device[edge] inference can be done efficiently in the near f
 \subsection{Latency and Throughput Characterization of Convolutional
 Neural Networks for Mobile Computer Vision}
 Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
-The authors use object recognition (MobileNet v1 and Inception v2) as well as object detection (SSD Mobilenet v1 COCO, SSD Inception v2 COCO,
-and VGG16 FasterRCNN PASCAL VOC) models for their experiments, but we only cover the object recognition models, since these are more relevant for this thesis.
+The authors use image classification (MobileNetV1 and Inceptionv2) as well as object detection (SSD MobilenetV1 COCO, SSD InceptionV2 COCO,
+and VGG16 FasterRCNN PASCAL VOC) models for their experiments, but we only cover the image classification models, since these are more relevant for this thesis.
 The authors focus on the metrics inference time and system throughput, in particular with regard to various batch sizes that they incrementally increase in the course of their experiments.
 
 In the case of the Android experiments 480x640 jpeg images get captured. Afterwards they get resized, cropped and normalized during the preprocessing step before getting fed to the neural networks.
@@ -100,12 +101,12 @@ Other related publications are:
 \cite{DBLP:journals/corr/HuangRSZKFFWSG016} presents "a guide for selecting a detection architecture that achieves the right
 speed/memory/accuracy balance for a given application and platform"
 
-\cite{DBLP:journals/corr/CanzianiPC16} presents a analysis of the impact of popular deep learning models like InceptionV4 on accuracy, memory, inference time and power consumption for practical applications.
+\cite{DBLP:journals/corr/CanzianiPC16} presents a analysis of the impact of popular deep learning models like InceptionV4 on accuracy, memory, inference latency and power consumption for practical applications.
 \section{Evaluation of the Related Work}
 %%Add advantages of NNAPI,quant here
 For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova and others\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks(TensorFlow Lite in combination with Android Neural Networks API) providing optimized operators/kernels and accelerator support, edge devices with accelerators and models that are specifically developed for edge deployment(MobileNet). Furthermore these models can also be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latency and model sizes, while only taking minimal impact on model accuracy.
-
-MLPerf looks to be a promising project, but it is still in an early phase with no inference results presented so far. Hence it is still unclear which metrics besides inference time/throughput they measure and how they measure them.
+%%Add more here about the papers
+MLPerf looks to be a promising project, but it is still in an early phase with no inference results presented so far. Hence it is still unclear which metrics besides inference latency/throughput they measure and how they measure them.
 
 
 

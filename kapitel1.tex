@@ -4,7 +4,7 @@
 %%ADD: android application
 
 With success in the past years in the field of deep learning models, for example in image recognition with the help convolutional neural networks, AI applications on edge devices such as cars and smartphones using these models have become more popular and viable.
-However, as the accuracy of these models have risen, the computational demands of them have also, and this has taken a toll on the performance on these models apart from the accuracy, in particular on aspects such as inference time, memory usage, energy consumption, CPU usage and throughput. 
+However, as the accuracy of these models have risen, the computational demands of them have also, and this has taken a toll on the performance on these models apart from the accuracy, in particular on aspects such as inference latency, memory usage, energy consumption, CPU usage and throughput. 
 While inference time and throughput are the essential metrics to ensure real-time AI, memory usage, energy consumption and CPU usage are also crucial in order to avoid that one application consumes the majority of the system resources.
 This is a concern especially for edge devices, where hardware or energy with mobile devices is often limited, and that is why the question arose whether the models should be deployed directly on the edge devices or on a cloud-backend where more computational power is available. 
 
@@ -17,7 +17,7 @@ During these experiments, we measure the performance metrics mentioned above, wh
 
 There exists a rich variety of different neural network types, with the most popular being convolutional neural networks(CNNs) and recurrent neural networks(RNNs).
 Many of these models use unique operators with different impact on inference performance
-Since it is not feasible to benchmark all these different network types, this thesis will focus on CNNs, specifically object recognition models classifying the contents of a given input image.
+Since it is not feasible to benchmark all these different network types, this thesis will focus on CNNs, specifically image classification models classifying the contents of a given input image.
 
 
 
@@ -26,7 +26,7 @@ This rich variety of configurations also applies to the hardware aspects, where 
 For the experiments, we will use a OnePlus 6T, a state of the art smartphone, as our edge device and a server with a Tesla P100 as the cloud-backend.
 
 
-TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these experiments, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks supported many of the above-mentioned hardware accelerators as well as providing optimised operators used by object recognition models.
+TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these experiments, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks supported many of the above-mentioned hardware accelerators as well as providing optimised operators used by image classification models.
 
 Another aspect, aside from the actual inference, is the preprocessing step, which is needed to transform the input into the format required by the model. 
 In the case of CNNs these steps often consist of image resizing and rescaling.

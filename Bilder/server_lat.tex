@@ -6,13 +6,13 @@
 %uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
 
 %Straight Lines [id:da7072764839644827] 
-\draw    (149.5,277) -- (451.5,277) ;
-\draw [shift={(451.5,277)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
-\draw [shift={(149.5,277)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw    (149.5,291) -- (451.5,291) ;
+\draw [shift={(451.5,291)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(149.5,291)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
 %Straight Lines [id:da9536138531960994] 
-\draw    (289.5,253) -- (450.5,253) ;
-\draw [shift={(450.5,253)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
-\draw [shift={(289.5,253)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw    (291.5,262.8) -- (450.5,263) ;
+\draw [shift={(450.5,263)}, rotate = 180.07] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(291.5,262.8)}, rotate = 180.07] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
 %Shape: Rectangle [id:dp8902536871651789] 
 \draw  [fill={rgb, 255:red, 201; green, 201; blue, 201 }  ,fill opacity=1 ] (63.91,93.69) -- (132.34,93.69) -- (132.34,221.63) -- (63.91,221.63) -- cycle ;
 %Rounded Rect [id:dp41557214204551274] 
@@ -35,11 +35,13 @@
 \draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (68.19,124.22) -- (128.07,124.22) -- (128.07,191.1) -- (68.19,191.1) -- cycle ;
 %Shape: Rectangle [id:dp7458124222136935] 
 \draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (300,189) -- (440,189) -- (440,229) -- (300,229) -- cycle ;
+%Straight Lines [id:da6846625455377753] 
+\draw    (149.5,262.8) -- (291.5,262.8) ;
+\draw [shift={(291.5,262.8)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(149.5,262.8)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
 
 % Text Node
-\draw (370,245) node  [align=left] {server latency};
-% Text Node
-\draw (293,269) node  [align=left] {total latency};
+\draw (375,251) node  [align=left] {$\displaystyle Latency_{server}$$ $};
 % Text Node
 \draw (210,127) node  [align=left] { \ \ \ \ \ \ \ Proto\\PredictRequest};
 % Text Node
@@ -56,6 +58,10 @@
 \draw (98.13,157.66) node  [align=left] {gRPC\\ Stub};
 % Text Node
 \draw (370,209) node  [align=left] {gRPC Server};
+% Text Node
+\draw (220,249) node  [align=left] {$\displaystyle Latency_{network}$$ $};
+% Text Node
+\draw (295,278) node  [align=left] {$\displaystyle Latency_{inference}$$ $};
 
 
 \end{tikzpicture}

@@ -9,7 +9,7 @@ This section deals the specification of the Android benchmark app, used hardware
 \centering
 \input{./Bilder/Exp_design.tex}
 \caption{placeholder}
-\label{fig:cloud}
+\label{fig:expDesign}
 \end{figure}
 
 
@@ -124,7 +124,6 @@ The general architecture of the network can be seen in figure \ref{fig:inception
 \caption{InceptionV4 architecture \cite{InceptionV4}}
 \label{fig:inceptionv4}
 \end{figure}
-%%Insert Tabelle mit overview über model specs
 \begin{table}[]
 %CITE inception params ned vergessen
 \caption{Overview of used models}
@@ -144,7 +143,7 @@ MobileNetV2 1.0 & 3.47M\cite{DBLP:journals/corr/abs-1801-04381} & 89.9\% & 224x2
 \subsection{Android Benchmark Application}
 To conduct the experiments for both edge and cloud inference we developed and implemented an Android benchmark application using Kotlin.
 This application implements all function needed to preprocess real workload images and perform the inference on either the Android device itself or sent the image to a cloud-backend.
-For both the preprocess and inference operation the application logs metrics such as inference time, time of the experiments etc. and stores them to a csv file, which then can be used to analyze the experiments.
+For both the preprocess and inference operation the application logs metrics such as inference latency, time of the experiments etc. and stores them to a csv file, which then can be used to analyze the experiments.
 
 Both edge and cloud inference implementations are based on the example implementations in the respective GitHub repositories to ensure optimal performance. 
 
@@ -174,7 +173,7 @@ The MainActivity writes the collected measurements and the parameter configurati
 For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the rgb values need to be scaled to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\textwidth]{./Bilder/preprocessing.jpg}
+\includegraphics[width=0.8\textwidth]{./Bilder/preprocessing.png}
 \caption{Preprocessing steps for image classifcation}
 \label{fig:prepro}
 \end{figure}
@@ -192,6 +191,12 @@ In the course of the experiments we change the configurations of the following p
 \paragraph{Model}
 We conduct experiments for all three models listed presented in \ref{chap:models}: InceptionV4, MobileNetV2 and MobileNetV2 quantized.
 \paragraph{Image Size}
+%224: 83KB
+%299: 141KB
+%2MP: 2411KB
+%4MP: 4309KB
+%8MP: 7515KB
+%16MP: 10077KB
 We evaluate the performance of 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP($3464\times2309$) and 16MP($4899\times3266$) images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$/$299\times299$ depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 \begin{figure}[H]
 \centering
@@ -200,7 +205,7 @@ We evaluate the performance of 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP
 \label{fig:cat}
 \end{figure}
 \paragraph{Batch Size}
-We experiment with the following batch sizes: 1, 2, 16, 32. Since at the point of this experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobilenetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference.
+We experiment with the following batch sizes: 1, 2, 16, 32. Since at the point of this experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobilenetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference at this point.
 \paragraph{NNAPI}
 NNAPI is supposed to enhance the inference performance of TensorFlow Lite. Therefore we take a look into the effect of this framework.
 \paragraph{GPU Usage}
@@ -225,31 +230,73 @@ Figure \ref{fig:tree} shows a part of our experimentation tree. In theory there 
 
 First, the Usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for a single Image Size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference so we only carry out experiments without NNAPI for a batch size of one.
 We omit the cloud inference for the quantized Mobilenet because %INSERT REASON.
+
 Lastly due to reasons of limited capacity/time and lack of support of batch sizes larger than one in TensorFlow Lite for some models.
 \subsection{Performance Metrics}
 \label{chap:insta_measurements}
 We conduct the measurements either directly in the source code or by using Android Studio Profiler (Version 3.3). Since Android Studio cannot collect all metrics the way we wanted, we wanted to used Trepn as a secondary profiling application. But since Trepn does not support our test device, we had to omit these metrics.
-\subsubsection{Inference Time}
-To measure inference time we need to  distinguish between edge and cloud inference, since for the latter the network latency needs to be considered.
-\paragraph{Edge Inference}To measure edge inference we measure the time the TensorFlow Lite interpreter needs to run the inference operation on the loaded model given the input image.
+
+In the following definitions $t_{start}$ denotes the starting point of either the preprocessing or inference, while $t_{end}$ denotes the end point of the respective process.
+\subsubsection{Latency}
+We measure $Latency_{preprocessing}$ by measuring the time difference between start and end of the preprocessing process.
+\begin{equation*}
+\begin{gathered}
+Latency_{preprocessing} = t_{end} - t_{start}
+\end{gathered}
+\end{equation*}
+To measure inference latency we need to distinguish between edge and cloud inference, since for the latter the network latency needs to be considered.
+
+\paragraph{Edge Inference}To measure edge inference latency we measure the time the TensorFlow Lite interpreter needs to run the inference operation on the loaded model given the input image.
+\begin{equation*}
+\begin{gathered}
+Latency_{inference} = t_{end} - t_{start}
+\end{gathered}
+\end{equation*}
 \paragraph{Cloud Inference}
-To measure the cloud inference time we need to measure two latencies. The first latency is the server latency. This server latency describes the time difference between the point where TensorFlow Serving receives the inference request and the point in time where TensorFlow Serving send the response back to the client.
-
-
-
-The second latency is called the total latency and describes the time difference between the moment the client sent the request to TensorFlow Serving and the moment it received its response, including the network latency.
-These two latencies are illustrated in figure \ref{fig:serverLat}.
-The total latency is be measured by simply measure the time needed to call the \emph{predict} function of TensorFlow Serving.
-Since TensorFlow Serving does not output the server latency, we needed to tweak the source code of gRPC, which is the underlying protocol of TensorFlow Serving. gRPC already logs this latency, so we adjust the source code to out this latency when a call to TensorFlow Serving is finished, repackage the source code and change to dependencies of TensorFlow Serving accordingly.
-\begin{figure}[H]
+To measure the cloud inference latency we need to measure two latencies, which combined yield $Latency_{inference}$. The first latency is  $Latency_{server}$. This server latency describes the time difference between the point where TensorFlow Serving receives the inference request and the point in time where TensorFlow Serving sends the response back to the client.
+The second latency $Latency_{network}$ denotes the time the prediction request needs to reach the cloud-backend.
+These latencies are illustrated in figure \ref{fig:serverLat}.
+\begin{figure}[!htb]
 \centering
 \input{./Bilder/server_lat.tex}
 \caption{Measurement of server and total latency for cloud inference}
 \label{fig:serverLat}
 \end{figure}
+
+
+Similar to the edge inference, $Latency_{inference}$ is being measured by calculating the time difference between starting the inference process and receiving the prediction for the given inference request. This whole process is covered by the \emph{predict} function of TensorFlow Serving. Therefore we measure the wall clock time of this function.
+
+Since TensorFlow Serving does not output the server latency, we needed to tweak the source code of gRPC, which is the underlying protocol of TensorFlow Serving. gRPC already logs this latency, so we adjust the source code to output this latency when a call to TensorFlow Serving is finished, repackage the source code and change to dependencies of TensorFlow Serving pointing to the adjusted packages.
+
+We then calculate $Latency_{network}$ implicitly by subtracting $Latency_{server}$ from $Latency_{inference}$.
+
+\begin{equation*}
+\begin{gathered}
+Latency_{inference} = t_{end} - t_{start}\\
+Latency_{server}= t_{receive Request} - t_{send Response}\\
+Latency_{network} = Latency_{inference} - Latency_{server}
+\end{gathered}
+\end{equation*}
+
+
+The total latency $Latency_{total}$ for both edge and cloud inference is simply calculated by summing up the latencies of both preprocessing and inference.
+\begin{equation*}
+\begin{gathered}
+Latency_{total} = Latency_{preprocessing} + Latency_{inference}
+\end{gathered}
+\end{equation*}
 \subsubsection{Energy Consumption}
 Since Android Studio Profiler only estimates the energy consumption in the form of low, medium and high, the tool is not fit to provide empiric measurements. The Trepn Power Profiler would provide such measurements, but does not support the device used for the experiments (OnePlus 6T).
 \subsubsection{CPU Usage}
+We measure the CPU usage of both preprocessing as the maximum CPU usage during the respective processes.
+\begin{equation*}
+\begin{gathered}
+%%CPU_{preprocessing} = max_{[start_{preprocessing}, end_{preprocessing}]}(CPU)\\
+%%CPU_{inference} = max_{[start_{inference}, end_{inference}]}(CPU)\\
+CPU_{preprocessing} = \max\limits_{t_{start} \leq t \leq t_{end}} CPU_{Usage}(t)\\
+CPU_{inference} = \max\limits_{t_{start} \leq t \leq t_{end}} CPU_{Usage}(t)
+\end{gathered}
+\end{equation*}
 Android Studios’ CPU Profiler allows us to record the maximum CPU usage for both preprocessing and inference. To minimize the impact on the Android Profiler on the performance of the application we disable allocation tracking.
 \begin{figure}[H]
 \centering  
@@ -258,11 +305,18 @@ Android Studios’ CPU Profiler allows us to record the maximum CPU usage for bo
 \label{fig:prof_cpu}
 \end{figure}
 \subsubsection{Memory Usage}
+We measure the memory usage by recording the maximum memory consumption during both processing and inference.
+\begin{equation*}
+\begin{gathered}
+Memory_{preprocessing} = \max\limits_{t_{start} \leq t \leq t_{end}} Memory(t)\\\\
+Memory_{inference} = \max\limits_{t_{start} \leq t \leq t_{end}} Memory(t)\\
+\end{gathered}
+\end{equation*}
 The Memory Profiler is part of Android Studio Profiler and shows the memory consumption of the app it is profiling. Memory allocations by the operating system or other apps are not recorded. Besides recording the total amount of memory allocated the Profiler also tracks the different categories, for example memory allocated by Java/Kotlin code. We always record the maximum consumed memory for each operation.
 
 Figure \ref{fig:prof_mem} depicts an example of the Memory Profiler for a single experiment. The first peak in memory consumption is the preprocessing step, while the second peak is caused by the inference process.
 The little trash can at the bottom of the figure shows that the garbage collection was called. The garbage collection was always manually called after the preprocessing in case not all unneeded memory allcations are collected before running the inference operation. 
-%In the case of preprocessing only the proprocessed image is needed, so the 
+%In the case of preprocessing only the preprocessed image is needed, so the 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{./Bilder/profiler_MEM}
@@ -272,32 +326,53 @@ The little trash can at the bottom of the figure shows that the garbage collecti
 \subsubsection{GPU Usage}
 Neither Android Studio nor Trepn can provide GPU metrics for the OnePlus 6T. Hence no GPU measurements can be conducted.
 \subsubsection{Throughput}
-We differentiate two types of throughput: the inference throughput and the total throughput, which also includes preprocessing besides inference.
+We differentiate three types of throughput: the inference throughput, preprocessing throughput and the total throughput, which also includes preprocessing besides inference.
 We calculate throughput in operations per second by 
 
 \begin{equation*}
 \begin{gathered}
-Throughput_{inference} =\frac{1000}{(time_{inference}) / batchsize}\\
-Throughput_{total}  =\frac{1000}{(time_{inference} + time_{preprocessing}) / batchsize}
+Throughput_{preprocessing} =\frac{1000}{(Latency_{preprocessing}) / batchsize}\\
+Throughput_{inference} =\frac{1000}{(Latency_{inference}) / batchsize}\\
+Throughput_{total}  =\frac{1000}{(Latency_{total}) / batchsize}
 \end{gathered}
 \end{equation*}
 \subsubsection{Data Consumption}
 We measure both transmitted and received data by using the Android TrafficStats package (https://developer.android.com/reference/android/net/TrafficStats). We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. 
+\begin{equation*}
+\begin{gathered}
+Data_{transmitted} = \sum_{t_{start}}^{t_{end}} Data_{transmitted}(t)\\
+Data_{received} = \sum_{t_{start}}^{t_{end}} Data_{received}(t)
+\end{gathered}
+\end{equation*}
 \section{Results and Evaluation}
 This section covers the results of the conducted experiments and their evaluation.
 
 First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. In each of these sections first the preprocessing and then the inference results are presented.
 
 For precise mean values and standard deviations of all measured metrics refer to tables \ref{measurementsInception} and \ref{measurementsMobilenet}.
-\subsection{Edge}
+\subsection{Edge Inference}
 This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
 \subsubsection{Preprocessing}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Inference_Preprocessing.pdf}
+\caption{Edge Inference - Preprocessing}
+\label{fig:EdgePrepro}
+\end{figure}
+
+
 \subsubsection{Inference}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Inference_Inference.pdf}
+\caption{Edge Inference - Inference}
+\label{fig:EdgeInference}
+\end{figure}
 \subsubsection{Effect of NNAPI}
 The Android Neural Network API (NNAPI) is supposed to speed up inference of neural network on Android by introducing optimized kernels/operators. 
 
 The effect of this framework can be seen in figure \ref{fig:NNAPI} and show the significant performance improvement caused by the NNAPI, not only affecting inference time, but also memory consumption and CPU usage.
-%%Genauer factors einfügen : inferecen zweimal sos chnell...
+%%Genauere factors einfügen : inferecen zweimal so schnell...
 This effect can be observed across all tested models, but especially on the InceptionV4 network.
 
 
@@ -305,13 +380,23 @@ Since the NNAPI leads to performance improvements in all measured metrics, it wi
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./Bilder/single_plots/edge_inference_plots/NNAPI_behavior.pdf}
-\caption{Effect of NNAPI}
+\caption{Edge Inference - Effect of NNAPI on Inference}
 \label{fig:NNAPI}
 \end{figure}
-\subsection{Cloud}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Preprocessing_+_Inference.pdf}
+\caption{Edge Inference - Ratio}
+\label{fig:EdgeInferenceRatio}
+\end{figure}
+
+\subsection{Cloud Inference}
 \subsubsection{Preprocessing}
 \subsubsection{Inference}
-\subsection{Edge vs. Cloud}
+\subsection{Edge vs. Cloud Inference}
 Now, the results of the cloud and the edge inference are compared against each other.
 \subsubsection{Preprocessing}
 \subsubsection{Inference}

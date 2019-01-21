@@ -5,16 +5,16 @@ In this section a performance model for understanding the runtime characteristic
 
 
 \section{Problem Space}
-The inference performance of a deep learning model is mainly affected by two major parts, the structure of the model itself and the hardware environment where it gets deployed. A third factor is the serving framework.
+The inference performance of a deep learning model is mainly affected by three factors, the architecture of the model itself and the hardware environment where it gets deployed and the framework performing the operations of the model on the hardware environment.
 
 \subsection{Deployment}
 Model deployment describes the process of deploying a trained machine learning model to a production environment for inference purposes. 
 Inference describes the process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output, also called prediction.
 But since models often require the input to be of a certain shape, often a preprocessing step is needed before the actual inference can be performed.
-
+%%Write more here
 There can be differentiated in two different deployment methods, the first one is deploying the model directly to edge devices, while the second outsources the model to a cloud-backend, where the inference is performed and the prediction is sent back to the edge device.
 \subsubsection{Edge Deployment}
-Edge devices are characterized by offering a limited amount of hardware specifications such as amount of available energy, memory and overall computational power.
+Edge devices are characterised by offering a limited amount of hardware specifications such as amount of available energy, memory and overall computational power.
 These devices are often mobile devices like smartphones, cars or Raspberry Pis.
 Despite its limits, edge deployment also has some advantages, particular in reliability and security. 
 For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise a data privacy/security concern.
@@ -22,10 +22,6 @@ Therefore edge deployment is preferred, if the inference performance is sufficie
 
 In order to increase this performance various accelerators like better GPUs, TPUs or other dedicated neural network hardware components have been developed for edge devices.
 
-\begin{itemize}
-    \item Was ist Edge (Beispiele)
-    \item Was macht Edge aus?
-\end{itemize}
 \subsubsection{Cloud Deployment}
 While the breakthroughs in deep learning are very interesting for AI applications on edge devices, the computational demand needed for edge deployment often exceeds the available power to be viable.
 That is why the option of outsourcing the models to a cloud-backend has become a popular solution in the recent years.
@@ -33,15 +29,12 @@ Cloud-backends offer a huge amount of computational power, especially suitable f
 
 
 The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications that are critical like autonomous driving.
-\begin{itemize}
-    \item Was ist cloud?
-    \item Was macht cloud aus
-\end{itemize}
+
 While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent unpreprocessed to the cloud. 
 In the latter case the input gets preprocessed on the cloud. 
 This can be justified by the same reasons as for the cloud inference, more computational power for intensive preprocessing.
 \subsubsection{Inference Framework}
-For both edge and cloud inference the underlying inference framework is important for the inference performance, since optimized kernels/operators or support of accelerators like GPUs can lead to significant performance improvements.
+For both edge and cloud inference the underlying inference framework is important for the inference performance, since optimised kernels/operators or support of accelerators like GPUs can lead to significant performance improvements.
 
 This is especially important for edge devices, where new accelerators are being developed at a fast pace.
 \subsection{Deep Learning}
@@ -53,7 +46,7 @@ There are many different operators, which makes performance prediction very comp
 In the following the two most popular networks get briefly presented.
 %This increased amount of layers leads to complex mathematical calculations.
 \subsubsection{Quantization}
-Quantization is a technique that trades in model precision for better inference times, memory consumption during inference and model sizes.
+Quantization is a technique that trades in model precision for better inference latencies, memory consumption during inference and model sizes.
 Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
 The weights/activations are either quantized after training the model with floats (Post Training Quantization) or the model is training with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
 efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these technique with the following results:
@@ -66,27 +59,18 @@ efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these 
     \item number of operations
 \end{itemize}
 \subsubsection{Convolutional Neural Network}
-This special subclass of neural network achieved wide success in the field of object recognition and detection in images. Convolutional Neural Networks (CNN)
+This special subclass of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN)
 \paragraph{Input}
 The input of CNNs often consists of images, but also can be...
 
 \paragraph{Operations}
 filter, pool, 
 
-\begin{comment}
-\subsubsection{Recurrent Neural Network}
-%%%WIRKLICH MACHEN ODER NUR CNNs?
-Recurrent neural networks (RNN) are made for the processing of sequences and made a lot a progress in the fields of voice recognition.
-\paragraph{Input}
-seqeuences
-\paragraph{Operations}
-GRU, LTSM
-\end{comment}
 
 
 
 \section{Performance Model}
-All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference time and throughput are the most important ones for real-time AI applications. However, as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other depicted metrics are vital as well.
+All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference latency and throughput are the most important ones for real-time AI applications. However, as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other depicted metrics are vital as well.
 Except the data consumption, all metrics are relevant for both edge and cloud inference.
 While accuracy is one of the most critical metrics for neural networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
 
@@ -98,32 +82,38 @@ To get the model output for a given model input two steps are needed. The first 
 \label{fig:perfmodel}
 \end{figure}
 \subsection{Performance Metrics}
-Several metrics are important to measure the performance of the preprocessing and the inference steps. 
+Several metrics are important to measure the performance of the preprocessing and the inference steps. For the most of the following metrics we break down each metric into two sub-measurements, one for the preprocessing  and the other for the inference part.
 
- 
-\subsubsection{Inference Time}
+\subsubsection{Latency}
+Latencies are a essential to determine the performance, since AI application often need predictions in realtime, resulting in the need of low latencies.
+The time needed to transform the original input to a shape fit for feeding into the deep learning model is called $Latency_{preprocessing}$.
 %%WALL CLOCK TIME ADD HERE
-Inference time describes the time needed from requesting a prediction from a deep learning model given an specific input until getting the prediction.
-This metrics is essential for the performance, since AI application often need predictions in realtime.
-\subsubsection{Preprocessing Time}
-The time needed to transform the original input to a shape fit for feeding into the deep learning model is called preprocessing time.
-
+$Latency_{inference}$ describes the time needed from requesting a prediction from a deep learning model given an specific input until getting the prediction.
+The latency needed to perform both preprocessing and inference for a given input is called $Latency_{total}$.
 \subsubsection{Throughput}
-In order to accomplish realtime AI a high enough throughput is essential. Therefore the number of processed predictions per second is a valuable metric. This metric can, depending on the specification, either mean preprocessing and inference together or only one of the two.
+In order to accomplish realtime AI a high enough throughput is essential. Therefore the number of processed predictions per second is a valuable metric. We differentiate between three times of throughput: $Throughput_{preprocessing}$, $Throughput_{inference}$ and $Throughput_{total}$, where the first two are the throughp and the third the throughput for both preprocessing and inference combined.
+
+
+
 \subsubsection{Energy Consumption}
-This metric is particular important for mobile edge devices, since they often are powered by batteries with a limited lifespan. So if the inference process of a model consumes too much energy, the application using the model is not viable.
-\subsubsection{CPU Usage}
-Since the inference operation is most of the time not the only process running on a system and other processes need to run simultaneously to the inference, the CPU usage is an important metric.
+$Energy_{preprocessing}$ and $Energy_{inference}$, which describe the amount of energy consumed during preprocessing and inference, are particular important for mobile edge devices, since they often are powered by batteries with a limited lifespan. If the preprocessing or inference process consumes too much energy, the application using the model is not viable.
+
+
+\subsubsection{CPU/GPU Usage}
+Since the preprocessing/inference operations are most of the time not the only processes running on a system and other processes need to run simultaneously to them, the usages of CPU($CPU_{inference}$, $CPU_{preprocessing}$) and GPU($GPU_{inference}$, $GPU_{preprocessing}$) or other available accelerators are an important metric.
+
+
 \subsubsection{Memory Usage}
-Similar to CPU usage, inference should not occupy the whole memory of system or even demand more memory than the available memory of a edge devices.
-\subsubsection{GPU Usage}
-If a GPU or an another accelerator is available their usage is of interest.
+Similar to CPU usage, preprocessing and inference should not occupy the whole memory of the system or even demand more memory than the available memory. Therefore $Memory_{inference}$ and $Memory_{preprocessing}$ are of interest.
+%\subsubsection{GPU Usage}
+%If a GPU or an another accelerator is available their usage is of interest.
 
 \subsubsection{Data Consumption}
-This metric is only relevant for cloud inference as the request has to be sent to the cloud-backend and the according response with prediction has to be sent back to the client. A high data consumption could slow down the inference time significantly if the up- and downstream of the network connection is too slow. 
+$Data_{transmitted}$ and $Data_{received}$ are only relevant for cloud inference, as a request has to be sent to a remote server and the according response with prediction has to be sent back to the client. A high data consumption could slow down the inference latency significantly if the up- and downstream of the network connection is too slow. 
 
-This is in particular important for the case where the input data for the model is preprocessed on the cloud, because the input data is often resized to a smaller shape during preprocessing. Therefore cloud preprocessing increased the amount of data that needs to be transmitted to the server. For slow network connections this could result in higher inference times.
+This is in particular important for the case where the input data for the model is preprocessed on the cloud, because the input data is often resized to a smaller shape during preprocessing. Therefore cloud preprocessing increased the amount of data that needs to be transmitted to the server. For slow network connections this could result in higher inference latencies.
 
+%%Add table here?
 
 
 
