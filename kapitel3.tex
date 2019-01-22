@@ -1,16 +1,72 @@
 \chapter{Methodology}
 %%WHAT Is inference3
 \label{chap:methodology}
-In this section a performance model for understanding the runtime characteristics of deep learning models is outlined. To understand these characteristics, the underlying factors that affect it need to be understood first. 
+In this section a performance model, characterising the deployment of deep learning models for inference, is presented. To understand these characteristics, the underlying factors that affect it need to be understood first. Therefore we first describe the problem space.
 
 
 \section{Problem Space}
 The inference performance of a deep learning model is mainly affected by three factors, the architecture of the model itself and the hardware environment where it gets deployed and the framework performing the operations of the model on the hardware environment.
+These three aspect are covered in this section.
 
-\subsection{Deployment}
-Model deployment describes the process of deploying a trained machine learning model to a production environment for inference purposes. 
-Inference describes the process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output, also called prediction.
-But since models often require the input to be of a certain shape, often a preprocessing step is needed before the actual inference can be performed.
+
+\subsection{Deep Learning}
+%%Bisschen genauer was deep learning input output...
+
+
+Deep learning models are defined as neural networks with many layers and hidden units, the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
+There are many different operators and network architectures, which makes performance prediction very complex.
+
+%This increased amount of layers leads to complex mathematical calculations.
+\subsubsection{Architectures}
+\begin{itemize}
+    \item layer
+    \item hidden units
+    \item input size
+    \item number of operations
+\end{itemize}
+\paragraph{Convolutional Neural Network}
+This special subclass of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN)
+\subparagraph{Input}
+The input of CNNs often consists of images, but also can be...
+
+\subparagraph{Operations}
+filter, pool, 
+
+\subsubsection{Training}
+After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set. This data set consists of 
+\subsubsection{Inference}
+
+
+After the model is trained for the lowest accuracy it is ready to serve its predictions to applications for a given input. This process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
+
+But since models often require the input to be of a certain shape and the input given by an application often does not match that shape, a preprocessing step is often needed before the actual inference can be performed.
+This preprocessing and inference process can also be seen in figure \ref{fig:InfProcess}.
+%%Add visualization of input here
+%%die dann im deployment wieder aufgreifen
+\begin{figure}[H]
+\centering
+\input{./Bilder/inference_process.tex}
+\caption{Visualisation of the inference process including preprocessing}
+\label{fig:InfProcess}
+\end{figure}
+Note that the architecture of the inference model is often slightly different from the training model, as some operators are only needed for the training process and are thus removed for inference.
+
+
+
+
+
+
+\subsubsection{Quantization}
+Quantization is a technique that trades in model precision for better inference latencies, memory consumption during inference and model sizes.
+Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
+The weights/activations are either quantized after training the model with floats (Post Training Quantization) or the model is training with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
+efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these technique with the following results:
+8-bit quantization can lead to a model size reduction by a factor of 4, a 2x-3x latency speedup on CPUs and DSPs, while reducing the model accuracies by 1\%.
+
+
+\subsection{Deployment of Deep Learning Models}
+Deep learning deployment describes the process of deploying a trained machine learning model to a production environment for inference purposes. 
+
 %%Write more here
 There can be differentiated in two different deployment methods, the first one is deploying the model directly to edge devices, while the second outsources the model to a cloud-backend, where the inference is performed and the prediction is sent back to the edge device.
 \subsubsection{Edge Deployment}
@@ -33,39 +89,14 @@ The big downside of cloud-based inference is the needed network connection, in p
 While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent unpreprocessed to the cloud. 
 In the latter case the input gets preprocessed on the cloud. 
 This can be justified by the same reasons as for the cloud inference, more computational power for intensive preprocessing.
-\subsubsection{Inference Framework}
+\subsection{Inference Framework}
 For both edge and cloud inference the underlying inference framework is important for the inference performance, since optimised kernels/operators or support of accelerators like GPUs can lead to significant performance improvements.
 
 This is especially important for edge devices, where new accelerators are being developed at a fast pace.
-\subsection{Deep Learning}
-%%Bisschen genauer was deep learning input output...
 
 
-Deep learning models are defined as neural networks with many layers and hidden units, the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
-There are many different operators, which makes performance prediction very complex.
-In the following the two most popular networks get briefly presented.
-%This increased amount of layers leads to complex mathematical calculations.
-\subsubsection{Quantization}
-Quantization is a technique that trades in model precision for better inference latencies, memory consumption during inference and model sizes.
-Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
-The weights/activations are either quantized after training the model with floats (Post Training Quantization) or the model is training with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
-efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these technique with the following results:
-8-bit quantization can lead to a model size reduction by a factor of 4, a 2x-3x latency speedup on CPUs and DSPs, while reducing the model accuracies by 1\%.
-
-\begin{itemize}
-    \item layer
-    \item hidden units
-    \item input size
-    \item number of operations
-\end{itemize}
-\subsubsection{Convolutional Neural Network}
-This special subclass of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN)
-\paragraph{Input}
-The input of CNNs often consists of images, but also can be...
-
-\paragraph{Operations}
-filter, pool, 
-
+%%
+After analysing the problem space of deep learning inference for real-time AI applications on edge devices we can propose a performance model, that maps the aspects of the problem space on the performance.
 
 
 

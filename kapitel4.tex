@@ -191,13 +191,14 @@ In the course of the experiments we change the configurations of the following p
 \paragraph{Model}
 We conduct experiments for all three models listed presented in \ref{chap:models}: InceptionV4, MobileNetV2 and MobileNetV2 quantized.
 \paragraph{Image Size}
+%%Add table here?
 %224: 83KB
 %299: 141KB
 %2MP: 2411KB
 %4MP: 4309KB
 %8MP: 7515KB
 %16MP: 10077KB
-We evaluate the performance of 2MP($1732\times1155$), 4MP($2449\times1633$), 8MP($3464\times2309$) and 16MP($4899\times3266$) images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$/$299\times299$ depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
+We evaluate the performance of 2MP($1732\times1155$, $2411$KB), 4MP($2449\times1633$, $4309$KB), 8MP($3464\times2309$, $7515$KB) and 16MP($4899\times3266$, $100077$KB) images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$, $83$KB or $299\times299$, $141$KB depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{./Bilder/European_cat_02_16_mp.jpg}
@@ -259,7 +260,7 @@ These latencies are illustrated in figure \ref{fig:serverLat}.
 \begin{figure}[!htb]
 \centering
 \input{./Bilder/server_lat.tex}
-\caption{Measurement of server and total latency for cloud inference}
+\caption{Measurement of $Latency_{server}$ and $Latency_{network}$ for Cloud Inference}
 \label{fig:serverLat}
 \end{figure}
 
@@ -350,24 +351,31 @@ This section covers the results of the conducted experiments and their evaluatio
 First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. In each of these sections first the preprocessing and then the inference results are presented.
 
 For precise mean values and standard deviations of all measured metrics refer to tables \ref{measurementsInception} and \ref{measurementsMobilenet}.
+
+The black bar on top of each bar of the following barchart represents the standard deviation.
 \subsection{Edge Inference}
 This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
 \subsubsection{Preprocessing}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Inference_Preprocessing.pdf}
-\caption{Edge Inference - Preprocessing}
+\caption{Edge Inference - Preprocessing $Latency_{preprocessing}$, $Memory_{preprocessing}$}
 \label{fig:EdgePrepro}
 \end{figure}
 
 
 \subsubsection{Inference}
+\begin{comment}
+%%Sagt Grafik was aus?
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Inference_Inference.pdf}
 \caption{Edge Inference - Inference}
 \label{fig:EdgeInference}
 \end{figure}
+
+
+\end{comment}
 \subsubsection{Effect of NNAPI}
 The Android Neural Network API (NNAPI) is supposed to speed up inference of neural network on Android by introducing optimized kernels/operators. 
 
@@ -389,22 +397,153 @@ Since the NNAPI leads to performance improvements in all measured metrics, it wi
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Preprocessing_+_Inference.pdf}
-\caption{Edge Inference - Ratio}
+\caption{Edge Inference - Ratio of Preprocessing and Inference in $Latency_{total}$}
 \label{fig:EdgeInferenceRatio}
 \end{figure}
 
 \subsection{Cloud Inference}
 \subsubsection{Preprocessing}
+\begin{figure}[H]
+
+
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Preprocessing_Latency.pdf}
+\caption{Cloud Inference -  $Latency_{preprocessing}$}
+\label{fig:cloudInferencePreproLat}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Preprocessing_Memory.pdf}
+\caption{Cloud Inference -  $Memory_{preprocessing}$}
+\label{fig:cloudInferencePreproMemory}
+\end{figure}
 \subsubsection{Inference}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Memory.pdf}
+\caption{Cloud Inference -  $Memory_{inference}$}
+\label{fig:cloudInferenceInferenceMemory}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Latency.pdf}
+\caption{Cloud Inference -  $Latency_{inference}$}
+\label{fig:cloudInferenceInferenceLatency}
+\end{figure}
+
+
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_ratio_server_total_latency_(cloud_prepro).pdf}
+   \caption{Cloud Preprocessing}
+   \label{fig:CloudInferenceratioCloud} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_ratio_server_total_latency_(edge_prepro).pdf}
+   \caption{Edge Preprocessing}
+   \label{fig:CloudInferenceRatioEdge}
+\end{subfigure}
+
+\caption{Cloud Inference -  Ratio between $Latency_{network}$ and $Latency_{server}$}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Received_Data.pdf}
+   \caption{$Data_{received}$}
+   \label{fig:CloudInferenceReceivedData} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Transmitted_Data.pdf}
+   \caption{$Data_{transmitted}$}
+   \label{fig:CloudInferenceTransmittedData}
+\end{subfigure}
+
+\caption{Cloud Inference -  $Data_{received}$ vs. $Data_{transmitted}$}
+\end{figure}
+
+
 \subsection{Edge vs. Cloud Inference}
 Now, the results of the cloud and the edge inference are compared against each other.
 \subsubsection{Preprocessing}
-\subsubsection{Inference}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_Latencies.pdf}
+\caption{Edge vs. Cloud Inference -  $Latency_{preprocessing}$}
+\label{fig:EdgeVsCloudPreproLat}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_Memory.pdf}
+\caption{Edge vs. Cloud Inference -  $Memory_{preprocessing}$}
+\label{fig:EdgeVsCloudPreproMemory}
+\end{figure}
+
+\subsubsection{Inference}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_Latencies.pdf}
+\caption{Edge vs. Cloud Inference -  $Latency_{inference}$}
+\label{fig:EdgeVsCloudInferenceLat}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_Memory.pdf}
+\caption{Edge vs. Cloud Inference -  $Memory_{inference}$}
+\label{fig:EdgeVsCloudInferenceMemory}
+\end{figure}
 \subsection{Effect of larger Batch Sizes}
 This section covers the results of the experiments with batch size equal or larger than one. Since the TensorFlow Lite of the used MobileNet version does not allow batch sizes larger than one, edge inference experiments with these models are omitted from this section.
 \subsubsection{Preprocessing}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_CPU_Usage.pdf}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $CPU_{preprocessing}$}
+\label{fig:BatchSizePreproCPU}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_Latencies.pdf}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Latency_{preprocessing}$}
+\label{fig:BatchSizePreproLatency}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_Memory.pdf}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Memory_{preprocessing}$}
+\label{fig:BatchSizePreproMemory}
+\end{figure}
+
+
 \subsubsection{Inference}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Memory.pdf}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Memory_{inference}$}
+\label{fig:BatchSizeInferenceMemory}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Latencies.pdf}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Latency_{inference}$}
+\label{fig:BatchSizeInferenceLatency}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Throughput.pdf}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Throughput_{inference}$}
+\label{fig:BatchSizeInferenceThroughput}
+\end{figure}
+
+
 
 
 
