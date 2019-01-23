@@ -13,10 +13,14 @@ These three aspect are covered in this section.
 %%Bisschen genauer was deep learning input output...
 
 
-Deep learning models are defined as neural networks with many layers and hidden units, the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
+Deep learning models are defined as neural networks with many hidden layers and hidden units leading to deep architectures.
+These models often have one input and one output layer and in between the hidden layers containing the hidden units.
+
+%the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
 There are many different operators and network architectures, which makes performance prediction very complex.
 
 %This increased amount of layers leads to complex mathematical calculations.
+\begin{comment}
 \subsubsection{Architectures}
 \begin{itemize}
     \item layer
@@ -24,14 +28,17 @@ There are many different operators and network architectures, which makes perfor
     \item input size
     \item number of operations
 \end{itemize}
+\end{comment}
+
 \paragraph{Convolutional Neural Network}
-This special subclass of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN)
-\subparagraph{Input}
-The input of CNNs often consists of images, but also can be...
+This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely a animal on a picture represents a cat.
 
-\subparagraph{Operations}
-filter, pool, 
+This feature extractions is done by using convolutional and pooling layers. These layer types
 
+%%bild mit simpler architecture?
+
+
+These deep architectures lead a high number of operations and parameters, resulting in high demands of computational power.
 \subsubsection{Training}
 After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set. This data set consists of 
 \subsubsection{Inference}
@@ -57,6 +64,7 @@ Note that the architecture of the inference model is often slightly different fr
 
 
 \subsubsection{Quantization}
+\label{chap:quant}
 Quantization is a technique that trades in model precision for better inference latencies, memory consumption during inference and model sizes.
 Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
 The weights/activations are either quantized after training the model with floats (Post Training Quantization) or the model is training with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for

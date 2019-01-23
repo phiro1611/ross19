@@ -13,7 +13,7 @@ This section deals the specification of the Android benchmark app, used hardware
 \end{figure}
 
 
-\subsection{Hardware}
+\subsection{Hardware Devices}
 \subsubsection{Edge}
 \label{chap:hardwareEdge}
 As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS 9.0.11, which is based on Android 9.
@@ -24,10 +24,12 @@ The virtual server has 32 cores (16 real cores with hyperthreading), 240 GB of m
 
 The server runs on Ubuntu 16.04 CUDA 9.1 PGI 17.9 nvidia-docker 2.0.3+docker18.03.1-1.
 \subsection{Frameworks}
-We use Two open-source frameworks based on TensorFlow for the experiments.
+We use two open source machine learning frameworks based on TensorFlow for the experiments, TensorFlow Lite and TensorFlow Serving.
+TensorFlow provides official releases, that are maintained and tested, of the models we like to evaluate
 This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite\cite{tfLite}  and TensorFlow Serving\cite{tfServing} websites, on which this section is based on, or the corresponding GitHub repositories
 We chose these frameworks since they both support TensorFlow models, ...%INSERT more reason here
 \subsubsection{TensorFlow Lite}
+\label{chap:TFLite}
 TensorFlow Lite (Release 1.12.0) was developed for mobile and embedded devices and is a lightweight solution of TensorFlow and thus will be used for the edge inference experiments.
 
 %%Mention NNAPI support?
@@ -35,6 +37,7 @@ At the moment only model inference can be done by TensorFlow Lite, not model tra
 It supports acceleration with GPU or other accelerators as well was portability to Android, iOS and other IoT devices.
 
 \paragraph{Android NNAPI}
+\label{chap:NNAPI}
 TensorFlow Lite is also compatible with the Android Neural Networks API (NNAPI). This API
 is designed to speed up computationally intensive machine learning operations and can be used by TensorFlow Lite to improve inference performance. During inference NNAPI "can
 efficiently distribute the computation workload across available on-device processors, including dedicated neural network chips, GPUs and DSPs"\cite{DBLP:journals/corr/abs-1810-01109}.
@@ -45,6 +48,7 @@ efficiently distribute the computation workload across available on-device proce
 TensorFlow Lite expects models in their own FlatBuffer file  format(\emph{.tflite}). Therefore models need to be converted to this format before TensorFlow Lite can load them. This conversion can be done using the TensorFlow Lite Converter, which supports various formats of trained TensorFlow models.
 The \emph{.tflite} model now can be loaded by a object of the Interpreter class.
 \paragraph{Run Prediction}
+
 To then run the inference process in TensorFlow Lite the run method of Interpreter object with a loaded model needs to be called. To call this function two objects need to be passed, first the input for the given model and second the output object, where the prediction response from the inference operation gets stored. 
 \begin{figure}[H]
 \centering
@@ -53,6 +57,7 @@ To then run the inference process in TensorFlow Lite the run method of Interpret
 \label{fig:edge}
 \end{figure}
 \subsubsection{TensorFlow Serving}
+\label{chap:TFServing}
 As for cloud inference TensorFlow Serving (Release 1.12.0 VERIFY THIS AGAIN) will be used, since it provides a framework to serve machine learning models in production environments. 
 
 
@@ -111,7 +116,7 @@ $1\times 1\times 1280$ & conv2d 1x1 & - & k & - &  \\ \bottomrule
 \end{tabular}
 \end{table}
 \paragraph{Quantization}
-The quantized version of MobileNetV2 looses 0.7\% in top-5 accuracy but also 75\% of its model size.
+Quantization of MobileNetV2, using the techniques presented in section \ref{chap:quant}, results in a  0.7\% loss of top-5 accuracy, but therefore has lost 75\% of its model size and a optimised performance, which we will evaluate in the experiments.
 \subsubsection{Inception V4}
 %%Add infos about stem and reduction
 InceptionV4, published in \cite{InceptionV4}, is a large image classification network with high accuracy but also with a high number of parameters leading to higher inference times than MobileNetV2.
@@ -170,7 +175,8 @@ This seperation is needed since these different model types require different in
 The MainActivity writes the collected measurements and the parameter configurations of a experiment to a instance of SingleExperiment. After the experiment is completed MainActivity tells a Logger instance to save the contents of the SingleExperiment object. The Logger then saves all collected data to a csv file.
 
 \subsubsection{Preprocessing}
-For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the rgb values need to be scaled to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
+%%mention png
+For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the RGB values need to be scaled to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/preprocessing.png}
@@ -179,11 +185,30 @@ For the case of image classification, the images need to have the correct size (
 \end{figure}
 \paragraph{Edge Preprocessing}
 In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural afterwards, either on the edge device itself or on a cloud-backend.
+We perform these steps the following way: After loading the PNG image into an InputStream we created a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$). 
+Afterwards we rescale the RGB values during the conversion from the bitmap to a ByteBuffer. 
+For the case of float models these buffer contain all the pixels in float format and for quantized model in bytes.
+%%%mehr erklären?
+We do this conversion since feeding ByteBuffers to TensorFlow Lite is performance enhancing %add cite here
+For cloud inference we then construct PredictRequest object containing this ByteBuffer.
+%%bitmap and bytebuffer stuff here '(quantization differences)
+
+%%batche isze >1 parallel preprocessing to speed up
 \paragraph{Cloud Preprocessing}
-In the case of cloud inference the images can also be preprocessed directly on the cloud, resulting in nearly no preprocessing done on the edge. While the resizing and scaling steps are no longer done on the edge, the image still needs to converted into a proto buffer that TensorFlow Serving can handle.
+%%bitmap, bytebuffer png stuff here
+In the case of cloud inference the images can also be preprocessed directly on the cloud, resulting in nearly no preprocessing done on the edge. While the resizing and scaling steps are no longer done on the edge, the image still needs to converted into a PredictRequest object that TensorFlow Serving can handle.
+To achieve this we again load the PNG image into an InputStream, convert it to a ByteArray which then can be feed to the PredictRequest object as a ByteString. 
+
+For batch size larger than one we parallize the preprocessing to speed up the proprocessing latency at the cost of higher maximum memory consumption. We start $n$ threads, where each thread is preprocessing one image in the way described above. After each image is preprocessed we concatenate all ByteBuffers into a single one, which then can be fed to the TensorFlow Lite interpreter. Note that $n$ is determined by both batch size and available CPU cores on the edge device. There are never more threads than available cores, but if the batch size is smaller than the number of cores, we only start $n$ threads, where $n$ is the batch size. 
 \subsubsection{Inference}
+To get the predictions for our now preprocessed image we need to feed it into the deep learning model, which is loaded either directly on the edge or on the remote cloud-backend. 
+The inference is done using the steps described in section \ref{chap:TFLite} (TensorFlow Lite) and \ref{chap:TFServing} (TensorFlow Serving).
 \paragraph{Edge Inference}
+To perform the inference operation we two things into the run function of an interpreter of TensorFlow Lite: The ByteBuffer created in the preprocessing step and an array (float models: FloatArray, quantized models: ByteArray) with the length 1001 (number of classes). TensorFlow lite then writes the confidence levels of the different classes to this array. We then sort the array for the five classes with the highest confidence and print them to the screen.
+
 \paragraph{Cloud Inference}
+
+For the cloud inference we send the PredictRequest object created in the preprocessing process to the TensorFlow Serving server, where the inference (and in the case of cloud preprocessing also the preprocessing) computations are executed. Afterwards the client receives the PredictResponse from the server containing the predictions for the sent image. We configured the TensorFlow Serving models to return the five classes with the highest confidence, hence we extract these five classes from the PredictResponse and print them to the screen.
 \section{Instantiation}
 We run each parameter configuration 25 times to reduce variance. During the experiments no other applications are running on either the edge or the cloud device.
 In the course of the experiments we change the configurations of the following parameters:
@@ -198,7 +223,7 @@ We conduct experiments for all three models listed presented in \ref{chap:models
 %4MP: 4309KB
 %8MP: 7515KB
 %16MP: 10077KB
-We evaluate the performance of 2MP($1732\times1155$, $2411$KB), 4MP($2449\times1633$, $4309$KB), 8MP($3464\times2309$, $7515$KB) and 16MP($4899\times3266$, $100077$KB) images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$, $83$KB or $299\times299$, $141$KB depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
+We evaluate the performance of 2MP($1732\times1155$, $2411$KB), 4MP($2449\times1633$, $4309$KB), 8MP($3464\times2309$, $7515$KB) and 16MP($4899\times3266$, $100077$KB) PNG images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$, $83$KB or $299\times299$, $141$KB depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{./Bilder/European_cat_02_16_mp.jpg}
@@ -206,9 +231,13 @@ We evaluate the performance of 2MP($1732\times1155$, $2411$KB), 4MP($2449\times1
 \label{fig:cat}
 \end{figure}
 \paragraph{Batch Size}
-We experiment with the following batch sizes: 1, 2, 16, 32. Since at the point of this experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobilenetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference at this point.
+%%mathe defs of throughput?
+Batch Size denotes the number of images fed into the deep learning model in a single inference operation. 
+Feeding more than one image to the network can lead to a higher throughput, if enough computational power is available. This increase in throughput often comes at the cost of increased latency and general resource consumption.
+
+To study these trade-offs we conduct experiments with the following batch sizes: 1, 2, 16, 32. Since at the point of these experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobilenetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference at this point.
 \paragraph{NNAPI}
-NNAPI is supposed to enhance the inference performance of TensorFlow Lite. Therefore we take a look into the effect of this framework.
+The Android Neural Network API (NNAPI), presented in section \ref{chap:NNAPI}, is supposed to enhance the inference performance of TensorFlow Lite. Therefore we take a look into the effect of this framework.
 \paragraph{GPU Usage}
 Since the latest release of TensorFlow Lite(version xxx) GPU usage on Android is supported.
 %experimental
@@ -240,6 +269,7 @@ We conduct the measurements either directly in the source code or by using Andro
 In the following definitions $t_{start}$ denotes the starting point of either the preprocessing or inference, while $t_{end}$ denotes the end point of the respective process.
 \subsubsection{Latency}
 We measure $Latency_{preprocessing}$ by measuring the time difference between start and end of the preprocessing process.
+Note that all latency measurements are reported in milliseconds(ms).
 \begin{equation*}
 \begin{gathered}
 Latency_{preprocessing} = t_{end} - t_{start}
@@ -289,7 +319,7 @@ Latency_{total} = Latency_{preprocessing} + Latency_{inference}
 \subsubsection{Energy Consumption}
 Since Android Studio Profiler only estimates the energy consumption in the form of low, medium and high, the tool is not fit to provide empiric measurements. The Trepn Power Profiler would provide such measurements, but does not support the device used for the experiments (OnePlus 6T).
 \subsubsection{CPU Usage}
-We measure the CPU usage of both preprocessing as the maximum CPU usage during the respective processes.
+We measure the CPU usage(\%) of both preprocessing as the maximum CPU usage during the respective processes.
 \begin{equation*}
 \begin{gathered}
 %%CPU_{preprocessing} = max_{[start_{preprocessing}, end_{preprocessing}]}(CPU)\\
@@ -306,7 +336,7 @@ Android Studios’ CPU Profiler allows us to record the maximum CPU usage for bo
 \label{fig:prof_cpu}
 \end{figure}
 \subsubsection{Memory Usage}
-We measure the memory usage by recording the maximum memory consumption during both processing and inference.
+We measure the memory usage by recording the maximum memory consumption during both processing and inference. Both of the following metrics are reported in megabytes(MB) in the result section.
 \begin{equation*}
 \begin{gathered}
 Memory_{preprocessing} = \max\limits_{t_{start} \leq t \leq t_{end}} Memory(t)\\\\
@@ -338,7 +368,7 @@ Throughput_{total}  =\frac{1000}{(Latency_{total}) / batchsize}
 \end{gathered}
 \end{equation*}
 \subsubsection{Data Consumption}
-We measure both transmitted and received data by using the Android TrafficStats package (https://developer.android.com/reference/android/net/TrafficStats). We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. 
+We measure both transmitted and received data by using the Android TrafficStats package (https://developer.android.com/reference/android/net/TrafficStats). We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. We report both $Data_{transmitted}$ and $Data_{received}$ in kilobytes(KB).
 \begin{equation*}
 \begin{gathered}
 Data_{transmitted} = \sum_{t_{start}}^{t_{end}} Data_{transmitted}(t)\\
