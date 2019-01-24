@@ -1,7 +1,7 @@
 \chapter{Methodology}
 %%WHAT Is inference3
 \label{chap:methodology}
-In this section a performance model, characterising the deployment of deep learning models for inference, is presented. To understand these characteristics, the underlying factors that affect it need to be understood first. Therefore we first describe the problem space.
+In this section a performance model, characterising the deployment of deep learning models for inference, is presented. To understand these characteristics, the underlying factors that affect it need to be understood first. Therefore we first describe the problem space before we can map the problem space on the performance model.
 
 
 \section{Problem Space}
@@ -11,10 +11,13 @@ These three aspect are covered in this section.
 
 \subsection{Deep Learning}
 %%Bisschen genauer was deep learning input output...
+%Einfluss auf inference latency an memory?
 
+Deep learning models are neural networks with many hidden layers and hidden units leading to deep architectures.
+These deep architectures with often millions of parameters lead to a significant increase in computational power for both training and inference,
+%While for simple linear regression model with a single variable a single computation
 
-Deep learning models are defined as neural networks with many hidden layers and hidden units leading to deep architectures.
-These models often have one input and one output layer and in between the hidden layers containing the hidden units.
+These models often have single input and output layer and in between the hidden layers containing the hidden units.
 
 %the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
 There are many different operators and network architectures, which makes performance prediction very complex.
@@ -31,11 +34,11 @@ There are many different operators and network architectures, which makes perfor
 \end{comment}
 
 \paragraph{Convolutional Neural Network}
-This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely a animal on a picture represents a cat.
+This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely an animal on a picture represents a cat.
 
-This feature extractions is done by using convolutional and pooling layers. These layer types
+This feature extraction is done with the use of convolutional and pooling layers. These layer types
 
-%%bild mit simpler architecture?
+%%bild mit simpler architecture? Bild->conv->pool->flatten->dense-> output
 
 
 These deep architectures lead a high number of operations and parameters, resulting in high demands of computational power.
@@ -44,7 +47,7 @@ After constructing the architecture of a model it can be trained to reach the hi
 \subsubsection{Inference}
 
 
-After the model is trained for the lowest accuracy it is ready to serve its predictions to applications for a given input. This process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
+After the model is trained it is ready to be deployed in a production environment, where it can serve its predictions to a an application. This process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
 
 But since models often require the input to be of a certain shape and the input given by an application often does not match that shape, a preprocessing step is often needed before the actual inference can be performed.
 This preprocessing and inference process can also be seen in figure \ref{fig:InfProcess}.
@@ -86,6 +89,10 @@ Therefore edge deployment is preferred, if the inference performance is sufficie
 
 In order to increase this performance various accelerators like better GPUs, TPUs or other dedicated neural network hardware components have been developed for edge devices.
 
+%% hier retrainign ansprechen; herausforderungen bei edge deployment (retrainign noch mehr computational intensive -> cloud rettraining and then redeployment on edge)
+%viele edge geräte
+
+
 \subsubsection{Cloud Deployment}
 While the breakthroughs in deep learning are very interesting for AI applications on edge devices, the computational demand needed for edge deployment often exceeds the available power to be viable.
 That is why the option of outsourcing the models to a cloud-backend has become a popular solution in the recent years.
@@ -97,8 +104,14 @@ The big downside of cloud-based inference is the needed network connection, in p
 While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent unpreprocessed to the cloud. 
 In the latter case the input gets preprocessed on the cloud. 
 This can be justified by the same reasons as for the cloud inference, more computational power for intensive preprocessing.
-\subsection{Inference Framework}
+
+
+
+\subsection{Deep Learning Inference Framework}
 For both edge and cloud inference the underlying inference framework is important for the inference performance, since optimised kernels/operators or support of accelerators like GPUs can lead to significant performance improvements.
+The framework needs to support the model operations as well as the hardware components to achieve a good performance.
+
+%cloud inference network protocol
 
 This is especially important for edge devices, where new accelerators are being developed at a fast pace.
 

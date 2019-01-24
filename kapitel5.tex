@@ -4,5 +4,12 @@
 Ideen:
 \begin{itemize}
     \item mix cloud/edge großen/kleinen modellen
+    \item prediction of performance using the data of this thesis
 \end{itemize}
+
+\paragraph{Retraining}
+A challenge not covered in this theses  is the retraining of the model. After the model is used in production, delivering inference predictions, new training data is available. This data can be used to retrain the model to achieve higher accuracy of the model and maybe account for a concept drift, since in a dynamic environment the data distribution changes continuously.
+In case of edge inference these models often get deployed to multiple edge devices with the same use case, in most cases it is more efficient to retrain the model on a cloud-backend, using the new data of all edge devices with the same use case. Another reason to retrain on the cloud is that retraining is most of the time even more computational intensive than the inference.
+In the case of cloud inference, this retraining would be easier, as the data of the many clients is already at the cloud, where it can be collectively be used to retrain the network(although some privacy issues may occur).
+Note that the ground truth labels for the new data needs to acquired at some point in order to retrain a model in the case of supervised learning.
 \endinput 
