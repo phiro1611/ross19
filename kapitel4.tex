@@ -4,11 +4,13 @@ This chapter deals with the experiments, their design, execution and results.
 
  
 \section{Experimental Design}
-This section deals the specification of the Android benchmark app, used hardware, used framework, used model and how the measurements are conducted. 
+This section deals the specification of the Android benchmark app, used hardware, frameworks, models and how the measurements are conducted. 
+Figure \ref{fig:expDesign} depicts a brief overview of the specifications of the experiments.
+We use image classification as the use case, therefore an image needs to be sent to the model.
 \begin{figure}[H]
 \centering
-\input{./Bilder/Exp_design.tex}
-\caption{placeholder}
+\resizebox{.95\linewidth}{!}{\input{./Bilder/Exp_design.tex}}
+\caption{Experimental Design}
 \label{fig:expDesign}
 \end{figure}
 
@@ -247,8 +249,9 @@ Feeding more than one image to the network can lead to a higher throughput, if e
 To study these trade-offs we conduct experiments with the following batch sizes: 1, 2, 16, 32. Since at the point of these experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobilenetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference at this point.
 \paragraph{NNAPI}
 The Android Neural Network API (NNAPI), presented in section \ref{chap:NNAPI}, is supposed to enhance the inference performance of TensorFlow Lite. Therefore we take a look into the effect of this framework.
+%%Mention GPU use here
 \paragraph{GPU Usage}
-Since xx an experimental realase of TensorFlow Lite supporting GPU usage on Android using OpenGL ES 3.1 Compute Shaders.
+Since January 16 an experimental release of TensorFlow Lite supporting GPU usage on Android using OpenGL ES 3.1 Compute Shaders \cite{tfLiteGPU}.
 So far only four public models and their operators are supported, including MobileNetV2, but not InceptionV4. 
 Therefore we omit the test of this new feature in our experimentation, but our initial testing indicated that the use of NNAPI provides faster inference latencies for MobileNetV2 than the GPU version.
 %%https://medium.com/tensorflow/tensorflow-lite-now-faster-with-mobile-gpus-developer-preview-e15797e6dee7
@@ -359,7 +362,8 @@ Memory_{inference} = \max\limits_{t_{start} \leq t \leq t_{end}} Memory(t)\\
 The Memory Profiler is part of Android Studio Profiler and shows the memory consumption of the app it is profiling. Memory allocations by the operating system or other apps are not recorded. Besides recording the total amount of memory allocated the Profiler also tracks the different categories, for example memory allocated by Java/Kotlin code. We always record the maximum consumed memory for each operation.
 
 Figure \ref{fig:prof_mem} depicts an example of the Memory Profiler for a single experiment. The first peak in memory consumption is the preprocessing step, while the second peak is caused by the inference process.
-The little trash can at the bottom of the figure shows that the garbage collection was called. The garbage collection was always manually called after the preprocessing in case not all unneeded memory allcations are collected before running the inference operation. 
+The little trash can at the bottom of the figure shows that the garbage collection was called. The garbage collection was always manually called after the preprocessing in case not all unneeded memory allocations are collected before running the inference operation. 
+Note that we report total memory consumption of the application, including memory consumed for the graphical interface or the \emph{Logger} class.
 %In the case of preprocessing only the preprocessed image is needed, so the 
 \begin{figure}[H]
 \centering
@@ -392,15 +396,31 @@ Data_{received} = \sum_{t_{start}}^{t_{end}} Data_{received}(t)
 This section covers the results of the conducted experiments and their evaluation.
 
 First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. In each of these sections first the preprocessing and then the inference results are presented.
-
+%die 83mb aufschlüsseln in GUI etc 
 Note that the Android application consumed around 83MB in memory and 0\% CPU during idle.
 
 For precise mean values and standard deviations of all measured metrics refer to tables \ref{measurementsInception} and \ref{measurementsMobilenet}.
 
 The black bar on top of each bar of the following barchart represents the standard deviation.
+
+Preprocessing is performed without any models loaded and the edge. 
+Edge Inference is done using a loaded model. We do not consider model loading time in this thesis.
 \subsection{Edge Inference}
 This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
 \subsubsection{Preprocessing}
+Figure \ref{fig:EdgePrepro} shows the $Latency_{preprocessing}$ and $Memory_{preprocessing}$ for the different image sizes and models.
+
+There is little difference in both latency and memory for the different models. 
+InceptionV4 uses more memory than the MobileNet models, which is caused by the models higher input size (InceptionV4 $299\times299$, MobileNetV2 $224\times224$). 
+
+Higher image sizes have an significant impact on the latency as well as memory.
+%%factors reinbringen auch kb größe der bilder
+%%mehr impact on latency than memory
+
+
+%%Was über CPU hier sagen
+Looking the CPU usages during preprocessing (see figure \ref{fig:CloudEdgePreproCPU}) one can see that the usages are very similar across all models and image sizes. This is probably due to the fact that the preprocessing of a single image is done on a single core.
+%%High variance
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Inference_Preprocessing.pdf}
@@ -410,6 +430,8 @@ This section covers the results of the edge inference experiments with OnePlus 6
 
 
 \subsubsection{Inference}
+Different image sizes have no effect on edge inference, as image are always preprocessed when they reach the inference step.
+Hence we do not consider the different image sizes in the majority of this section.
 \begin{comment}
 %%Sagt Grafik was aus?
 \begin{figure}[H]
@@ -424,7 +446,8 @@ This section covers the results of the edge inference experiments with OnePlus 6
 \subsubsection{Effect of NNAPI}
 The Android Neural Network API (NNAPI) is supposed to speed up inference of neural network on Android by introducing optimized kernels/operators. 
 
-The effect of this framework can be seen in figure \ref{fig:NNAPI} and show the significant performance improvement caused by the NNAPI, not only affecting inference time, but also memory consumption and CPU usage.
+The effect of this framework can be seen in figure \ref{fig:NNAPI} and show the significant performance improvement caused by the NNAPI, not only affecting $Latency_{inference}$, but also $Memory_{inference}$ and $CPU_{inference}$.
+%%GPU usage ansprechen hier
 %%Genauere factors einfügen : inferecen zweimal so schnell...
 This effect can be observed across all tested models, but especially on the InceptionV4 network.
 
@@ -438,7 +461,13 @@ Since the NNAPI leads to performance improvements in all measured metrics, it wi
 \end{figure}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%Edge Inference Prepro Vs Inference%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Figure \ref{fig:EdgeInferenceRatio} depicts the latency ratio between preprocessing and inference.
+As image sizes increases, the preprocessing becomes more and more the bottleneck, especially for the MobileNetV2 models.
+For the MobileNetV2 even $224\times224$ images take longer to preprocess than to perform the inference on them.
+%The Inception models are far more computational intensive, hence the longer inference latencies, but still 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_inference_plots/Edge_Preprocessing_+_Inference.pdf}
@@ -463,6 +492,7 @@ Since the NNAPI leads to performance improvements in all measured metrics, it wi
 \label{fig:cloudInferencePreproMemory}
 \end{figure}
 \subsubsection{Inference}
+This section focuses on performance differences between the models and the impact of cloud preprocessing on cloud inference.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Memory.pdf}
