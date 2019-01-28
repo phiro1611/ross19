@@ -92,7 +92,7 @@ On December 12th 2018 the first results for model training were published, with 
 
 \subsection{Other publications}
 Other related publications are: 
-\cite{DBLP:journals/corr/abs-1810-01109} provides a study on the current state of model inference on Android smarthpones, including available frameworks, deep learning models and hardware accelerators. Additionally they present performance results for different hardware configuration using nine test including image recognition.
+\cite{DBLP:journals/corr/abs-1810-01109} provides a study on the current state of model inference on Android smarthpones, including available frameworks, deep learning models and hardware accelerators. Additionally they present performance results for different hardware configuration using nine different tests including image recognition.
 
 \cite{rethinkingDeployment} proposes a new approach for developing and deploying machine learning models optimised for inference on edge devices. Based on this approach they build a prototype to demonstrate the advantages of their proposed solutions.
 
@@ -104,10 +104,16 @@ speed/memory/accuracy balance for a given application and platform"
 \cite{DBLP:journals/corr/CanzianiPC16} presents a analysis of the impact of popular deep learning models like InceptionV4 on accuracy, memory, inference latency and power consumption for practical applications.
 \section{Evaluation of the Related Work}
 %%Add advantages of NNAPI,quant here
-For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova and others\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks(TensorFlow Lite in combination with Android Neural Networks API) providing optimized operators/kernels and accelerator support, edge devices with accelerators and models that are specifically developed for edge deployment(MobileNet). Furthermore these models can also be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latency and model sizes, while only taking minimal impact on model accuracy.
+For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova and others\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks(TensorFlow Lite in combination with Android Neural Networks API) providing optimised operators/kernels and accelerator support, edge devices with accelerators and models that are specifically developed for edge deployment(MobileNet). Furthermore these models can also be further optimised with the help of techniques like quantization, that severely lead to improved speedup inference latency and model sizes, while only taking minimal impact on model accuracy.
 %%Add more here about the papers
+%preprocessing
 MLPerf looks to be a promising project, but it is still in an early phase with no inference results presented so far. Hence it is still unclear which metrics besides inference latency/throughput they measure and how they measure them.
 
+Another aspect essential for the inference performance that is not covered by most publications is the impact of preprocessing on performance.
+Although \cite{DBLP:conf/ic2e/Guo18} and \cite{DBLP:conf/mmsys/HanhirovaKSSHY18} measure the latency of the preprocessing process, they do not report other metrics such as memory consumption. The effect of preprocessing on the cloud is also not studied in depth by any of the presented papers.
+
+
+Therefore at the moment of writing it can be stated that no other published study covers the impact on preprocessing and inference performance at the cloud or the edge in a comparative manner with the selected combination of frameworks, models and hardware specifications. 
 
 
 

@@ -44,8 +44,9 @@ This feature extraction is done with the use of convolutional and pooling layers
 These deep architectures lead a high number of operations and parameters, resulting in high demands of computational power.
 \subsubsection{Training}
 After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set. This data set consists of 
+%forward and backprop
 \subsubsection{Inference}
-
+%only forward prop
 
 After the model is trained it is ready to be deployed in a production environment, where it can serve its predictions to a an application. This process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
 
@@ -59,7 +60,7 @@ This preprocessing and inference process can also be seen in figure \ref{fig:Inf
 \caption{Visualisation of the inference process including preprocessing}
 \label{fig:InfProcess}
 \end{figure}
-Note that the architecture of the inference model is often slightly different from the training model, as some operators are only needed for the training process and are thus removed for inference.
+Note that the architecture of the inference model is often slightly different from the training model, as some operators are only needed for the training process and are thus removed for inference (e.\,g. dropout).
 
 
 
