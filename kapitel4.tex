@@ -97,14 +97,30 @@ To convert model suitable for TensorFlow Serving we use the TensorFlow-Slim libr
 MobileNetV2 (version 1.0) is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
 constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
 inverted residual with linear bottleneck".
-This module is a combination of three layers, started by a conv2d, followed by a depthwise convolution and lastly again a conv2d layer.
-While the first conv2d layer increases the channel dimension of the input, the second conv2 decreases this dimension again.
 
+This module is visualised in figure \ref{fig:bottleneckBlock} and consists of two parts: The inverted residual block and a shortcut from the input to the output.%Mention activation functions?
+In a first step the inverted residual block the channel dimension of the input get expanded with the use of a pointwise $1\times1$ convolution layer. 
+Afterwards depthwise $3\times3$ convolution is applied to the expanded input. Then again a pointwise $1\times1$ convolution gets used, but this time the dimensions are decreased instead of increased.
+
+The intuition behind this module is that the expansion decodes information ensuring that the features can be extracted during the depthwise convolution. The extracted features then get encoded again by reducing the dimensions.
+To improve the backpropagation of the gradient across multiple layers during the training the authors add the shortcut to the module, resulting in faster training and better accuracy.
 The bottleneck module can be implemented very memory efficient, thus particularly fit for edge inference.
 
-Figure \ref{fig:MobileNetArchi} displays the design of the model, with 
-
+Figure \ref{fig:MobileNetArchi} displays the design of the model, with the majority of the building blocks being the bottleneck modules.
+All bottleneck modules in a sequence have the same number of output channels and use a stride of $1$, except for the first bottleneck block in a sequence. All spatial convolutions use $3\times3$ kernels. 
 Although not depicted on the figure, the model uses dropout and batch normalisation during training.
+%%expanstionf actor?
+%%$$shortcut!! expanded by a "expansion factor" varying for different seqences
+
+\begin{figure}
+\centering
+   \resizebox{.7\linewidth}{!}{\input{Bilder/MobileNet_bottleneck.tex}}
+\caption{Inverted Residual Block (bottleneck)}
+\label{fig:bottleneckBlock}
+%%NO DROPOUT AT INFERENCE
+\end{figure}
+
+
 \begin{comment}
 
 
@@ -139,9 +155,52 @@ InceptionV4, published in \cite{InceptionV4}, is a large image classification ne
 
 In comparison to its previous versions InceptionV4 is built with "a more uniform simplified architecture and more inception modules". 
 The general architecture of the network can be seen in figure \ref{fig:inceptionv4Archi} with varying Inception (A-C) and Reduction(A-B) building blocks. 
+The intuition behind the Inception modules is 
 These Stem, Inception and Reduction modules consists of multiple convolutional, pooling and filter concat layers. 
+
+\begin{comment}
+
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{.95\textwidth}
+   \input{Bilder/InceptionAModule.tex}
+   \caption{Inception-A module}
+   \label{fig:inceptionv4Archi} 
+\end{subfigure}
+
+\vspace{1em}
+\begin{subfigure}[b]{.95\textwidth}
+   %%Verify the architectures again
+   \input{Bilder/InceptionReductionModule.tex}
+   \caption{Inception-Reduction module}
+   \label{fig:MobileNetArchi}
+\end{subfigure}
+
+\caption{Special modules used by InceptionV4}
+
+\end{figure}
+\end{comment}
+\begin{figure}
+\centering
+   \resizebox{.9\linewidth}{!}{\input{Bilder/InceptionAModule.tex}}
+\caption{Inception-A module}
+\label{fig:InceptionA}
+%%NO DROPOUT AT INFERENCE
+\end{figure}
+\begin{figure}
+\centering
+   \resizebox{.7\linewidth}{!}{\input{Bilder/InceptionReductionModule.tex}}
+\caption{Inception-Reduction module}
+\label{fig:InceptionReduction}
+%%NO DROPOUT AT INFERENCE
+\end{figure}
 %%Sinn hinter einzelenes Modulen kurz erklären
 %%Intuition behind inception blocks
+%paralll conv layer, then concat
+%%ein inception und ein reduction module erklären
+%multiple convolutions with multiple filters and pooling layers simultaneously in parallel within the same layer 
+%do all the convolutions and let the model pick what’s best.
 
 
 Besides dropout InceptionV4 also benefits from the use of batch normalisation during training.
@@ -161,7 +220,7 @@ Besides dropout InceptionV4 also benefits from the use of batch normalisation du
    \label{fig:inceptionv4Archi} 
 \end{subfigure}%
 \begin{subfigure}[t]{0.47\textwidth}
-   %%CAREFUL WITH THIS ARCHITECTURE
+   %%Verify the architectures again
    \resizebox{.99\linewidth}{!}{\input{Bilder/MobileNetV2_archi.tex}}
    \caption{MobileNetV2 architecture \cite{DBLP:journals/corr/abs-1801-04381}}
    \label{fig:MobileNetArchi}
@@ -200,7 +259,7 @@ Both edge and cloud inference implementations are based on the example implement
 \caption{Flowchart of the Benchmark Application}
 \label{fig:app}
 \end{figure}
-In figure \ref{fig:app} the workflow to perform the inference is seen. First, a image needs to be selected. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. In the case of edge inference it needs to be decided if the NNAPI should be used by TensorFlow Lite. For cloud inference the preprocessing mode needs to be selected (edge/cloud). Now the preprocessing operations can be performed based on the previous selected options (Even for the case of cloud inference with cloud preprocessing some preprocessing needs to be done on the edge beforehand like building the \emph{Proto PredictRequest}). Now, that the input is preprocessed, the actual inference is performed resulting in a prediction. For both preprocessing and inference the measurements mentioned in section \ref{chap:insta_measurements} are logged.
+In figure \ref{fig:app} the workflow to perform the inference is seen. First, a image needs to be selected. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. In the case of edge inference it needs to be decided if the NNAPI should be used by TensorFlow Lite. For cloud inference the preprocessing mode needs to be selected (edge/cloud). Now the preprocessing operations can be performed based on the previous selected options (Even for the case of cloud inference with cloud preprocessing some preprocessing needs to be done on the edge beforehand like building a \emph{PredictRequest} containing the request for the cloud-backend). Now, that the input is preprocessed, the actual inference is performed resulting in a prediction. For both preprocessing and inference the measurements mentioned in section \ref{chap:insta_measurements} are logged.
 
 \begin{figure}[htb]
 \centering

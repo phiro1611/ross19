@@ -34,13 +34,26 @@ There are many different operators and network architectures, which makes perfor
 \end{comment}
 
 \paragraph{Convolutional Neural Network}
-This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely an animal on a picture represents a cat.
+This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. 
 
+Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely an animal on a picture represents a cat.
+A simple architecture for this classification task can be seen in figure \ref{fig:simpleCNN}.
+The network expects input images as a three dimensional tensor $h\times w\times c$, where $h$ and $w$ are the fixed height and width of the image and $c$ is the number of channels, which in most cases is $3$ for the RGB channels.
+From this tensor the convolutional layer extract features such as edges. 
+The pooling layers 
+
+An image needs to be preprocessed to match these shape specifications before feeding it to the network.
 This feature extraction is done with the use of convolutional and pooling layers. These layer types
 
+
+
+\begin{figure}
 %%bild mit simpler architecture? Bild->conv->pool->flatten->dense-> output
-
-
+    \centering
+    \resizebox{.95\linewidth}{!}{\input{Bilder/simple_CNN.tex}}
+    \caption{Simple image classification CNN}
+    \label{fig:simpleCNN}
+\end{figure}
 These deep architectures lead a high number of operations and parameters, resulting in high demands of computational power.
 \subsubsection{Training}
 After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set. This data set consists of 
@@ -124,16 +137,17 @@ After analysing the problem space of deep learning inference for real-time AI ap
 
 \section{Performance Model}
 All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference latency and throughput are the most important ones for real-time AI applications. However, as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other depicted metrics are vital as well.
-Except the data consumption, all metrics are relevant for both edge and cloud inference.
-While accuracy is one of the most critical metrics for neural networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
-
-To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.99\textwidth]{./Bilder/trade_offs.png}
 \caption{Performance Model}
 \label{fig:perfmodel}
 \end{figure}
+Except the data consumption, all metrics are relevant for both edge and cloud inference.
+While accuracy is one of the most critical metrics for neural networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
+
+To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
+
 \subsection{Performance Metrics}
 Several metrics are important to measure the performance of the preprocessing and the inference steps. For the most of the following metrics we break down each metric into two sub-measurements, one for the preprocessing  and the other for the inference part.
 
