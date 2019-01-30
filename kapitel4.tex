@@ -86,19 +86,21 @@ This request and response process can also be seen in figure \ref{fig:cloud}
 \end{figure}
 \subsection{Models}
 \label{chap:models}
-We will use two different image classification model for the experiment, one optimised for mobile deployment and the other towards high accuracy.
+We will use two different image classification models for the experiment, MobileNetV2 and InceptionV4, the first is optimised for mobile deployment and the second towards high accuracy.
 Both models are trained on a ImageNet dataset consisting of 1001 image classes (1000 image classes + 1 class for other image classes).
 
 For the TensorFlow Lite version we use the models provided on the TensorFlow Lite website \cite{tfLiteModels}.
 To convert model suitable for TensorFlow Serving we use the TensorFlow-Slim library \cite{tfSlim}, where maintained and tested implementations of popular image classification models are being published. For both Serving and Lite we use the same training checkpoint to get the same weights for the graphs.
 
+In the following we give a brief overview of the models, their unique building blocks and the intuition behind them.
+For full details please refer to \cite{DBLP:journals/corr/abs-1801-04381} and \cite{InceptionV4}.
 
 \subsubsection{MobileNetV2}
 MobileNetV2 (version 1.0) is a successor of MobileNetV1 and is "specifically tailored for mobile and resource
 constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors do this by "significantly decreasing the number of operations and the memory needed while retaining the same accuracy"  \cite{DBLP:journals/corr/abs-1801-04381} and introducing a new layer module called "the
 inverted residual with linear bottleneck".
 
-This module is visualised in figure \ref{fig:bottleneckBlock} and consists of two parts: The inverted residual block and a shortcut from the input to the output.%Mention activation functions?
+This module is visualised in figure \ref{fig:bottleneckBlock} and consists of two parts: The inverted residual block and a shortcut from the input to the output.
 In a first step the inverted residual block the channel dimension of the input get expanded with the use of a pointwise $1\times1$ convolution layer. 
 Afterwards depthwise $3\times3$ convolution is applied to the expanded input. Then again a pointwise $1\times1$ convolution gets used, but this time the dimensions are decreased instead of increased.
 
@@ -112,7 +114,7 @@ Although not depicted on the figure, the model uses dropout and batch normalisat
 %%expanstionf actor?
 %%$$shortcut!! expanded by a "expansion factor" varying for different seqences
 
-\begin{figure}
+\begin{figure}[!htb]
 \centering
    \resizebox{.7\linewidth}{!}{\input{Bilder/MobileNet_bottleneck.tex}}
 \caption{Inverted Residual Block (bottleneck)}
@@ -149,58 +151,48 @@ $1\times 1\times 1280$ & conv2d 1x1 & - & k & - &  \\ \bottomrule
 \end{comment}
 \paragraph{Quantization}
 Quantization of MobileNetV2, using the techniques presented in section \ref{chap:quant}, results in a  0.7\% loss of top-5 accuracy, but therefore has lost 75\% of its model size and a optimised performance, which we will evaluate in the experiments.
+
+
+
 \subsubsection{Inception V4}
 %%Add infos about stem and reduction
 InceptionV4, published in \cite{InceptionV4}, is a large image classification network with high accuracy, but also with a high number of parameters leading to higher inference times than MobileNetV2.
-
 In comparison to its previous versions InceptionV4 is built with "a more uniform simplified architecture and more inception modules". 
-The general architecture of the network can be seen in figure \ref{fig:inceptionv4Archi} with varying Inception (A-C) and Reduction(A-B) building blocks. 
-The intuition behind the Inception modules is 
-These Stem, Inception and Reduction modules consists of multiple convolutional, pooling and filter concat layers. 
 
-\begin{comment}
+The general architecture of the network can be seen in figure \ref{fig:inceptionv4Archi} with the fundamental building blocks being varying Inception (A-C) and Reduction(A-B) modules. 
+An example for both of these modules can be seen in figures \ref{fig:InceptionA} and \ref{fig:InceptionReduction}.
+Inception modules are built of multiple convolutions with multiple filters and pooling layers in parallel within the same layer.
+After the convolutions the output of all convolutions are concatenated.
+The intuition behind this parallelism is to give the model multiple convolution choices for a given input and let the model learn itself  the best feature extractor. An additional benefit is that the model can extract both local and more complex feature from an input.
+
+To reduce the dimensionality before computational expensive large convolutions, and thus speed up training, the authors introduce the Reduction block containing small $1\times1$.convolutions.   %genauer erklären
 
 
-\begin{figure}
+
+
+\begin{figure}[!htb]
 \centering
 \begin{subfigure}[b]{.95\textwidth}
-   \input{Bilder/InceptionAModule.tex}
+\centering
+   \resizebox{.8\linewidth}{!}{\input{Bilder/InceptionAModule.tex}}
    \caption{Inception-A module}
-   \label{fig:inceptionv4Archi} 
+   \label{fig:InceptionA} 
 \end{subfigure}
 
 \vspace{1em}
 \begin{subfigure}[b]{.95\textwidth}
+\centering
    %%Verify the architectures again
-   \input{Bilder/InceptionReductionModule.tex}
-   \caption{Inception-Reduction module}
-   \label{fig:MobileNetArchi}
+   \resizebox{.6\linewidth}{!}{\input{Bilder/InceptionReductionModule.tex}}
+   \caption{Reduction module (convolutions with "V" are valid, rest is same padded )}
+   \label{fig:InceptionReduction}
 \end{subfigure}
 
 \caption{Special modules used by InceptionV4}
 
 \end{figure}
-\end{comment}
-\begin{figure}
-\centering
-   \resizebox{.9\linewidth}{!}{\input{Bilder/InceptionAModule.tex}}
-\caption{Inception-A module}
-\label{fig:InceptionA}
-%%NO DROPOUT AT INFERENCE
-\end{figure}
-\begin{figure}
-\centering
-   \resizebox{.7\linewidth}{!}{\input{Bilder/InceptionReductionModule.tex}}
-\caption{Inception-Reduction module}
-\label{fig:InceptionReduction}
-%%NO DROPOUT AT INFERENCE
-\end{figure}
-%%Sinn hinter einzelenes Modulen kurz erklären
-%%Intuition behind inception blocks
-%paralll conv layer, then concat
-%%ein inception und ein reduction module erklären
-%multiple convolutions with multiple filters and pooling layers simultaneously in parallel within the same layer 
-%do all the convolutions and let the model pick what’s best.
+
+
 
 
 Besides dropout InceptionV4 also benefits from the use of batch normalisation during training.
@@ -212,7 +204,7 @@ Besides dropout InceptionV4 also benefits from the use of batch normalisation du
 %\label{fig:inceptionv4}
 %\end{figure}
 
-\begin{figure}
+\begin{figure}[!htb]
 \centering
 \begin{subfigure}[t]{0.47\textwidth}
    \resizebox{.99\linewidth}{!}{\input{Bilder/InceptionV4_archi.tex}}
@@ -277,17 +269,17 @@ The \emph{MainActivity} writes the collected measurements and the parameter conf
 
 \subsubsection{Preprocessing}
 %%mention png
-For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the RGB values need to be scaled to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
+For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the RGB values need to be normalised to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{./Bilder/preprocessing.png}
+\input{Bilder/Preprocessing.tex}
 \caption{Preprocessing steps for image classifcation}
 \label{fig:prepro}
 \end{figure}
 \paragraph{Edge Preprocessing}
 In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural afterwards, either on the edge device itself or on a cloud-backend.
 We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we created a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$). 
-Afterwards we rescale the RGB values during the conversion from the bitmap to a \emph{ByteBuffer}. 
+Afterwards we normalise the RGB values to $[-1,1]$ during the conversion from the bitmap to a \emph{ByteBuffer}. 
 For the case of float models these buffer contain all the pixels in float format and for quantized model in bytes.
 %%%mehr erklären?
 We do this conversion since feeding \emph{ByteBuffers} to TensorFlow Lite is performance enhancing %add cite here
@@ -313,7 +305,7 @@ To perform the inference operation we two things into the run function of an int
 
 For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server, where the inference (and in the case of cloud preprocessing also the preprocessing) computations are executed. Afterwards the client receives the \emph{PredictResponse} from the server containing the predictions for the sent image. We configured the TensorFlow Serving models to return the five classes with the highest confidence, hence we extract these five classes from the \emph{PredictResponse} and print them to the screen.
 
-To preprocess the image on the cloud we add TensorFlows preprocessing functions to the model graphs before we export them to the TensorFlow Serving format. The images arrive at the serve in the PNG format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally rescale the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed on the edge. Now the input can be fed to the actual model graphs.
+To preprocess the image on the cloud we add TensorFlows preprocessing functions to the model graphs before we export them to the TensorFlow Serving format. The images arrive at the serve in the PNG format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalise the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed on the edge. Now the input can be fed to the actual model graphs.
 \section{Instantiation}
 We run each parameter configuration 25 times to reduce variance. During the experiments no other applications are running on either the edge or the cloud device.
 In the course of the experiments we change the configurations of the following parameters:

@@ -12,7 +12,7 @@ These three aspect are covered in this section.
 \subsection{Deep Learning}
 %%Bisschen genauer was deep learning input output...
 %Einfluss auf inference latency an memory?
-
+This section gives a brief, but nowhere complete overview of the deep learning field. We will focus on the basic structures and intuition behind these model, as a comprehensive analysis would go beyond the scope of this thesis.
 Deep learning models are neural networks with many hidden layers and hidden units leading to deep architectures.
 These deep architectures with often millions of parameters lead to a significant increase in computational power for both training and inference,
 %While for simple linear regression model with a single variable a single computation
@@ -21,7 +21,13 @@ These models often have single input and output layer and in between the hidden 
 
 %the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
 There are many different operators and network architectures, which makes performance prediction very complex.
-
+\begin{figure}[!htb]
+%%bild mit simpler architecture? Bild->conv->pool->flatten->dense-> output
+    \centering
+    \resizebox{.8\linewidth}{!}{\input{Bilder/simple_neural_network.tex}}
+    \caption{Simple neural network}
+    \label{fig:simpleNN}
+\end{figure}
 %This increased amount of layers leads to complex mathematical calculations.
 \begin{comment}
 \subsubsection{Architectures}
@@ -39,15 +45,14 @@ This specific class of neural network achieved wide success in the field of imag
 Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely an animal on a picture represents a cat.
 A simple architecture for this classification task can be seen in figure \ref{fig:simpleCNN}.
 The network expects input images as a three dimensional tensor $h\times w\times c$, where $h$ and $w$ are the fixed height and width of the image and $c$ is the number of channels, which in most cases is $3$ for the RGB channels.
-From this tensor the convolutional layer extract features such as edges. 
-The pooling layers 
-
 An image needs to be preprocessed to match these shape specifications before feeding it to the network.
-This feature extraction is done with the use of convolutional and pooling layers. These layer types
+The fundamental building blocks of CNNs are multiple convolution layers, which extract features from the images. The first convolutional extract simple features like edges from the image, while the later convolutional layers combine these simple features to complex shapes like rectangles.
+To reduce the spatial dimension of the feature maps, outputted by the convolution, a popular layer type added to CNNs are pooling layers.
+After extracting the features the resulting tensor get flattened to a one dimensional tensor before getting fed to one or more dense layers.
+The last dense layer contains the output of the network, in this case confidence levels for predefined labels (e.\,g. $80$\% cat).  
 
 
-
-\begin{figure}
+\begin{figure}[!htb]
 %%bild mit simpler architecture? Bild->conv->pool->flatten->dense-> output
     \centering
     \resizebox{.95\linewidth}{!}{\input{Bilder/simple_CNN.tex}}
@@ -55,13 +60,16 @@ This feature extraction is done with the use of convolutional and pooling layers
     \label{fig:simpleCNN}
 \end{figure}
 These deep architectures lead a high number of operations and parameters, resulting in high demands of computational power.
+%Add calculation example
 \subsubsection{Training}
-After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set. This data set consists of 
+%loss function erklären
+After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set with their according ground truth labels. 
+This training is done with forward and backpropagation, where training data is forward propagated through the network until reaching the output layer. Afterwards the loss can be calculated and thus the  by backpropagation is being started with results in updated weights of the network. This process is repeated until the minimum loss is reached and therefore the highest possible accuracy.
 %forward and backprop
 \subsubsection{Inference}
 %only forward prop
 
-After the model is trained it is ready to be deployed in a production environment, where it can serve its predictions to a an application. This process of feeding input data to a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
+After the model is trained it is ready to be deployed in a production environment, where it can serve its predictions to an application. This process of forward propagating the input through a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
 
 But since models often require the input to be of a certain shape and the input given by an application often does not match that shape, a preprocessing step is often needed before the actual inference can be performed.
 This preprocessing and inference process can also be seen in figure \ref{fig:InfProcess}.
