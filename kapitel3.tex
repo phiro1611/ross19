@@ -12,15 +12,14 @@ These three aspect are covered in this section.
 \subsection{Deep Learning}
 %%Bisschen genauer was deep learning input output...
 %Einfluss auf inference latency an memory?
-This section gives a brief, but nowhere complete overview of the deep learning field. We will focus on the basic structures and intuition behind these model, as a comprehensive analysis would go beyond the scope of this thesis.
-Deep learning models are neural networks with many hidden layers and hidden units leading to deep architectures.
-These deep architectures with often millions of parameters lead to a significant increase in computational power for both training and inference,
+This section gives a brief, but nowhere complete overview of the deep learning field. We will focus on the basic structures and intuition behind deep learning models, as a comprehensive analysis would go beyond the scope of this thesis.
+
+Deep learning are a subclass of neural networks.
+The intention of a neural network is to make a prediction $\mathbf{\Hat{Y}}$ given an input $\mathbf{X}$ that is as close as possible to the underlying ground truth $\mathbf{Y}$. 
+The difference of neural networks and deep learning networks is the amount of layers and hidden units. Deep learning models are built of many hidden layers and hidden units leading to deep architectures.
+These deep architectures with often millions of parameters lead to a significant increase in computational power for both training and inference.
 %While for simple linear regression model with a single variable a single computation
-
-These models often have single input and output layer and in between the hidden layers containing the hidden units.
-
-%the most popular being convolutional neural networks and recurrent neural networks right now, which are special forms of neural networks.
-There are many different operators and network architectures, which makes performance prediction very complex.
+% ground through Y and the net predictions Y hat
 \begin{figure}[!htb]
 %%bild mit simpler architecture? Bild->conv->pool->flatten->dense-> output
     \centering
@@ -28,19 +27,72 @@ There are many different operators and network architectures, which makes perfor
     \caption{Simple neural network}
     \label{fig:simpleNN}
 \end{figure}
-%This increased amount of layers leads to complex mathematical calculations.
-\begin{comment}
-\subsubsection{Architectures}
-\begin{itemize}
-    \item layer
-    \item hidden units
-    \item input size
-    \item number of operations
-\end{itemize}
-\end{comment}
+
+%mention fully connected layers
+Figure \ref{fig:simpleNN} shows the structure of a simple neural network with input $\mathbf{X}$ and output $\mathbf{\Hat{Y}}$, where $\mathbf{X}$ is a vector of size four, meaning the neural network takes four features as its inputs. 
+The output $\mathbf{\Hat{Y}}$ for this example is vector of only size one, hence the network predictions one value.
+Between the input and output lay three hidden layers with five, three and again five hidden units.
+Each of these hidden layers has a weight matrix $\mathbf{W\in\mathbb{R}^{m\times n}}$, where $\mathbf{m}$ is the number of hidden units and $\mathbf{n}$ the number of hidden units in the previous layer.
+This weight matrices are needed to compute the state of each hidden layer by calculated the weighted sum on all its inputs.
+For example the state of the first hidden layer is calculated by multiplying $\mathbf{W_1X}$, where $\mathbf{W_1}$ is the weight matrix of layer one and $\mathbf{X}$ the output of the previous layer, in this case the input layer.
+To calculate  $\mathbf{\Hat{Y}}$ in the output layer using $\mathbf{W_O}$ , all previous states need to calculated consecutively. 
+This chain of calculations needed to get from input $\mathbf{X}$ to output $\mathbf{\Hat{Y}}$ is also called forward-propagation, because the values of the input vector get passed through all layers by multiplication.
+For example \ref{fig:simpleNN} all computations can be seen in equation \ref{eq:1}, with the shapes of all input/output vectors and weight matrices depicted in equation \ref{eq:2}.
+
+\begin{equation} \label{eq:1}
+\begin{gathered}
+\mathbf{\hat{Y}} = \mathbf{W_O(W_3(W_2(W_1X)))}
+\end{gathered}
+\end{equation}
+
+
+\begin{equation} \label{eq:2}
+\begin{gathered}
+\mathbf{X} = \begin{bmatrix}
+           x_{1} \\
+           x_{2} \\
+           x_{3} \\
+           x_{4}
+         \end{bmatrix},
+\mathbf{W_1} = \begin{bmatrix}
+           w_{11} & w_{12}& w_{13}& w_{14}\\
+           w_{21} & w_{22}& w_{23}& w_{24} \\
+           w_{31} & w_{32}& w_{33}& w_{34} \\
+           w_{41} & w_{42}& w_{43}& w_{44} \\
+           w_{51} & w_{52}& w_{53}& w_{54} 
+         \end{bmatrix},
+\mathbf{W_2} = \begin{bmatrix}
+           w_{11} & w_{12}& w_{13}& w_{14}& w_{15}\\
+           w_{21} & w_{22}& w_{23}& w_{24}& w_{25} \\
+           w_{31} & w_{32}& w_{33}& w_{34}& w_{35} 
+         \end{bmatrix},\\ \\
+\mathbf{W_3} = \begin{bmatrix}
+           w_{11} & w_{12}& w_{13}\\
+           w_{21} & w_{22}& w_{23} \\
+           w_{31} & w_{32}& w_{33} \\
+           w_{41} & w_{42}& w_{43} \\
+           w_{51} & w_{52}& w_{53} 
+         \end{bmatrix},
+\mathbf{W_O} = \begin{bmatrix} w_{11} & w_{12}& w_{13}& w_{14}& w_{15} \end{bmatrix},
+\mathbf{\hat{Y}} = \begin{bmatrix} y_1 \end{bmatrix}
+%\hat{Y} = (1\times5)(5\times3)(3\times5)(5\times4) (4\times1) = (1\times5)(5\times3)(3\times5)(5\time1) = (1\times5)(5\times3)(3\times1) = (1\times5)(5\times1) = 1
+\end{gathered}
+\end{equation}
+
+For sake of simplicity the example does not use activation functions $\mathbf{\sigma}$ (e.\,g. ReLU) and biases $\mathbf{b}$, which would usually be used in practice in the form of $\mathbf{\sigma(WX+b)}$ instead of $\mathbf{WX}$.
+Activation functions are needed to decide if a neuron (hidden unit) fires or not as well as minimising the risk of exploding/vanishing gradients.
+%beispielrechnung für das nn
+
+
+This simple network only contains three hidden layers with at most five hidden, but still X computations are needed for the forward propagation of a single input vector.
+In practice deep learning models contain often more than Y layers, leading to high computational demands.
+
+There are many different operators and network architectures, which makes performance prediction very complex.
+Since we will use image classification as a use case for the experimentation, we will now present the basics of Convolutional Neural Networks, which are used for this use case.
 
 \paragraph{Convolutional Neural Network}
 This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. 
+%Abschnitt über convolutions und pooling?
 
 Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely an animal on a picture represents a cat.
 A simple architecture for this classification task can be seen in figure \ref{fig:simpleCNN}.
@@ -48,8 +100,8 @@ The network expects input images as a three dimensional tensor $h\times w\times 
 An image needs to be preprocessed to match these shape specifications before feeding it to the network.
 The fundamental building blocks of CNNs are multiple convolution layers, which extract features from the images. The first convolutional extract simple features like edges from the image, while the later convolutional layers combine these simple features to complex shapes like rectangles.
 To reduce the spatial dimension of the feature maps, outputted by the convolution, a popular layer type added to CNNs are pooling layers.
-After extracting the features the resulting tensor get flattened to a one dimensional tensor before getting fed to one or more dense layers.
-The last dense layer contains the output of the network, in this case confidence levels for predefined labels (e.\,g. $80$\% cat).  
+After extracting the features the resulting tensor get flattened to a one dimensional tensor before getting fed to one or more fully connected layers.
+The last fully connected layer contains the output of the network, in this case confidence levels for predefined labels (e.\,g. $80$\% cat).  
 
 
 \begin{figure}[!htb]
@@ -59,13 +111,20 @@ The last dense layer contains the output of the network, in this case confidence
     \caption{Simple image classification CNN}
     \label{fig:simpleCNN}
 \end{figure}
-These deep architectures lead a high number of operations and parameters, resulting in high demands of computational power.
+
 %Add calculation example
 \subsubsection{Training}
-%loss function erklären
-After constructing the architecture of a model it can be trained to reach the highest accuracy using a data set with their according ground truth labels. 
-This training is done with forward and backpropagation, where training data is forward propagated through the network until reaching the output layer. Afterwards the loss can be calculated and thus the  by backpropagation is being started with results in updated weights of the network. This process is repeated until the minimum loss is reached and therefore the highest possible accuracy.
-%forward and backprop
+
+After constructing the architecture of a model it can be trained to reach the highest accuracy.
+Since most neural network are type of supervised learning, a training data set with ground truth labels $\mathbf{Y}$ is needed for the training.
+This training is done with forward- and back-propagation, where one or more samples of the training set is forward propagated through the network until reaching the output layer. Afterwards the $Loss\mathbf{(Y,\Hat{Y})}$ can be calculated, which measures the difference between the prediction $\mathbf{\Hat{Y}}$ and the ground truth $\mathbf{Y}$.
+
+To optimise the network, the loss needs to be minimised to a minimum, meaning that the different between prediction and ground truth is as small as possible and the accuracy as high as possible.
+Since there is no closed form solution to find this minimum, neural network use gradient descent, specifically back-propagation, to minimise the loss in an iterative process.
+Given the loss of the network, the gradients of all weights in the network can be computed and afterwards the weights can be updated using a learning rate in respect to the gradient and learning rate.
+
+This process of forward- and back-propagation is repeated for all sample in the training data set multiple times until the minimum loss is reached and therefore the highest possible accuracy.
+
 \subsubsection{Inference}
 %only forward prop
 

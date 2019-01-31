@@ -10,7 +10,7 @@
     % Draw the input layer nodes
     \foreach \name / \y in {1,...,4}
     % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
-        \node[input neuron, pin=left:Input \#\y] (I-\name) at (0,-\y) {};
+        \node[input neuron, pin=left:$x_\y$] (I-\name) at (0,-\y) {};
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,5}
@@ -25,7 +25,7 @@
         \path[yshift=0.5cm]
             node[hidden neuron] (H3-\name) at (\layersep+5cm,-\y cm) {};
     % Draw the output layer node
-    \node[output neuron,pin={[pin edge={->}]right:Output/Prediction}, right of=H3-3] (O) {};
+    \node[output neuron,pin={[pin edge={->}]right:$\mathbf{\hat{Y}}$}, right of=H3-3] (O) {};
 
     % Connect every node in the input layer with every node in the
     % hidden layer.
