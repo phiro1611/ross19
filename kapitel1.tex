@@ -29,7 +29,7 @@ For the experiments, we will use a OnePlus 6T, a state of the art smartphone, as
 TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these experiments, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks supported many of the above-mentioned hardware accelerators as well as providing optimised operators used by image classification models.
 
 Another aspect, aside from the actual inference, is the preprocessing step, which is needed to transform the input into the format required by the model. 
-In the case of CNNs these steps often consist of image resizing and rescaling.
+In the case of CNNs these steps often consist of image resizing and normalisation.
 Since this step is vital for the inference, our experiments will also include preprocessing aside from the actual inference.
 
 \section{Structure of the Thesis}

@@ -28,10 +28,9 @@ These deep architectures with often millions of parameters lead to a significant
     \label{fig:simpleNN}
 \end{figure}
 
-%mention fully connected layers
 Figure \ref{fig:simpleNN} shows the structure of a simple neural network with input $\mathbf{X}$ and output $\mathbf{\Hat{Y}}$, where $\mathbf{X}$ is a vector of size four, meaning the neural network takes four features as its inputs. 
 The output $\mathbf{\Hat{Y}}$ for this example is vector of only size one, hence the network predictions one value.
-Between the input and output lay three hidden layers with five, three and again five hidden units.
+Between the input and output lay three fully connected hidden layers with five, three and again five hidden units.
 Each of these hidden layers has a weight matrix $\mathbf{W\in\mathbb{R}^{m\times n}}$, where $\mathbf{m}$ is the number of hidden units and $\mathbf{n}$ the number of hidden units in the previous layer.
 This weight matrices are needed to compute the state of each hidden layer by calculated the weighted sum on all its inputs.
 For example the state of the first hidden layer is calculated by multiplying $\mathbf{W_1X}$, where $\mathbf{W_1}$ is the weight matrix of layer one and $\mathbf{X}$ the output of the previous layer, in this case the input layer.
@@ -41,7 +40,7 @@ For example \ref{fig:simpleNN} all computations can be seen in equation \ref{eq:
 
 \begin{equation} \label{eq:1}
 \begin{gathered}
-\mathbf{\hat{Y}} = \mathbf{W_O(W_3(W_2(W_1X)))}
+\mathbf{\hat{Y}(X)} = \mathbf{W_O(W_3(W_2(W_1X)))}
 \end{gathered}
 \end{equation}
 
@@ -84,12 +83,13 @@ Activation functions are needed to decide if a neuron (hidden unit) fires or not
 %beispielrechnung für das nn
 
 
-This simple network only contains three hidden layers with at most five hidden, but still X computations are needed for the forward propagation of a single input vector.
-In practice deep learning models contain often more than Y layers, leading to high computational demands.
+This simple network only contains three hidden layers with at most five hidden layers and thus 45 parameters, but in practice state of the art deep learning models contain often millions of parameters. 
+The forward propagation of such models often need more than one GFLOPS, leading to high computational demands for real-time AI applications.
+
 %15+5+15+20 = 45 parameters
 %large network >10 000 000 param
 
-There are many different operators and network architectures, which makes performance prediction very complex.
+There are many different operators and network architectures, all with different computational demands, thus making performance prediction very complex.
 Since we will use image classification as a use case for the experimentation, we will now present the basics of Convolutional Neural Networks, which are used for this use case.
 
 \paragraph{Convolutional Neural Network}
@@ -155,7 +155,7 @@ Quantization is a technique that trades in model precision for better inference 
 Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
 The weights/activations are either quantized after training the model with floats (Post Training Quantization) or the model is training with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
 efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these technique with the following results:
-8-bit quantization can lead to a model size reduction by a factor of 4, a 2x-3x latency speedup on CPUs and DSPs, while reducing the model accuracies by 1\%.
+8-bit quantization can lead to a model size reduction by a factor of 4, a 2-3x latency speedup on CPUs and DSPs, while reducing the model accuracies by 1\%.
 
 
 \subsection{Deployment of Deep Learning Models}
@@ -168,12 +168,10 @@ Edge devices are characterised by offering a limited amount of hardware specific
 These devices are often mobile devices like smartphones, cars or Raspberry Pis.
 Despite its limits, edge deployment also has some advantages, particular in reliability and security. 
 For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise a data privacy/security concern.
-Therefore edge deployment is preferred, if the inference performance is sufficient for the use case of real time AI applications.
+Therefore edge deployment should be the preferred choice, if the inference performance is sufficient for the use case of real time AI applications.
 
 In order to increase this performance various accelerators like better GPUs, TPUs or other dedicated neural network hardware components have been developed for edge devices.
 
-%% hier retrainign ansprechen; herausforderungen bei edge deployment (retrainign noch mehr computational intensive -> cloud rettraining and then redeployment on edge)
-%viele edge geräte
 
 
 \subsubsection{Cloud Deployment}
@@ -205,21 +203,26 @@ After analysing the problem space of deep learning inference for real-time AI ap
 
 
 \section{Performance Model}
-All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors of the performance model (see figure \ref{fig:perfmodel}). These inputs affect various performance metrics, of which inference latency and throughput are the most important ones for real-time AI applications. However, as the hardware on edge devices is limited and most of the times many applications need to run in parallel, low usages of the other depicted metrics are vital as well.
+All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors of the performance model (see figure \ref{fig:perfmodel}). 
+These inputs affect various performance metrics, of which inference latency and throughput are the most important ones for real-time AI applications on the edge. However, as the hardware on edge devices is limited and most of the times more than one application needs to run in parallel, low usages of the other depicted metrics are vital as well.
+In the following we present performance metrics essential for the performance of real-time AI applications and the rationale behind them.
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.99\textwidth]{./Bilder/trade_offs.png}
 \caption{Performance Model}
 \label{fig:perfmodel}
 \end{figure}
-Except the data consumption, all metrics are relevant for both edge and cloud inference.
+
+Except the data consumption, which is only needed for cloud inference, because data is sent to a remote server, all metrics are relevant for both edge and cloud inference.
 While accuracy is one of the most critical metrics for neural networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
 
 To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
 
 \subsection{Performance Metrics}
+\label{chap:metrics}
 Several metrics are important to measure the performance of the preprocessing and the inference steps. For the most of the following metrics we break down each metric into two sub-measurements, one for the preprocessing  and the other for the inference part.
 
+Note that we only measure the impact on inference on the resources on the edge devices, not on the cloud-backend in case of cloud inference.
 \subsubsection{Latency}
 Latencies are a essential to determine the performance, since AI application often need predictions in realtime, resulting in the need of low latencies.
 The time needed to transform the original input to a shape fit for feeding into the deep learning model is called $Latency_{preprocessing}$.
@@ -227,7 +230,11 @@ The time needed to transform the original input to a shape fit for feeding into 
 $Latency_{inference}$ describes the time needed from requesting a prediction from a deep learning model given an specific input until getting the prediction.
 The latency needed to perform both preprocessing and inference for a given input is called $Latency_{total}$.
 \subsubsection{Throughput}
-In order to accomplish realtime AI a high enough throughput is essential. Therefore the number of processed predictions per second is a valuable metric. We differentiate between three times of throughput: $Throughput_{preprocessing}$, $Throughput_{inference}$ and $Throughput_{total}$, where the first two are the throughp and the third the throughput for both preprocessing and inference combined.
+In order to accomplish realtime AI a certain level of throughput is essential. Therefore the number of predictions per second is a valuable metric. 
+Since preprocessing is a vital part of the inference process, the throughput impact caused by preprocessed is also of interest.
+
+Therefore we differentiate between three types of throughput: $Throughput_{preprocessing}$, $Throughput_{inference}$ and $Throughput_{total}$.
+$Throughput_{total}$ is the throughput of the preprocessing and inference latencies combined.
 
 
 
@@ -236,7 +243,8 @@ $Energy_{preprocessing}$ and $Energy_{inference}$, which describe the amount of 
 
 
 \subsubsection{CPU/GPU Usage}
-Since the preprocessing/inference operations are most of the time not the only processes running on a system and other processes need to run simultaneously to them, the usages of CPU($CPU_{inference}$, $CPU_{preprocessing}$) and GPU($GPU_{inference}$, $GPU_{preprocessing}$) or other available accelerators are an important metric.
+Since the preprocessing/inference operations are most of the time not the only processes running on a system and other processes need to run simultaneously, the usages of CPU ($CPU_{inference}$, $CPU_{preprocessing}$) and GPU ($GPU_{inference}$, $GPU_{preprocessing}$) or other available accelerators are an important metric.
+High usages would also indicate that performance would eventually be slowed down on devices with less CPU/GPU power.
 
 
 \subsubsection{Memory Usage}

@@ -3,6 +3,7 @@
 %kleine modelle edge, große cloud
 %impact of preprocessing
 %effect of NNAPI
+%results mit related work vergleichen
 %
 \section{Future Work}
 Ideen:
@@ -10,6 +11,18 @@ Ideen:
     \item mix cloud/edge großen/kleinen modellen
     \item prediction of performance using the data of this thesis
 \end{itemize}
+\paragraph{Inference Performance Prediction}
+Use data of this thesis for a machine learning model that predicts the optimal deployment solution
+\paragraph{Mixed Inference}
+An idea for a future study would be the combination of both cloud and edge inference to a mixed inference method for use cases of continuous inference.
+This would combine both the advantages of both cloud and edge inference, as fast continuous predictions could be provided by a relatively small model on the edge device, and high accuracy predictions could be delivered by a large model hosted on a cloud-backend if demanded. 
+
+Two event could trigger the start of the cloud inference: 
+Either the edge device sends requests in periodic intervals to the cloud-backend, where the model accuracy is higher, to verify the prediction of the model on the edge devices.
+
+The second event would be triggered by a change in prediction on the edge device. If the prediction of the edge model changes after predicting the same class/value for a extended period of time, a request could be made to the cloud-backend for reassurance. For this approach a threshold for triggering the cloud inference would be needed (e.\,g. difference between the prediction at time $t$ and the prediction at time $t-1$).
+
+
 
 \paragraph{Retraining}
 A challenge not covered in this theses  is the retraining of the model. After the model is used in production, delivering inference predictions, new training data is available. This data can be used to retrain the model to achieve higher accuracy of the model and maybe account for a concept drift, since in a dynamic environment the data distribution changes continuously.
