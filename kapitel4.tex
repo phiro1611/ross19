@@ -360,11 +360,11 @@ The inference can either be performed on the edge or an a cloud-backend.
 \end{figure}
 Figure \ref{fig:tree} shows a part of our experimentation tree. In theory there would be 240 different parameter configurations, but due to a number of reasons the number of different configurations reduced to 113 in total.
 
-First, the Usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for a single Image Size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference so we only carry out experiments without NNAPI for a batch size of one.
+First, the Usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for a single image size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference, so we only carry out experiments without NNAPI for a batch size of one.
 We omit the cloud inference for the quantized MobileNetV2 because the model is so small the network overhead would be overwhelming.%INSERT REASON.
 
 %of limited capacity/time and
-Lastly due to lack of support of batch sizes larger than one in TensorFlow Lite for the MobileNet models.
+Lastly due to lack of support certain operations in TensorFlow Lite for the MobileNetV2 models, we can not perform inference experiment for MobileNetV2 with a batch size larger than one.
 \subsection{Performance Metrics}
 \label{chap:insta_measurements}
 In the following section we describe how we measure the performance metrics defined in \ref{chap:metrics}.
@@ -494,28 +494,30 @@ For precise mean values and standard deviations of all measured metrics refer to
 
 The black bar on top of each bar of the following bar chart and translucent areas around the lines of the line plots represent the standard deviation.
 
-Preprocessing is performed without any models loaded and the edge. 
+Preprocessing is performed without any models loaded on the edge. but with the image loaded into memory before the start of preprocessing to prevent the I/O operations to influence the preprocessing performance.
 Edge Inference is done using a loaded model. We do not consider model loading latency in this thesis.
 \subsection{Edge Inference}
 This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
+
+Note that this section only covers the results for a batch size of one, for the results of larger batch sizes please refer to section \ref{chap:resultsBatchSize}.
 \subsubsection{Preprocessing}
+\label{chap:edgePrepro}
 Figure \ref{fig:EdgePrepro} shows the $Latency_{preprocessing}$ and $Memory_{preprocessing}$ for the different image sizes and models.
 
 There is little difference in both latency and memory for the different models. 
-InceptionV4 uses more memory than the MobileNet models, which is caused by the models higher input size (InceptionV4 $299\times299$, MobileNetV2 $224\times224$). 
+InceptionV4 uses more memory than the MobileNetV2 models, which is caused by the models higher input size (InceptionV4 $299\times299$, MobileNetV2 $224\times224$). 
 These small differences are expected, since both all three model require roughly the same input specifications, with the exception of input size, but the difference between the two input sizes is relatively small.
 
 While the different models have little difference in memory and latency, the image size has an significant impact on both of these metrics.
-
 A $16$ megapixel image takes on average across all models more than $10$ times as long to preprocess as well as using $1.5$ times more memory in comparison to a $224^2/299^2$ image.
-The figure \ref{fig:EdgePrepro} shows a steady increase of $Latency_{preprocessing}$ and $Memory_{preprocessing}$ across the increasing image sizes.
+Figure \ref{fig:EdgePrepro} shows a steady increase of $Latency_{preprocessing}$ and $Memory_{preprocessing}$ across the increasing image sizes.
+Preprocessing of large images is therefore mainly affected by the resizing process, not the pixel normalisation or conversion to a \emph{ByteBuffer}, since these steps are performed after the resizing, thus having the same impact on performance as they would have on an $224^2/299^2$ image.
 
 The standard deviation of both memory and latency are both low, indicating a stable resource consumption.
 
 
 %%factors reinbringen auch kb größe der bilder
 %%mehr impact on latency than memory
-\textbf{resizing biggest impact, not normalisation}
 
 \begin{figure}[H]
 \centering
@@ -534,6 +536,8 @@ Looking the CPU usages during preprocessing (see figure \ref{fig:CloudEdgePrepro
 This section presents the results for edge inference, in particular the effect of the Android Neural Network API.
 Different image sizes have no effect on edge inference, as image are always preprocessed when they reach the inference step.
 Hence we do not consider the different image sizes in the majority of this section.
+
+
 \begin{comment}
 \begin{figure}[H]
 \centering
@@ -566,12 +570,20 @@ Since the NNAPI leads to performance improvements in all measured metrics, it wi
 %, InceptionV4, MobileNetV2 and the quantized version of MobileNetV2,
 When comparing the different models with NNAPI enabled it can be stated that there a significant performance differences between these models.
 %%MobileNet und Inception vergleichen
+%begründen: effect of quant mit paper vergleichen
+%unterschiede mobileNet inception vergleichen
 %%danahc MobileNet mit quantized
 On average, InceptionV4 inference causes higher inference latencies of factor $8$ and consumes twice as much memory as MobileNetV2.
+This contrast in performance is as expected, since MobileNetV2 architecture only contains $8\%$ of InceptionV4's parameter number (see table \ref{table:modelOverview}).
+This bigger architecture as well as bigger input size lead to higher memory demands and latencies, thus explaining the performance differences.
+
+A similar difference in inference latency can be seen when comparing MobileNetV2 against its quantized version, where the quantized version is more than $2$ times faster, confirming the study results of \cite{Quantizing} presented in section \ref{chap:quant}.
+While there is a difference in latency between the quantized and non quantized versions of MobileNetV2, there is nearly no discrepancy in memory consumption.
+
 
 
 While having big impact on both latency and memory, the different models have 
-negligible CPU usage differences, but probably not in GPU, which we can not report in this thesis.
+negligible CPU usage differences, but probably not on GPU usage, which we can not report in this thesis.
 
 
 
@@ -597,39 +609,63 @@ For the MobileNetV2 even $224\times224$ images take longer to preprocess than to
     \item Preprocessing becomes bottleneck for larger image sizes.\\
           $16$ MP image in comparison to a $224^2/299^2$ image needs
     \begin{itemize}
-        \item $10$x slower $Latency_{preprocessing}$
-        \item $1.5$x more $Memory_{preprocessing}$
+        \item $10\times$ slower $Latency_{preprocessing}$
+        \item $1.5\times$ more $Memory_{preprocessing}$
     \end{itemize}
     \item NNAPI leads to way better performance across all models:
     \begin{itemize}
-        \item $4$x faster $Latency_{inference}$
-        \item $1.2$x less $Memory_{inference}$
-        \item $3$x less $CPU_{inference}$
+        \item $4\times$ faster $Latency_{inference}$
+        \item $1.2\times$ less $Memory_{inference}$
+        \item $3\times$ less $CPU_{inference}$
     \end{itemize}
-    \item In comparison to InceptionV4 MobileNetV2 quantized consumes
+    \item In comparison to InceptionV4 MobileNetV2 leads to:
     \begin{itemize}
-        \item $20$x faster $Latency_{inference}$
-        \item $2.2$x more $Memory_{infernece}$
+        \item $8.6\times$ faster $Latency_{inference}$
+        \item $2.2\times$ more $Memory_{inference}$
     \end{itemize}
+    \item Quantization of MobileNetV2 results in $2.3$x faster $Latency_{inference}$
+    \item Preprocessing affects latency more than inference across all images sizes for small networks.
 \end{itemize}}
 \subsection{Cloud Inference}
+
+Note that this section only covers the results for a batch size of one, for the results of larger batch sizes please refer to section \ref{chap:resultsBatchSize}.
 \subsubsection{Preprocessing}
+Cloud Inference allows two preprocessing methods, either on the edge beforehand or directly on the cloud.
+This section present the results of these two methods, especially their impact on the resource consumption of edge devices.
+
+Figures \ref{fig:cloudInferencePreproLat} and \ref{fig:cloudInferencePreproMemory} display the effect of preprocessing on either edge or cloud on the preprocessing latencies and memory consumption on the edge in respect to the different deep learning models and image sizes.
+
+Since preprocessing on the edge is very similar as in the edge inference case, please refer to section \ref{chap:edgePrepro} for full details on the edge preprocessing results.
+
+Preprocessing on the cloud leads to an significant decrease in $Latency_{preprocessing}$, which is expected since nearly no preprocessing steps are done on the edge except building a \emph{PredictRequest} object for TensorFlow Serving.
+The impact of larger image sizes in the case of cloud preprocessing is marginal, especially in comparison for the edge preprocessing counterparts.
+
+While $Memory_{preprocessing}$ is lower for cloud preprocessing, the difference is nowhere as substantial as the latency differences.
+
+
 \begin{figure}[H]
-
-
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Preprocessing_Latency.pdf}
 \caption{Cloud Inference -  $Latency_{preprocessing}$}
 \label{fig:cloudInferencePreproLat}
 \end{figure}
+
+
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Preprocessing_Memory.pdf}
 \caption{Cloud Inference -  $Memory_{preprocessing}$}
 \label{fig:cloudInferencePreproMemory}
 \end{figure}
+
+
 \subsubsection{Inference}
 This section focuses on performance differences between the models and the impact of cloud preprocessing on cloud inference.
+
+%%Also includes preprocessing!!!!
+
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Inference_Memory.pdf}
@@ -662,6 +698,25 @@ This section focuses on performance differences between the models and the impac
 \caption{Cloud Inference -  Ratio between $Latency_{network}$ and $Latency_{server}$}
 \end{figure}
 
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Preprocessing_Inference_Comb_cloud_prepro.pdf}
+   \caption{Cloud Preprocessing}
+   \label{fig:CloudInference+PreproCloud} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Preprocessing_Inference_Comb_edge_prepro.pdf}
+   \caption{Edge Preprocessing}
+   \label{fig:CloudInference+PreproEdge}
+\end{subfigure}
+
+\caption{Cloud Inference -  $Latency_{preprocessing}$ and $Latency_{inference}$ combined}
+\end{figure}
+
+
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.95\textwidth}
@@ -688,7 +743,7 @@ This section focuses on performance differences between the models and the impac
 }
 
 \subsection{Edge vs. Cloud Inference}
-Now, the results of the cloud and the edge inference are compared against each other.
+Now, the results of the cloud and the edge inference with batch size one are compared against each other.
 \subsubsection{Preprocessing}
 
 \begin{figure}[H]
@@ -728,6 +783,7 @@ Now, the results of the cloud and the edge inference are compared against each o
 }
 
 \subsection{Effect of larger Batch Sizes}
+\label{chap:resultsBatchSize}
 This section covers the results of the experiments with batch size equal or larger than one. Since the TensorFlow Lite of the used MobileNet version does not allow batch sizes larger than one, edge inference experiments with these models are omitted from this section.
 \subsubsection{Preprocessing}
 \begin{figure}[H]
