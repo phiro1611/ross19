@@ -279,7 +279,7 @@ For the case of image classification, the images need to have the correct size (
 \end{figure}
 \paragraph{Edge Preprocessing}
 In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural afterwards, either on the edge device itself or on a cloud-backend.
-We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we created a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$). 
+We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we created a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$) by calling \emph{createScaledBitmap}. 
 Afterwards we normalise the RGB values to $[-1,1]$ during the conversion from the bitmap to a \emph{ByteBuffer}. 
 For the case of float models these buffer contain all the pixels in float format and for quantized model in bytes.
 %%%mehr erklären?
@@ -452,6 +452,7 @@ Memory_{inference} = \max\limits_{t_{startInference} \leq t \leq t_{endInference
 \end{gathered}
 \end{equation*}
 The Memory Profiler is part of Android Studio Profiler and shows the memory consumption of the app it is profiling. Memory allocations by the operating system or other apps are not recorded. Besides recording the total amount of memory allocated the Profiler also tracks the different categories, for example memory allocated by Java/Kotlin code. We always record the maximum consumed memory for each operation.
+%%memory not accurate over 1GB
 
 Figure \ref{fig:prof_mem} depicts an example of the Memory Profiler for a single experiment. The first peak in memory consumption is the preprocessing step, while the second peak is caused by the inference process.
 The little trash can at the bottom of the figure shows that the garbage collection was called. The garbage collection was always manually called after the preprocessing in case not all unneeded memory allocations are collected before running the inference operation. 
@@ -502,6 +503,8 @@ Preprocessing is performed without any models loaded on the edge. but with the i
 Edge Inference is done using a loaded model. We do not consider model loading latency in this thesis.
 
 All experiments are done using the eduroam Wi‑Fi, since the cloud-backend server is only reachable within the Münchner Wissenschaftsnetz (MWN) and a VPN would have an impact on network latencies.
+
+We conducted the experiments in multiple sessions, where each session consists of $100$ experiments distributed over about two hours, thus preventing the results to be skewed by thermal throttling.
 \subsection{Edge Inference}
 This section covers the results of the edge inference experiments with OnePlus 6T device presented in section \ref{chap:hardwareEdge}.
 
@@ -687,12 +690,23 @@ There are no $Memory_{inference}$  differences between the two models, since unp
 The $Latency_{inference}$ results can be seen in figure \ref{fig:cloudInferenceInferenceLatency}.
 Like for the memory, the latency for edge preprocessing stays the same across all image sizes, since all image sizes are preprocessed on the edge beforehand. 
 Mean latencies are $181.2$ms and $108.46$ms for InceptionV4 and MobileNetV2 respectively, therefore MobileNetV2 is $1.7$ times faster.
+Figure \ref{fig:CloudInferenceRatioEdgetotal} displays the share of $Latency_{network}$ and $Latency_{server}$ in $Latency_{inference}$ and one can see that the network is accountable for about $20\%$ of the  inference latency for InceptionV4 and $30\%$ for MobileNetV2.
 
 If the images are preprocessed on the cloud, the preprocessing step on the cloud has an significant impact on $Latency_{inference}$, as can be seen in figure \ref{fig:cloudInferenceInferenceLatency}.
 While an $224^2/299^2$ image has an latency of $95.8/64.5$ms for InceptionV4/MobileNetV2, a $16MP$ image needs $21.9/17.8$ times longer with a $1702.3/1414.8$ms mean latency.
-%eingehen darauf dass network constant bleibt und nicht der entscheidene faktor bei latency ist.
+\textbf{This increase applies to all image sizes in a linear proportion.}
+Looking at  the share of $Latency_{network}$ in $Latency_{inference}$ in figure \ref{fig:CloudInferenceratioCloudtotal}, it can be stated that the network is not reason for the increase in latency for the larger image sizes, but rather the preprocessing done on the cloud-backend by TensorFlow Serving.
+We think Tensorflow's \emph{resize\_bilinear} function, which we use to resize the images, causes the bottleneck in the preprocessing step on the cloud.%%add GPU kernel optimisations issues
+The use of a other resize approach like nearest-neighbor could speed up preprocessing (enter source here), but would probably have an impact on the accuracy of the predictions.
+While the network connection in our experimentation environment is fast enough too prevent any bottlenecks caused by the network, a slower network connection could slow down inference for large image sizes.
+%warum preprocessing s langsam bei tensorflow serving?
 
 %%cloud preprocessing bigger images higher variance
+Comparing the two cloud inference options, edge and cloud preprocessing,  $Latency_{inference}$ values for edge preprocessing of both models are faster for all image sizes except the $224^2/299^2$ images.
+
+
+This is also true for $Latency_{total}$ (see figures \ref{fig:CloudInference+PreproCloud} and \ref{fig:CloudInference+PreproEdge}), which includes both $Latency_{preprocessing}$ and $Latency_{inference}$.
+
 %vergelichen
 %kleine images schneller auf der cloud, sonst edge
 
@@ -703,39 +717,42 @@ While an $224^2/299^2$ image has an latency of $95.8/64.5$ms for InceptionV4/Mob
 \label{fig:cloudInferenceInferenceLatency}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.95\textwidth}
-   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_ratio_server_total_latency_(cloud_prepro).pdf}
-   \caption{Cloud Preprocessing}
-   \label{fig:CloudInferenceratioCloudtotal} 
-\end{subfigure}
 
-\begin{subfigure}[b]{0.95\textwidth}
-   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_ratio_server_total_latency_(edge_prepro).pdf}
-   \caption{Edge Preprocessing}
-   \label{fig:CloudInferenceRatioEdgetotal}
-\end{subfigure}
-
-\caption{Cloud Inference -  Ratio between $Latency_{network}$ and $Latency_{server}$}
-\end{figure}
 
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.95\textwidth}
    \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Server_+_NetworkLatencies_cloudprepro.pdf}
    \caption{Cloud Preprocessing}
-   \label{fig:CloudInferenceratioCloudrelative} 
+   \label{fig:CloudInferenceratioCloudtotal} 
 \end{subfigure}
 
 \begin{subfigure}[b]{0.95\textwidth}
    \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_Server_+_NetworkLatencies_edgeprepro.pdf}
    \caption{Edge Preprocessing}
-   \label{fig:CloudInferenceRatioEdgerelative}
+   \label{fig:CloudInferenceRatioEdgetotal}
+\end{subfigure}
+
+\caption{Cloud Inference -  $Latency_{inference}$ including $Latency_{network}$ and $Latency_{server}$}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_ratio_server_total_latency_(cloud_prepro).pdf}
+   \caption{Cloud Preprocessing}
+   \label{fig:CloudInferenceratioCloudrel} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/cloud_inference_plots/Cloud_ratio_server_total_latency_(edge_prepro).pdf}
+   \caption{Edge Preprocessing}
+   \label{fig:CloudInferenceRatioEdgerel}
 \end{subfigure}
 
 \caption{Cloud Inference -  Ratio between $Latency_{network}$ and $Latency_{server}$}
 \end{figure}
+
 
 
 \begin{figure}[H]
@@ -755,7 +772,22 @@ While an $224^2/299^2$ image has an latency of $95.8/64.5$ms for InceptionV4/Mob
 \caption{Cloud Inference -  $Latency_{preprocessing}$ and $Latency_{inference}$ combined}
 \end{figure}
 
-
+Figures \ref{fig:CloudInferenceReceivedData} and \ref{fig:CloudInferenceTransmittedData} show the data transmitted and received from the edge client to the cloud-backend server.
+For edge processed image the mean transmitted data is $1061.9/608.7$KB for InceptionV4/MobileNetV2 and $16.7/10.3$KB data received by the respective models.
+Therefore $299^2$ images require $453.2$ kilobytes more than $224^2$ images.
+For cloud preprocessing both $Data_{transmitted}$ and $Data_{received}$ increase for increasing image sizes.
+%%NR:[114.5] transmitted
+%%NR:[3.] received
+%%2MP:[2446.2] transmitted
+%%2MP:[38.2] received
+%%4MP:[4365.5] transmitted
+%%4MP:[64.8] received
+%%8MP:[7603.6] transmitted
+%%8MP:[114.9] received
+%%16MP:[10176.8] transmitted
+%%16MP:[141.4] received
+%299 png kleiner als 299 preporcessing
+%%mit echter bildgröße abgleichen
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.95\textwidth}
