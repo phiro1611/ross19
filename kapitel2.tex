@@ -19,7 +19,7 @@ The model loading time (1.\,Load model), the time needed to resize the image int
 Additional to the latencies they measured the CPU usage, battery and memory consumption during these 4 steps using Trepn Profiler.
 They used 15 images in total, divided in three different image size groups ($540\times960$, $108\times1920$, $2160\times3840$) with the same 5 scaled images in each group.
 
-After analysing their measurements, they present the following results:
+After analyzing their measurements, they present the following results:
 Cloud inference "exhibits substantial benefits
 in terms of inference response time and mobile energy savings
 over on-device inference, in this case by two orders of magnitude". As the responsible bottleneck for this conclusion they identify the model loading and inference times during edge inference.
@@ -51,7 +51,7 @@ The authors use image classification (MobileNetV1 and Inceptionv2) as well as ob
 and VGG16 FasterRCNN PASCAL VOC) models for their experiments, but we only cover the image classification models, since these are more relevant for this thesis.
 The authors focus on the metrics inference latencies and throughput, in particular with regard to various batch sizes that they incrementally increase in the course of their experiments.
 
-In the case of the Android experiments $480\times640$ \emph{JPG} images get captured. Afterwards these images get resized, cropped and normalised during the preprocessing step before getting fed to the neural networks.
+In the case of the Android experiments $480\times640$ \emph{JPG} images get captured. Afterwards these images get resized, cropped and normalized during the preprocessing step before getting fed to the neural networks.
 
 
 

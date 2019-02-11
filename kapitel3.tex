@@ -79,7 +79,7 @@ For example \ref{fig:simpleNN} all computations can be seen in equation \ref{eq:
 \end{equation}
 
 For sake of simplicity the example does not use activation functions $\mathbf{\sigma}$ (e.\,g. ReLU) and biases $\mathbf{b}$, which would usually be used in practice in the form of $\mathbf{\sigma(WX+b)}$ instead of $\mathbf{WX}$.
-Activation functions are needed to decide if a neuron (hidden unit) fires or not as well as minimising the risk of exploding/vanishing gradients.
+Activation functions are needed to decide if a neuron (hidden unit) fires or not as well as minimizing the risk of exploding/vanishing gradients.
 %beispielrechnung für das nn
 
 
@@ -121,8 +121,8 @@ After constructing the architecture of a model it can be trained to reach the hi
 Since most neural network are type of supervised learning, a training data set with ground truth labels $\mathbf{Y}$ is needed for the training.
 This training is done with forward- and back-propagation, where one or more samples of the training set is forward propagated through the network until reaching the output layer. Afterwards the $Loss\mathbf{(Y,\Hat{Y})}$ can be calculated, which measures the difference between the prediction $\mathbf{\Hat{Y}}$ and the ground truth $\mathbf{Y}$.
 
-To optimise the network, the loss needs to be minimised to a minimum, meaning that the different between prediction and ground truth is as small as possible and the accuracy as high as possible.
-Since there is no closed form solution to find this minimum, neural network use gradient descent, specifically back-propagation, to minimise the loss in an iterative process.
+To optimize the network, the loss needs to be minimized to a minimum, meaning that the different between prediction and ground truth is as small as possible and the accuracy as high as possible.
+Since there is no closed form solution to find this minimum, neural network use gradient descent, specifically back-propagation, to minimize the loss in an iterative process.
 Given the loss of the network, the gradients of all weights in the network can be computed and afterwards the weights can be updated using a learning rate in respect to the gradient and learning rate.
 
 This process of forward- and back-propagation is repeated for all sample in the training data set multiple times until the minimum loss is reached and therefore the highest possible accuracy.
@@ -164,7 +164,7 @@ Deep learning deployment describes the process of deploying a trained machine le
 %%Write more here
 There can be differentiated in two different deployment methods, the first one is deploying the model directly to edge devices, while the second outsources the model to a cloud-backend, where the inference is performed and the prediction is sent back to the edge device.
 \subsubsection{Edge Deployment}
-Edge devices are characterised by offering a limited amount of hardware specifications such as amount of available energy, memory and overall computational power.
+Edge devices are characterized by offering a limited amount of hardware specifications such as amount of available energy, memory and overall computational power.
 These devices are often mobile devices like smartphones, cars or Raspberry Pis.
 Despite its limits, edge deployment also has some advantages, particular in reliability and security. 
 For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise a data privacy/security concern.
@@ -202,7 +202,7 @@ Low latency protocol can speed up inference time
 %%REST vs gRPC
 
 %%
-After analysing the problem space of deep learning inference for real-time AI applications on edge devices we can propose a performance model, that maps the aspects of the problem space on the performance.
+After analyzing the problem space of deep learning inference for real-time AI applications on edge devices we can propose a performance model, that maps the aspects of the problem space on the performance.
 
 
 
