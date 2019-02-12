@@ -642,6 +642,8 @@ For the MobileNetV2 even $224\times224$ images take longer to preprocess than to
 \subsection{Cloud Inference}
 This section deals with the results of the cloud inference experiments and their evaluation, divided into preprocessing and inference.
 Note that this section only covers the results for a batch size of one, for the results of larger batch sizes please refer to section \ref{chap:resultsBatchSize}.
+We are evaluating $Latency_{inference}$ for the most cloud inference results, thus including the network component $Latency_{network}$, because this factor would also be present in real world AI applications. In our case we have a high speed connection with low network latency, thus being a lower bound for real-time AI applications.
+%%add network proof (ping and upload)
 \subsubsection{Preprocessing}
 Cloud Inference allows two preprocessing methods, either on the edge beforehand or directly on the cloud.
 This section present the results of these two methods, especially their impact on the resource consumption of edge devices.
@@ -697,7 +699,8 @@ Figure \ref{fig:CloudInferenceRatioEdgetotal} displays the share of $Latency_{ne
 If the images are preprocessed on the cloud, the preprocessing step on the cloud has an significant impact on $Latency_{inference}$, as can be seen in figure \ref{fig:cloudInferenceInferenceLatency}.
 While an $224^2/299^2$ image has an latency of $95.8/64.5$ms for InceptionV4/MobileNetV2, a $16MP$ image needs $21.9/17.8$ times longer with a $1702.3/1414.8$ms mean latency.
 \textbf{This increase applies to all image sizes in a linear proportion.}
-Looking at  the share of $Latency_{network}$ in $Latency_{inference}$ in figure \ref{fig:CloudInferenceratioCloudtotal}, it can be stated that the network is not reason for the increase in latency for the larger image sizes, but rather the preprocessing done on the cloud-backend by TensorFlow Serving.
+Looking at  the share of $Latency_{network}$ in $Latency_{inference}$ in figure \ref{fig:CloudInferenceratioCloudtotal}, the network takes up to $50\%$ of the inference latency for $224^2/299^2$ images, but shrinks to less than $15\%$ for all remaining image sizes.
+Therefore it can be stated that the network is not reason for the increase in latency for the larger image sizes, but rather the preprocessing done on the cloud-backend by TensorFlow Serving.
 We think Tensorflow's \emph{resize\_bilinear} function, which we use to resize the images, causes the bottleneck in the preprocessing step on the cloud.%%add GPU kernel optimisations issues
 %(enter source here)
 The use of a other resize approach like nearest-neighbor could speed up preprocessing, but would probably have an impact on the accuracy of the predictions.
@@ -712,7 +715,10 @@ We believe the $224^2/299^2$ images are faster because of the lower I/O overhead
 This stays also true for $Latency_{total}$ (see figures \ref{fig:CloudInference+PreproCloud} and \ref{fig:CloudInference+PreproEdge}), which includes both $Latency_{preprocessing}$ and $Latency_{inference}$. 
 For $224^2/299^2$ images need $223.1/147.2$ms $Latency_{total}$ for InceptionV4/MobileNetV2 for edge preprocessing, while cloud preprocessing needs up $96.9/64.3$ms, therefore cloud preprocessing being $2.3$ times faster.
 In contrast cloud inference with edge preprocessing is faster by a factor of $2.7$ for $16MP$ images, with the latencies of InceptionV4/MobileNetV2 being $626.7/532$ms for edge preprocessing and $1673.4/1453.9$ms for cloud preprocessing. $2MP$ images are $1.7/1.8$ times faster when using edge preprocessing, $4MP$ $2.1/2.2$ and $8MP$ $2.6/3$ times faster.
-
+%latency edge vs cloud prepro inference:
+While MobileNetV2 is $1.75$ times faster in $Latency_{inference}$ for edge preprocessing than InceptionV4, this latency difference shrinks for cloud preprocessing for larger images, started by a difference of factor $1.52$ for $224^2/299^2$ images and shrinking to $1.25/1.21/1.09/1.15$ for the respective image sizes $2/4/8/16MP$.
+We believe this decrease is due to the fact as images for MobileNetV2 need to be resized to a smaller input size than InceptionV4, hence increasing the already high resize overhead and thus narrowing the latency difference between both models.
+When comparing memory consumption of cloud inference with ether cloud preprocessing or edge preprocessing, the difference is only $3\%$ for  $224^2/299^2$ images ($121.5$MB for edge preprocessing and $118.1$Mb for cloud preprocessing), but $14\%$ for $16MP$ images (edge preprocessing $120.0$Mb, cloud preprocessing $136.9$MB).
 
 \begin{figure}[!htb]
 \centering
@@ -826,28 +832,53 @@ For both edge and cloud preprocessing the $Data_{received}$ rises for rising $Da
 %resize binlinear bad implementation?
 \emph{
 \begin{itemize}
-    \item Cloud Preprocessing in comparison to edge preprocessing causes:
+    \item Preprocessing on the cloud in comparison to edge preprocessing causes:
     \begin{itemize}
         \item $20\times$ faster $Latency_{preprocessing}$ for $224^2/299^2$ images
         \item $10\times$ faster $Latency_{preprocessing}$ for $16$MP images
         \item $1.28\times$ less $Memory_{preprocessing}$ for $16$MP images
     \end{itemize}
-    \item Network connection is not a decisive factor in our experimentation environment
-    \item In comparison to InceptionV4 MobileNetV2 leads to:
+    \item Inference on the cloud including preprocessing in comparison to cloud inference without preprocessing causes:
     \begin{itemize}
-        \item $xyz\times$ faster $Latency_{inference}$
-        \item $xyz\times$ more $Memory_{inference}$
+        \item $2.3\times$ faster InceptionV4/MobileNetV2 $Latency_{total}$ for $224^2/299^2$ images
+        \item $2.7\times$ slower InceptionV4/MobileNetV2 $Latency_{total}$ for $16MP$ images
+        \item $0.97\times$ less $Memory_{inference}$ for $224^2/299^2$ images
+        \item $1.14\times$ more $Memory_{inference}$ for $16MP$ images
     \end{itemize}
-    \item Edge Preprocessing has faster $Latency_{total}$ latencies for all image sizes except $224^2/299^2$.
+    \item MobileNetV2 is up to $75\%$ faster than InceptionV4 for smaller images, but shrinking to around $10\%$ faster for large image in case of cloud preprocessing.
+    \item Network is accountable for up to $50\%$ of $Latency_{inference}$ for $224^2/299^2$ images and networks, but less than $30\%$ for larger images and network for both cloud and edge preprocessing.
 \end{itemize}
-}
+\begin{itemize}[leftmargin=4em]
+ \renewcommand{\labelitemi}{$\Rightarrow$}
+ \item Edge Preprocessing has faster $Latency_{total}$ latencies for all image sizes except $224^2/299^2$.
+\end{itemize}
+}%emph end
 
 
 \subsection{Edge vs. Cloud Inference}
 Previous two sections presented the results for both edge and cloud inference.
 Now, the results of the cloud and the edge inference with batch size one, including preprocessing, are compared against each other.
+
+Each plot of this section contains five subplots, one for each image sizes, the x-axis contains the deep learning model, while the y-axis displays the various performance metrics. 
+The legend used in all those plots in explained in table \ref{table:legendPlots}.
+\begin{table}[H]
+\newcommand\crule[3][black]{\textcolor{#1}{\rule{#2}{#3}}}
+\centering
+\caption{Explanation of the plot legends}
+\label{table:legendPlots}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Inference on & Description & Color \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Inf on:CLOUD;\\ Prepro on:CLOUD\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference as well as preprocessing is done on the\\ cloud-backend.\end{tabular} &  \crule[gruen]{0.8cm}{0.8cm}\\
+\begin{tabular}[c]{@{}l@{}}Inf on:CLOUD;\\ Prepro on:EDGE\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference is done on cloud-backend, but images are \\ preprocessed on edge beforehand.\end{tabular} &  \crule[orangedunkel]{0.8cm}{0.8cm}\\
+\begin{tabular}[c]{@{}l@{}}Inf on:EDGE;\\ Prepro on:EDGE\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference as well as preprocessing is done on the\\ edge.\end{tabular} & \crule[lila]{0.8cm}{0.8cm} \\ \bottomrule
+\end{tabular}
+\end{table}
+
 \subsubsection{Preprocessing}
 
+Figures \ref{fig:EdgeVsCloudPreproMemory}, \ref{fig:EdgeVsCloudPreproLat} and \ref{fig:CloudEdgePreproCPU} report the preprocessing metrics $Memory_{preprocessing}$, $Latency_{preprocessing}$ and $CPU_{preprocessing}$.
+Each figure 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_Memory.pdf}
