@@ -13,7 +13,7 @@ This chapter will give a brief outline and evaluation of related work on the top
 \section{Cloud-based or On-device:
 An Empirical Study of Mobile Deep Inference}
 Guo "evaluate[s] the inference performance of three Convolutional Neural Networks
-(CNNs) using a benchmark Android application" \cite{DBLP:conf/ic2e/Guo18} for both cloud and edge inference. The hardware and frameworks used for the experiments leading to this evaluation can be seen in table \ref{frameworks_hardware_1}. The three tested CNNs are image classification models (AlexNet, NIN and SqueezeNet) with an image input size of $224\times224$.
+(CNNs) using a benchmark Android application" \cite{DBLP:conf/ic2e/Guo18} for both cloud and edge inference. The hardware and frameworks used to conduct the experiments leading to this evaluation can be seen in table \ref{frameworks_hardware_1}. The three tested CNNs are image classification models (AlexNet, NIN and SqueezeNet) with an image input size of $224\times224$.
 They divided the experiment in 4 steps and measure the executing time of each step: 
 The model loading time (1.\,Load model), the time needed to resize the image into a $224\times224$ bitmap (2.\,Rescale bitmap), the time needed to upload the bitmap to the server in case of cloud inference (3.\,Upload bitmap) and the inference time (4.\,Compute probability).
 Additional to the latencies they measured the CPU usage, battery and memory consumption during these 4 steps using Trepn Profiler.
@@ -47,11 +47,12 @@ very likely that on-device[edge] inference can be done efficiently in the near f
 \section{Latency and Throughput Characterization of Convolutional
 Neural Networks for Mobile Computer Vision}
 Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
-The authors use image classification (MobileNetV1 and Inceptionv2) as well as object detection (SSD MobilenetV1 COCO, SSD InceptionV2 COCO,
-and VGG16 FasterRCNN PASCAL VOC) models for their experiments, but we only cover the image classification models, since these are more relevant for this thesis.
-The authors focus on the metrics inference latencies and throughput, in particular with regard to various batch sizes that they incrementally increase in the course of their experiments.
+The authors use image classification (MobileNetV1 and Inceptionv2) as well as object detection models (SSD MobilenetV1 COCO, SSD InceptionV2 COCO,
+and VGG16 FasterRCNN PASCAL VOC) for their experiments, but we only cover the results of the image classification models, since these are more relevant for this thesis.
+The authors focus on the inference metrics latency and throughput, in particular with regard to various batch sizes, that they incrementally increase in the course of their experiments.
 
-In the case of the Android experiments $480\times640$ \emph{JPG} images get captured. Afterwards these images get resized, cropped and normalized during the preprocessing step before getting fed to the neural networks.
+The authors conduct experiments with multiple edge devices.
+In the case of the Android experiments $480\times640$ \emph{JPG} images get captured. Afterwards these images get resized, cropped and normalized during the preprocessing step before getting fed to the deep learning models mentioned earlier.
 
 
 
@@ -60,7 +61,7 @@ For edge inference the authors also experiment with running two neural network i
 This leads to a higher throughput in the case of the Android phone, but to a decrease for the Jetson TX 2. They claim this decrease originates from the "context switch overhead of scheduling
 the two processes".
 
-For both TensorFlow Serving and TensorRT the throughput increases with increasing batch size until a saturation point that depends on factors such as the model, hardware and the configuration.
+For both cloud inference frameworks TensorFlow Serving and TensorRT throughput increases with increasing batch size until a saturation point, that depends on factors such as the model, hardware and the configuration.
 
 Like Guo they also identify the model loading process as a bottleneck on the Android phone, contrary to the inference time, which they call "comparatively fast".
 

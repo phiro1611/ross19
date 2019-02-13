@@ -1,11 +1,11 @@
 \chapter{Methodology}
 %%WHAT Is inference3
 \label{chap:methodology}
-In this section a performance model, characterising the deployment of deep learning models for inference, is presented. To understand these characteristics, the underlying factors that affect it need to be understood first. Therefore we first describe the problem space before we can map the problem space on the performance model.
+In this section a performance model, characterizing the deployment of deep learning models for inference, is presented. To understand these characteristics, the underlying factors that affect it need to be understood first. Therefore we first describe the problem space before we can map the problem space on the performance model.
 
 
 \section{Problem Space}
-The inference performance of a deep learning model is mainly affected by three factors, the architecture of the model itself and the hardware environment where it gets deployed and the framework performing the operations of the model on the hardware environment.
+The inference performance of a deep learning model is mainly affected by three factors, the architecture of the deep learning model itself, the hardware environment where it gets deployed and the framework performing the operations of the model on the hardware environment.
 These three aspect are covered in this section.
 
 
@@ -14,8 +14,9 @@ These three aspect are covered in this section.
 %Einfluss auf inference latency an memory?
 This section gives a brief, but nowhere complete overview of the deep learning field. We will focus on the basic structures and intuition behind deep learning models, as a comprehensive analysis would go beyond the scope of this thesis.
 
-Deep learning are a subclass of neural networks.
+%Deep learning are a subclass of neural networks, which differ from normal neural network by having large architectures in the form of layers, leading to high computational demands.
 The intention of a neural network is to make a prediction $\mathbf{\Hat{Y}}$ given an input $\mathbf{X}$ that is as close as possible to the underlying ground truth $\mathbf{Y}$. 
+Deep learning are a subclass of neural network.
 The difference of neural networks and deep learning networks is the amount of layers and hidden units. Deep learning models are built of many hidden layers and hidden units leading to deep architectures.
 These deep architectures with often millions of parameters lead to a significant increase in computational power for both training and inference.
 %While for simple linear regression model with a single variable a single computation
@@ -29,10 +30,10 @@ These deep architectures with often millions of parameters lead to a significant
 \end{figure}
 
 Figure \ref{fig:simpleNN} shows the structure of a simple neural network with input $\mathbf{X}$ and output $\mathbf{\Hat{Y}}$, where $\mathbf{X}$ is a vector of size four, meaning the neural network takes four features as its inputs. 
-The output $\mathbf{\Hat{Y}}$ for this example is vector of only size one, hence the network predictions one value.
-Between the input and output lay three fully connected hidden layers with five, three and again five hidden units.
+The output $\mathbf{\Hat{Y}}$ for this example is vector of only size one, hence the network predicts one value.
+Between the input and output of this example network lay three fully connected hidden layers, also called dense layers, with five, three and again five hidden units.
 Each of these hidden layers has a weight matrix $\mathbf{W\in\mathbb{R}^{m\times n}}$, where $\mathbf{m}$ is the number of hidden units and $\mathbf{n}$ the number of hidden units in the previous layer.
-This weight matrices are needed to compute the state of each hidden layer by calculated the weighted sum on all its inputs.
+This weight matrices are needed to compute the state of each hidden layer by calculating the weighted sum on all its inputs.
 For example the state of the first hidden layer is calculated by multiplying $\mathbf{W_1X}$, where $\mathbf{W_1}$ is the weight matrix of layer one and $\mathbf{X}$ the output of the previous layer, in this case the input layer.
 To calculate  $\mathbf{\Hat{Y}}$ in the output layer using $\mathbf{W_O}$ , all previous states need to calculated consecutively. 
 This chain of calculations needed to get from input $\mathbf{X}$ to output $\mathbf{\Hat{Y}}$ is also called forward-propagation, because the values of the input vector get passed through all layers by multiplication.
@@ -84,25 +85,26 @@ Activation functions are needed to decide if a neuron (hidden unit) fires or not
 
 
 This simple network only contains three hidden layers with at most five hidden layers and thus 45 parameters, but in practice state of the art deep learning models contain often millions of parameters. 
-The forward propagation of such models often need more than one GFLOPS, leading to high computational demands for real-time AI applications.
+The forward propagation of such models often causes the need of more than one GFLOPS, leading to high computational demands for real-time AI applications.
 
 %15+5+15+20 = 45 parameters
 %large network >10 000 000 param
 
 There are many different operators and network architectures, all with different computational demands, thus making performance prediction very complex.
-Since we will use image classification as a use case for the experimentation, we will now present the basics of Convolutional Neural Networks, which are used for this use case.
+Since we will use image classification as a use case for the experimentation in section \ref{chap:experiments}, we will now present the basics of Convolutional Neural Networks, which are used for this use case.
 
 \paragraph{Convolutional Neural Network}
-This specific class of neural network achieved wide success in the field of image classification and detection in images. Convolutional Neural Networks (CNN) are used to extract features like complex shapes or colour patterns from images to perform image classification. 
+This specific class of neural network achieved wide success in the field of image classification and detection in images.
+The strength of Convolutional Neural Networks (CNN) is the ability to extract features like complex shapes or colour patterns from images, thus this network is particular suitable for image classification.
 %Abschnitt über convolutions und pooling?
 
-Image classification network classify the contents of a image by outputting a class for the image with a respective confidence level, for example how likely an animal on a picture represents a cat.
+Image classification network classify the contents of a image by outputting classes for the image with a respective confidence levels, for example how likely an animal on a picture represents a cat.
 A simple architecture for this classification task can be seen in figure \ref{fig:simpleCNN}.
-The network expects input images as a three dimensional tensor $h\times w\times c$, where $h$ and $w$ are the fixed height and width of the image and $c$ is the number of channels, which in most cases is $3$ for the RGB channels.
+The network expects input images as a three dimensional tensor $h\times w\times c$, where $h$ and $w$ are the fixed height and width of the image and $c$ is the number of channels, which in most cases is $3$ for the $3$ RGB channels.
 An image needs to be preprocessed to match these shape specifications before feeding it to the network.
 The fundamental building blocks of CNNs are multiple convolution layers, which extract features from the images. The first convolutional extract simple features like edges from the image, while the later convolutional layers combine these simple features to complex shapes like rectangles.
 To reduce the spatial dimension of the feature maps, outputted by the convolution, a popular layer type added to CNNs are pooling layers.
-After extracting the features the resulting tensor get flattened to a one dimensional tensor before getting fed to one or more fully connected layers.
+After extracting all features are extracted, the resulting tensor gets flattened to a one dimensional tensor before getting reaching one or more fully connected layers.
 The last fully connected layer contains the output of the network, in this case confidence levels for predefined labels (e.\,g. $80$\% cat).  
 
 
@@ -116,12 +118,11 @@ The last fully connected layer contains the output of the network, in this case 
 
 %Add calculation example
 \subsubsection{Training}
-
-After constructing the architecture of a model it can be trained to reach the highest accuracy.
-Since most neural network are type of supervised learning, a training data set with ground truth labels $\mathbf{Y}$ is needed for the training.
+Constructing the architecture of a model is the first step, but in order to enable models to make accurate prediction, they have to be trained, which means adjusting the weights the network. 
+Since most neural network are a type of supervised learning, a training data set with ground truth labels $\mathbf{Y}$ is needed for the training.
 This training is done with forward- and back-propagation, where one or more samples of the training set is forward propagated through the network until reaching the output layer. Afterwards the $Loss\mathbf{(Y,\Hat{Y})}$ can be calculated, which measures the difference between the prediction $\mathbf{\Hat{Y}}$ and the ground truth $\mathbf{Y}$.
 
-To optimize the network, the loss needs to be minimized to a minimum, meaning that the different between prediction and ground truth is as small as possible and the accuracy as high as possible.
+To optimize the network, the loss needs to be minimized, meaning that the different between prediction and ground truth is as small as possible and thus the accuracy as high as possible.
 Since there is no closed form solution to find this minimum, neural network use gradient descent, specifically back-propagation, to minimize the loss in an iterative process.
 Given the loss of the network, the gradients of all weights in the network can be computed and afterwards the weights can be updated using a learning rate in respect to the gradient and learning rate.
 
@@ -162,15 +163,17 @@ efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these 
 Deep learning deployment describes the process of deploying a trained machine learning model to a production environment for inference purposes. 
 
 %%Write more here
-There can be differentiated in two different deployment methods, the first one is deploying the model directly to edge devices, while the second outsources the model to a cloud-backend, where the inference is performed and the prediction is sent back to the edge device.
+There can be differentiated in two different deployment methods, the first one is deploying the model directly to edge devices, while the second outsources the model to a cloud-backend, where the inference is performed and the prediction is then sent back to the edge device.
 \subsubsection{Edge Deployment}
-Edge devices are characterized by offering a limited amount of hardware specifications such as amount of available energy, memory and overall computational power.
-These devices are often mobile devices like smartphones, cars or Raspberry Pis.
+Edge deployment describes the process of deploying deep learning models to edge devices such as mobile devices like smartphones, cars or Raspberry Pis
+These edge devices are characterized by offering a limited amount of hardware specifications such as amount of available energy, memory and overall computational power.
+This limited power often stands in contrast to the performance demands caused real-time AI applications using deep learning models.
 Despite its limits, edge deployment also has some advantages, particular in reliability and security. 
 For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise a data privacy/security concern.
 Therefore edge deployment should be the preferred choice, if the inference performance is sufficient for the use case of real time AI applications.
 
 In order to increase this performance various accelerators like better GPUs, TPUs or other dedicated neural network hardware components have been developed for edge devices.
+%%mention NNAPI here?
 
 
 
@@ -180,7 +183,7 @@ That is why the option of outsourcing the models to a cloud-backend has become a
 Cloud-backends offer a huge amount of computational power, especially suitable for deep learning in the form of GPUs, TPUs, etc.
 
 
-The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications that are critical like autonomous driving.
+The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications like autonomous driving, where continuous and reliable predictions from deep learning models as critical for the.
 
 While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent unpreprocessed to the cloud. 
 In the latter case the input gets preprocessed on the cloud. 
@@ -226,7 +229,7 @@ To get the model output for a given model input two steps are needed. The first 
 \label{chap:metrics}
 Several metrics are important to measure the performance of the preprocessing and the inference steps. For the most of the following metrics we break down each metric into two sub-measurements, one for the preprocessing  and the other for the inference part.
 
-Note that we only measure the impact on inference on the resources on the edge devices, not on the cloud-backend in case of cloud inference.
+Note that we only measure the impact on inference/preprocessing on the resources on the edge devices, not the usage on the cloud-backend itself, as this theses focuses on optimal selection for real-time AI applications on edge devices.
 \subsubsection{Latency}
 Latencies are a essential to determine the performance, since AI application often need predictions in realtime, resulting in the need of low latencies.
 The time needed to transform the original input to a shape fit for feeding into the deep learning model is called $Latency_{preprocessing}$.
@@ -259,7 +262,7 @@ Similar to CPU usage, preprocessing and inference should not occupy the whole me
 \subsubsection{Data Consumption}
 $Data_{transmitted}$ and $Data_{received}$ are only relevant for cloud inference, as a request has to be sent to a remote server and the according response with prediction has to be sent back to the client. A high data consumption could slow down the inference latency significantly if the up- and downstream of the network connection is too slow. 
 
-This is in particular important for the case where the input data for the model is preprocessed on the cloud, because the input data is often resized to a smaller shape during preprocessing. Therefore cloud preprocessing increased the amount of data that needs to be transmitted to the server. For slow network connections this could result in higher inference latencies.
+This is in particular important for the case where the input data for the model is preprocessed on the cloud, because the input data is often resized to a smaller shape during preprocessing. Therefore cloud preprocessing increases the amount of data that needs to be transmitted to the server. For slow network connections this could result in higher inference latencies.
 
 %%Add table here?
 

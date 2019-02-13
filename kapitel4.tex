@@ -26,10 +26,10 @@ The virtual server has 32 cores (16 real cores with hyperthreading), 240 GB of m
 
 The server runs on Ubuntu 16.04 CUDA 9.1 PGI 17.9 nvidia-docker 2.0.3+docker18.03.1-1.
 \subsection{Deep Learning Inference Framework}
-We use two open source machine learning frameworks based on TensorFlow for the experiments, TensorFlow Lite and TensorFlow Serving. We decided to use these framework because they are open source and support, at the point of this theses, the operations for most image classification models and also a increasing number of hardware accelerators and operating systems for both edge and cloud inference.
-TensorFlow provides official releases, that are maintained and tested, of the models we like to evaluate
-This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite\cite{tfLite}  and TensorFlow Serving\cite{tfServing} websites, on which this section is based on, or the corresponding GitHub repositories
-We chose these frameworks since they both support TensorFlow models, ...%INSERT more reason here
+We use two open source machine learning frameworks, both based on TensorFlow, for the experiments, TensorFlow Lite and TensorFlow Serving. We decided to use these framework because they are open source and support, at the point of this theses, the operations for most image classification models and also a increasing number of hardware accelerators and operating systems for both edge and cloud inference.
+TensorFlow provides official releases of deep learning models, that are well maintained and tested, including the ones we use in this thesis.
+
+This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite\cite{tfLite}  and TensorFlow Serving\cite{tfServing} websites, on which this section is based on, or the corresponding GitHub repositories.
 \subsubsection{TensorFlow Lite}
 \label{chap:TFLite}
 TensorFlow Lite (Release 1.12.0) was developed for mobile and embedded devices and is a lightweight solution of TensorFlow and thus will be used for the edge inference experiments.
