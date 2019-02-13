@@ -453,6 +453,7 @@ Memory_{inference} = \max\limits_{t_{startInference} \leq t \leq t_{endInference
 \end{equation*}
 The Memory Profiler is part of Android Studio Profiler and shows the memory consumption of the app it is profiling. Memory allocations by the operating system or other apps are not recorded. Besides recording the total amount of memory allocated the Profiler also tracks the different categories, for example memory allocated by Java/Kotlin code. We always record the maximum consumed memory for each operation.
 %%memory not accurate over 1GB
+Note that for values greater than $1000$MB the profiler only reports gigabyte values with one decimal place. For example the profiler reports $1410$MB as $1.4$GB.
 
 Figure \ref{fig:prof_mem} depicts an example of the Memory Profiler for a single experiment. The first peak in memory consumption is the preprocessing step, while the second peak is caused by the inference process.
 The little trash can at the bottom of the figure shows that the garbage collection was called. The garbage collection was always manually called after the preprocessing in case not all unneeded memory allocations are collected before running the inference operation. 
@@ -845,7 +846,7 @@ For both edge and cloud preprocessing the $Data_{received}$ rises for rising $Da
         \item $0.97\times$ less $Memory_{inference}$ for $224^2/299^2$ images
         \item $1.14\times$ more $Memory_{inference}$ for $16MP$ images
     \end{itemize}
-    \item MobileNetV2 is up to $75\%$ faster than InceptionV4 for smaller images, but shrinking to around $10\%$ faster for large image in case of cloud preprocessing.
+    \item MobileNetV2 is up to $1.75\times$ faster than InceptionV4 for smaller images, but shrinking to around $10\%$ faster for large image in case of cloud preprocessing.
     \item Network is accountable for up to $50\%$ of $Latency_{inference}$ for $224^2/299^2$ images and networks, but less than $30\%$ for larger images and network for both cloud and edge preprocessing.
 \end{itemize}
 \begin{itemize}[leftmargin=4em]
@@ -861,7 +862,7 @@ Now, the results of the cloud and the edge inference with batch size one, includ
 
 Each plot of this section contains five subplots, one for each image sizes, the x-axis contains the deep learning model, while the y-axis displays the various performance metrics. 
 The legend used in all those plots in explained in table \ref{table:legendPlots}.
-\begin{table}[H]
+\begin{table}[!htb]
 \newcommand\crule[3][black]{\textcolor{#1}{\rule{#2}{#3}}}
 \centering
 \caption{Explanation of the plot legends}
@@ -875,10 +876,31 @@ Inference on & Description & Color \\ \midrule
 \end{tabular}
 \end{table}
 
+Not that for the quantized MobileNetV2 we only conduct edge inference experiments, thus no cloud inference results for this model can be seen in the plots of this section.
 \subsubsection{Preprocessing}
 
 Figures \ref{fig:EdgeVsCloudPreproMemory}, \ref{fig:EdgeVsCloudPreproLat} and \ref{fig:CloudEdgePreproCPU} report the preprocessing metrics $Memory_{preprocessing}$, $Latency_{preprocessing}$ and $CPU_{preprocessing}$.
-Each figure 
+
+%Memory
+\paragraph{$\mathbf{Memory_{preprocessing}}$}
+Both edge preprocressing options, for either edge inference or cloud inference, have very similar memory consumption results with the cloud inference mean values being at most $5\%$ higher from the edge inference values for all image sizes.
+This due to the fact that both options share most of the preprocessing steps, the only difference is that in case of cloud inference with edge preprocessing the \emph{ByteBuffer}, containing the preprocessed image, gets used to build the \emph{PredictRequest} for TensorFlow Serving. 
+For edge inference no such step is needed as the \emph{ByteBuffer} can be directly be used to call the run function of the TensorFlow Lite interpreter, which starts the inference process at the edge.
+Thus the $5\%$ overhead in memory can be explained by the additional \emph{PredictRequest} object that has to loaded into memory for cloud inference.
+
+In case of small images the memory consumption of cloud preprocessing is very close to its edge preprocessing counter-part, the larger the image the larger the memory difference.
+While the difference is only $2\%$ for an $224^2/299^2$ image, the difference grows to an $22.5\%$ decrease in memory for $16MP$ images ($2MP$: $1.1\%$, $4MP$: $7.9\%$, $8MP$: $9.9\%$).
+This difference is caused by the fact that for cloud preprocessing only the compressed \emph{PNG} gets loaded into memory, which is a lot smaller than the decoded image, especially for large images such as the $16MP$ image.
+
+When comparing the different models 
+%Latency
+\paragraph{$\mathbf{Latency_{preprocessing}}$}
+%CPU
+\paragraph{$\mathbf{CPU_{preprocessing}}$}
+Looking at the CPU usages in figure \ref{fig:CloudEdgePreproCPU} it can be seen that the variance of all inference modes, models and images sizes is too large to make conclusions, although there is a indication that cloud preprocessing causes lower usages.
+Overall it can be stated that all usages are around $12.5\%$. This makes sense since the preprocessing of a single image is done on a single thread, thus running on one core and since the OnePlus 6T has 8 cores, the full utilization of a single core causes an overall $CPU_{preprocessing}$  usage of $12.5\%$. 
+This infers that the preprocessing uses $100\%$ of a single core, especially for large images.
+
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_Memory.pdf}
