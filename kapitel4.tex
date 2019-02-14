@@ -4,13 +4,14 @@ This chapter deals with the experiments, their design, execution and results.
 
  
 \section{Experimental Design}
-This section deals the specification of the Android benchmark app, used hardware, frameworks, models and how the measurements are conducted. 
-Figure \ref{fig:expDesign} depicts a brief overview of the specifications of the experiments.
-We use image classification as the use case, therefore an image needs to be sent to the model.
+This section deals the specification of the Android benchmark application, used hardware, frameworks, models and how the measurements are conducted. 
+Figure \ref{fig:expDesign} depicts a brief overview of the design of the experiments, more precisely the used models, frameworks and hardware components, which are presented in greater detail in this section.
+The role of the Android benchmark app is to emulate a AI application that delegates the inputs, which in our use case are images, to the edge or cloud inference framework for the inference process and gets the predictions as a response from the frameworks.
+
 \begin{figure}[H]
 \centering
 \resizebox{.95\linewidth}{!}{\input{./Bilder/Exp_design.tex}}
-\caption{Experimental Design Architecure}
+\caption{Experimental Design Architecture}
 \label{fig:expDesign}
 \end{figure}
 
@@ -26,7 +27,7 @@ The virtual server has 32 cores (16 real cores with hyperthreading), 240 GB of m
 
 The server runs on Ubuntu 16.04 CUDA 9.1 PGI 17.9 nvidia-docker 2.0.3+docker18.03.1-1.
 \subsection{Deep Learning Inference Framework}
-We use two open source machine learning frameworks, both based on TensorFlow, for the experiments, TensorFlow Lite and TensorFlow Serving. We decided to use these framework because they are open source and support, at the point of this theses, the operations for most image classification models and also a increasing number of hardware accelerators and operating systems for both edge and cloud inference.
+We use two open source machine learning frameworks, both based on TensorFlow, for the experiments, TensorFlow Lite and TensorFlow Serving. We decided to use these framework, because they are open source and support, at the point of this theses, most of the operations needed for the popular image classification models as well as an increasing number of hardware accelerators and operating systems for both edge and cloud inference.
 TensorFlow provides official releases of deep learning models, that are well maintained and tested, including the ones we use in this thesis.
 
 This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite\cite{tfLite}  and TensorFlow Serving\cite{tfServing} websites, on which this section is based on, or the corresponding GitHub repositories.
@@ -47,11 +48,11 @@ efficiently distribute the computation workload across available on-device proce
 
 
 \paragraph{Hosting Models}
-TensorFlow Lite expects models in their own FlatBuffer file  format(\emph{.tflite}). Therefore models need to be converted to this format before TensorFlow Lite can load them. This conversion can be done using the TensorFlow Lite Converter, which supports various formats of trained TensorFlow models.
-The \emph{.tflite} model now can be loaded by a object of the Interpreter class.
+TensorFlow Lite expects models in their own FlatBuffer file  format(\emph{.tflite}). Therefore models need to be converted to this format, before TensorFlow Lite can load them. This conversion can be done using the TensorFlow Lite Converter, which supports various formats of trained TensorFlow models.
+After conversion a \emph{.tflite} model can be loaded by an object of the Interpreter class.
 \paragraph{Run Prediction}
 
-To then run the inference process in TensorFlow Lite the run method of Interpreter object with a loaded model needs to be called. To call this function two objects need to be passed, first the input for the given model and second the output object, where the prediction response from the inference operation gets stored. 
+To then run the inference process in TensorFlow Lite the run method of Interpreter object with a loaded model needs to be called. To call this function two objects need to be passed, first the input for the given model and second the output object, where the prediction response from the inference operation get stored. 
 \begin{figure}[H]
 \centering
 \input{./Bilder/edge.tex}
@@ -60,20 +61,20 @@ To then run the inference process in TensorFlow Lite the run method of Interpret
 \end{figure}
 \subsubsection{TensorFlow Serving}
 \label{chap:TFServing}
-As for cloud inference TensorFlow Serving (Release 1.12.0 VERIFY THIS AGAIN) will be used, since it provides a framework to serve machine learning models in production environments. 
+TensorFlow Serving (Release 1.12.0 VERIFY THIS AGAIN) will be used as the cloud inference framework, since it provides a framework to serve machine learning models in production environments. 
 
 
 
 \paragraph{Hosting Models}
-In order to host a model as a Servable in TensorFlow Serving, first a TensorFlow model needs to exported using TensorFlow's SavedModelBuilder, resulting in a SavedModel protocol buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
+In order to host a model as a Servable in TensorFlow Serving, first a TensorFlow model needs to exported using TensorFlow's \emph{SavedModelBuilder}, resulting in a \emph{SavedModel protocol} buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
 %%Wieviel schreiben über signature, predict function etc?
 
 Now the exported model can be loaded by a instance of Tensorflow Serving.
 We use docker to start that instance, specifically nvidia-docker that allows us to run the inference operations on a GPU. For that TensorFlow Serving provides two docker images of their framework, one with CPU and the other with GPU support.
 
 \paragraph{Run Prediction}
-TensorFlow Serving supports two API for clients to create predictions requests: gRPC and REST. Since the gRPC protocol is supposed to deliver a better performance, we will use the gRPC API.
-For a client to a request to the server a gRPC stub needs to be created in the first place, that allows us to call all methods implemented on the server. In our case we need to call TensorFlow Serving's Predict method to start the inference process. The method needs to be passed a PredictRequest object, which contains among other things the input data for the model, the shape of the input and the requested model.%model signature?
+TensorFlow Serving supports two API for clients to create predictions requests: gRPC and REST. Since the gRPC protocol is supposed to deliver a better performance in the form of lower latencies and smaller payloads, we will use the gRPC API in this thesis.
+Before a client can make a resquest to the server, a gRPC stub needs to be created in the first place, that allows us to call all methods implemented on the server. In our case we need to call TensorFlow Serving's \emph{Predict} method to start the inference process. The method needs to be passed a \emph{PredictRequest} object, which contains among other things the input data for the model, the shape of the input and the requested model.%model signature?
 
 After the request is sent and handled the server response by sending back a \emph{PredictResponse} object. This object holds the predictions for the given input data in the form specified by the exported model.
 This request and response process can also be seen in figure \ref{fig:cloud}
@@ -81,16 +82,16 @@ This request and response process can also be seen in figure \ref{fig:cloud}
 \begin{figure}[H]
 \centering
 \input{./Bilder/cloud.tex}
-\caption{Functionality of TensorFlow Serving}
+\caption{Basic Functionality of TensorFlow Serving}
 \label{fig:cloud}
 \end{figure}
 \subsection{Models}
 \label{chap:models}
-We will use two different image classification models for the experiment, MobileNetV2 and InceptionV4, the first is optimised for mobile deployment and the second towards high accuracy.
+We will benchmark two different image classification models in this thesis, MobileNetV2 and InceptionV4, the first is optimized for mobile deployment and the second towards high accuracy.
 Both models are trained on a ImageNet dataset consisting of 1001 image classes (1000 image classes + 1 class for other image classes).
 
 For the TensorFlow Lite version we use the models provided on the TensorFlow Lite website \cite{tfLiteModels}.
-To convert model suitable for TensorFlow Serving we use the TensorFlow-Slim library \cite{tfSlim}, where maintained and tested implementations of popular image classification models are being published. For both Serving and Lite we use the same training checkpoint to get the same weights for the graphs.
+To convert model suitable for TensorFlow Serving, we use the TensorFlow-Slim library \cite{tfSlim}, where maintained and tested implementations of popular image classification models are being published. For both Serving and Lite we use the same training checkpoint to get the same weights for the graphs.
 
 In the following we give a brief overview of the models, their unique building blocks and the intuition behind them.
 For full details please refer to \cite{DBLP:journals/corr/abs-1801-04381} and \cite{InceptionV4}.
@@ -101,14 +102,14 @@ constrained environments" \cite{DBLP:journals/corr/abs-1801-04381}. The authors 
 inverted residual with linear bottleneck".
 
 This module is visualized in figure \ref{fig:bottleneckBlock} and consists of two parts: The inverted residual block and a shortcut from the input to the output.
-In a first step the inverted residual block the channel dimension of the input get expanded with the use of a pointwise $1\times1$ convolution layer. 
+In a first step of the inverted residual block the channel dimension of the input are expanded with the use of a pointwise $1\times1$ convolution layer. 
 Afterwards depthwise $3\times3$ convolution is applied to the expanded input. Then again a pointwise $1\times1$ convolution gets used, but this time the dimensions are decreased instead of increased.
 
 The intuition behind this module is that the expansion decodes information ensuring that the features can be extracted during the depthwise convolution. The extracted features then get encoded again by reducing the dimensions.
 To improve the backpropagation of the gradient across multiple layers during the training the authors add the shortcut to the module, resulting in faster training and better accuracy.
 The bottleneck module can be implemented very memory efficient, thus particularly fit for edge inference.
 
-Figure \ref{fig:MobileNetArchi} displays the design of the model, with the majority of the building blocks being the bottleneck modules.
+Figure \ref{fig:MobileNetArchi} displays the overall architecture of the model, with the majority of the building blocks being the bottleneck modules.
 All bottleneck modules in a sequence have the same number of output channels and use a stride of $1$, except for the first bottleneck block in a sequence. All spatial convolutions use $3\times3$ kernels. 
 Although not depicted on the figure, the model uses dropout and batch normalization during training.
 %%expanstionf actor?
@@ -156,16 +157,16 @@ Quantization of MobileNetV2, using the techniques presented in section \ref{chap
 
 \subsubsection{Inception V4}
 %%Add infos about stem and reduction
-InceptionV4, published in \cite{InceptionV4}, is a large image classification network with high accuracy, but also with a high number of parameters leading to higher inference times than MobileNetV2.
+InceptionV4, published in \cite{InceptionV4}, is a large image classification network with high accuracy, but also with a high number of parameters leading to higher computational demands than MobileNetV2 and thus larger impact on inference performance.
 In comparison to its previous versions InceptionV4 is built with "a more uniform simplified architecture and more inception modules". 
 
-The general architecture of the network can be seen in figure \ref{fig:inceptionv4Archi} with the fundamental building blocks being varying Inception (A-C) and Reduction(A-B) modules. 
+The general architecture of the network can be seen in figure \ref{fig:inceptionv4Archi} with the fundamental building blocks being multiple Inception (A-C) and Reduction(A-B) modules. 
 An example for both of these modules can be seen in figures \ref{fig:InceptionA} and \ref{fig:InceptionReduction}.
 Inception modules are built of multiple convolutions with multiple filters and pooling layers in parallel within the same layer.
 After the convolutions the output of all convolutions are concatenated.
-The intuition behind this parallelism is to give the model multiple convolution choices for a given input and let the model learn itself  the best feature extractor. An additional benefit is that the model can extract both local and more complex feature from an input.
+The intuition behind this parallelism is to give the model multiple convolution choices for a given input and let the model learn itself the best feature extractor. An additional benefit is that the model can extract both local and more complex feature from an input.
 
-To reduce the dimensionality before computational expensive large convolutions, and thus speed up training, the authors introduce the Reduction block containing small $1\times1$.convolutions.   %genauer erklären
+To reduce the dimensionality before computational expensive large convolutions, and thus speed up training, the authors introduce the Reduction block containing small $1\times1$ convolutions.   %genauer erklären
 
 
 
@@ -241,7 +242,7 @@ MobileNetV2 1.0 & 3.47M\cite{DBLP:journals/corr/abs-1801-04381} & 89.9\% & 224x2
 \subsection{Android Benchmark Application}
 To conduct the experiments for both edge and cloud inference we developed and implemented an Android benchmark application using Kotlin.
 This application implements all function needed to preprocess real workload images and perform the inference on either the Android device itself or sent the image to a cloud-backend.
-For both the preprocess and inference operation the application logs metrics such as inference latency, time of the experiments etc. and stores them to a \emph{CSV} file, which then can be used to evaluation purposes.
+For both preprocessing and inference the application logs metrics such as inference latency, time of the experiments etc. and stores them to a \emph{CSV} file, which then can be used to evaluation purposes.
 
 Both edge and cloud inference implementations are based on the example implementations in the respective GitHub repositories to ensure optimal performance. 
 
@@ -252,7 +253,7 @@ Both edge and cloud inference implementations are based on the example implement
 \caption{Flowchart of the Benchmark Application}
 \label{fig:app}
 \end{figure}
-In figure \ref{fig:app} the work-flow to perform the inference is seen. First, a image needs to be selected. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a android phone. In the case of edge inference it needs to be decided if the NNAPI should be used by TensorFlow Lite. For cloud inference the preprocessing mode needs to be selected (edge/cloud). Now the preprocessing operations can be performed based on the previous selected options (Even for the case of cloud inference with cloud preprocessing some preprocessing needs to be done on the edge beforehand like building a \emph{PredictRequest} containing the request for the cloud-backend). Now, that the input is preprocessed, the actual inference is performed resulting in a prediction. For both preprocessing and inference the measurements mentioned in section \ref{chap:insta_measurements} are logged.
+In figure \ref{fig:app} the work-flow to perform the inference is seen. First, a image needs to be selected. Afterwards the image classification model needs to be chosen. Now the user selects whether the inference should be performed on the cloud-backend or directly on the edge device, in this case a Android phone. In the case of edge inference it needs to be decided if the NNAPI should be used by TensorFlow Lite. For cloud inference the preprocessing mode needs to be selected (edge/cloud). Now the preprocessing operations can be performed based on the previous selected options (Even for the case of cloud inference with cloud preprocessing some preprocessing needs to be done on the edge beforehand like building a \emph{PredictRequest} containing the request for the cloud-backend). Now, that the input is preprocessed, the actual inference is performed as a last step, resulting in a prediction. For both preprocessing and inference the measurements mentioned in section \ref{chap:insta_measurements} are logged.
 
 \begin{figure}[htb]
 \centering
@@ -264,13 +265,13 @@ Figure \ref{fig:UML} depicts an UML class diagram of the application featuring t
 The main class is called \emph{MainActivity} and implements all of the graphical aspects. 
 The \emph{MainActivity} handles requests for both cloud and edge inference by delegating the requests to instances of the classes \emph{TFServingClient} and \emph{ImageClassifier}, respectively. Both of these classes also take care of the preprocessing steps.
 The abstract class \emph{ImageClassifier} has two subclasses \emph{FloatClassifier} and \emph{QuantClassifier}. The first class runs the inference for floating point models and the second for quantized models.
-This seperation is needed since these different model types require different input and output types.
+This separation is needed since these different model types require different input and output types.
 
-The \emph{MainActivity} writes the collected measurements and the parameter configurations of a experiment to a instance of \emph{SingleExperiment}. After the experiment is completed \emph{MainActivity} tells a Logger instance to save the contents of the \emph{SingleExperiment} object. The Logger then saves all collected data to a \emph{CSV} file.
+The \emph{MainActivity} writes the collected measurements and the parameter configurations of an experiment to a instance of \emph{SingleExperiment}. After the experiment is completed \emph{MainActivity} tells a \emph{Logger} instance to save the contents of the \emph{SingleExperiment} object. The Logger then saves all collected data to a \emph{CSV} file.
 
 \subsubsection{Preprocessing}
 %%mention png
-For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the RGB values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are rgb)
+For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the RGB values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are RGB)
 \begin{figure}[H]
 \centering
 \input{Bilder/Preprocessing.tex}
@@ -278,12 +279,12 @@ For the case of image classification, the images need to have the correct size (
 \label{fig:prepro}
 \end{figure}
 \paragraph{Edge Preprocessing}
-In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural afterwards, either on the edge device itself or on a cloud-backend.
-We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we created a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$) by calling \emph{createScaledBitmap}. 
+In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural network afterwards, either on the edge device itself or on a cloud-backend.
+We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we create a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$) by calling the \emph{createScaledBitmap} function. 
 Afterwards we normalize the RGB values to $[-1,1]$ during the conversion from the bitmap to a \emph{ByteBuffer}. 
-For the case of float models these buffer contain all the pixels in float format and for quantized model in bytes.
+For the case of float models this buffer contains all the pixels in float format and for quantized model in bytes, since quantized models work with lower represenations.
 %%%mehr erklären?
-We do this conversion since feeding \emph{ByteBuffers} to TensorFlow Lite is performance enhancing %add cite here
+We do this conversion since feeding \emph{ByteBuffers} to TensorFlow Lite is performance enhancing. %add cite here
 For cloud inference we then construct \emph{PredictRequest} object containing this \emph{ByteBuffer}.
 
 For batch size larger than one we parallize the preprocessing to speed up the proprocessing latency at the cost of higher maximum memory consumption. We start $n$ threads, where each thread is preprocessing one image in the way described above. After each image is preprocessed we concatenate all \emph{ByteBuffers} into a single one, which then can be fed to the TensorFlow Lite interpreter. Note that $n$ is determined by both batch size and available CPU cores on the edge device. There are never more threads than available cores, but if the batch size is smaller than the number of cores, we only start $n$ threads, where $n$ is the batch size. 
@@ -297,20 +298,23 @@ To achieve this we again load the PNG image into an \emph{InputStream}, convert 
 
 
 \subsubsection{Inference}
-To get the predictions for our now preprocessed image we need to feed it into the deep learning model, which is loaded either directly on the edge or on the remote cloud-backend. 
+To get the predictions for our now preprocessed image we need to run the inference operation of the inference framework with the deep learning model laoded, which is loaded either directly on the edge or on the remote cloud-backend. 
 The inference is done using the steps described in section \ref{chap:TFLite} (TensorFlow Lite) and \ref{chap:TFServing} (TensorFlow Serving).
 \paragraph{Edge Inference}
-To perform the inference operation we two things into the run function of an interpreter of TensorFlow Lite: The \emph{ByteBuffer} created in the preprocessing step and an array (float models: \emph{FloatArray}, quantized models: \emph{ByteArray}) with the length 1001 (number of classes). TensorFlow lite then writes the confidence levels of the different classes to this array. We then sort the array for the five classes with the highest confidence and print them to the screen.
+To perform the inference operation we two things into the \emph{run} function of an interpreter of TensorFlow Lite: The \emph{ByteBuffer} created in the preprocessing step and an array (float models: \emph{FloatArray}, quantized models: \emph{ByteArray}) with the length 1001 (number of classes). TensorFlow lite then writes the confidence levels of the different classes to this array. We then sort the array for the five classes with the highest confidence and print them to the screen.
 
 \paragraph{Cloud Inference}
 
-For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server, where the inference (and in the case of cloud preprocessing also the preprocessing) computations are executed. Afterwards the client receives the \emph{PredictResponse} from the server containing the predictions for the sent image. We configured the TensorFlow Serving models to return the five classes with the highest confidence, hence we extract these five classes from the \emph{PredictResponse} and print them to the screen.
+For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server, where the inference (and in the case of cloud preprocessing also the preprocessing) computations are executed.
+To sent the \emph{PredictRequest} object to the server we call the \emph{predict} function of the previous created TensorFlow Serving gRPC stub.
+Afterwards the client receives the \emph{PredictResponse} from the server containing the predictions for the sent image. We configured the TensorFlow Serving models to return the five classes with the highest confidence, hence we extract these five classes from the \emph{PredictResponse} and print them to the screen.
 
-To preprocess the image on the cloud we add TensorFlows preprocessing functions to the model graphs before we export them to the TensorFlow Serving format. The images arrive at the serve in the PNG format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalize the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed on the edge. Now the input can be fed to the actual model graphs.
+To preprocess the image on the cloud we add TensorFlows preprocessing functions to the model graphs before we export them to the TensorFlow Serving format. The images arrive at the server in the \emph{PNG} format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalize the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed on the edge can be fed to the actual model graphs.
 \section{Instantiation}
 Using the experimental design presented in the previous section, we now describe which parameters we change in the course of the experiments as well as how the performance metrics are measured.
 \subsection{Parameters}
-We run each parameter configuration 20 times to reduce variance. During the experiments no other applications are running on either the edge or the cloud device.
+We run each parameter configuration 15 times to reduce variance and stabilize our results.
+During the experiments no other applications are running on either the edge or the cloud device.
 In the course of the experiments we change the configurations of the following parameters:
 %%%293,performance analysis buch
 \paragraph{Model}
@@ -329,7 +333,7 @@ The inference can either be performed on the edge or an a cloud-backend.
 %4MP: 4309KB
 %8MP: 7515KB
 %16MP: 10077KB
-We evaluate the performance of 2MP($1732\times1155$, $2411$KB), 4MP($2449\times1633$, $4309$KB), 8MP($3464\times2309$, $7515$KB) and 16MP($4899\times3266$, $10077$KB) PNG images. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$, $83$KB or $299\times299$, $141$KB depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
+We evaluate the performance of 2MP($1732\times1155$, $2411$KB), 4MP($2449\times1633$, $4309$KB), 8MP($3464\times2309$, $7515$KB) and 16MP($4899\times3266$, $10077$KB) PNG images, as the OnePlus 6T is capable of taking pictures with 16 megapixel. This way the effect of different image sizes on the performance of the preprocessing step can assessed. We also evaluate an image where no resizing is needed ($224\times224$, $83$KB or $299\times299$, $141$KB depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{./Bilder/European_cat_02_16_mp.jpg}
@@ -411,7 +415,7 @@ We then calculate $Latency_{network}$ implicitly by subtracting $Latency_{server
 
 \begin{equation*}
 \begin{gathered}
-Latency_{inference} = t_{end} - t_{start}\\
+Latency_{inference} = t_{endInference} - t_{startInference}\\
 Latency_{server}= t_{receive Request} - t_{send Response}\\
 Latency_{network} = Latency_{inference} - Latency_{server}
 \end{gathered}
