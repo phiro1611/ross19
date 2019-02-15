@@ -188,6 +188,8 @@ The big downside of cloud-based inference is the needed network connection, in p
 While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent unpreprocessed to the cloud. 
 In the latter case the input gets preprocessed on the cloud. 
 This can be justified by the same reasons as for the cloud inference, more computational power for intensive preprocessing.
+Although slow network connection could diminish the speed up gained by the larger computational power, since non preprocessed input are most of the times larger in payload size and therefore more data has to be sent to the server, resulting in the need of faster network connections to achieve the same network latency as a preprocessed input would.
+However in the case of compressed inputs as for example \emph{JPEG} images, if the \emph{JPEG} and the preprocessed image have the same input size, the \emph{JPEG} image could lead to faster latencies, as less data has to be sent to the server and the I/O overhead at the server is minimized, as the server has to load a smaller image into memory assuming \emph{JPEG} decoding is faster than the I/O overhead of load a larger image. 
 
 
 
