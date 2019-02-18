@@ -5,14 +5,38 @@
 %effect of NNAPI
 %results mit related work vergleichen
 %
+We proposed a performance model for the deployment of deep learning models for inference on either edge or cloud devices for real-time AI applications running on edge devices.
+Using this performance model we conducted experiments using image classification as a use case.
+
+The evaluation of our experiments show that edge inference provides better inference performance in the form of lower latencies and higher throughput, while having little no no impact on CPU and memory, for small deep learning models like MobileNetV2 than cloud inference, due to network and I/O constraints. 
+Our results show that techniques like quantization can increase throughput of these models by a factor of $X$, with little impact on accuracy.
+%edge inference prefered because of security and netowrk
+
+While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of large deep learning models like InceptionV4.
+Therefore cloud inference is the prefered choice for large deep learning models at the moment.
+
+
+
+Furthermore we evaluated the impact of preprocessing on inference performance.
+
+
+
+We come to the conclusion that preprocessing of large images can can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
+Preprocessing should be minimized.
+
+
+On key lesson
+
+
+
+We believe that in the near future edge inference will be the preferred option for all model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
 \section{Future Work}
-Ideen:
-\begin{itemize}
-    \item mix cloud/edge großen/kleinen modellen
-    \item prediction of performance using the data of this thesis
-\end{itemize}
+While we proposed an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new questions inspired by our results. 
+In this section we present possible ideas for future work.
 \paragraph{Inference Performance Prediction}
-Use data of this thesis for a machine learning model that predicts the optimal deployment solution
+Furthermore the data containing the measurements can be used to design a machine learning model.
+Such a machine learning could take information about the deep learning models to deployed as its input (e.g.\, number of parameters) as well as hardware specifications of both cloud and edge devices.
+Using this input data the model could predict metrics such as inference time, throughput or memory consumption at the edge.
 \paragraph{Mixed Inference}
 An idea for a future study would be the combination of both cloud and edge inference to a mixed inference method for use cases of continuous inference.
 This would combine both the advantages of both cloud and edge inference, as fast continuous predictions could be provided by a relatively small model on the edge device, and high accuracy predictions could be delivered by a large model hosted on a cloud-backend if demanded. 

@@ -131,7 +131,7 @@ This process of forward- and back-propagation is repeated for all sample in the 
 \subsubsection{Inference}
 %only forward prop
 
-After the model is trained it is ready to be deployed in a production environment, where it can serve its predictions to an application. This process of forward propagating the input through a neural network, performing all computational operations defined in the model resulting in an output/prediction, is called inference.
+After the model is trained it is ready to be deployed in a production environment, where it can serve its predictions to an application. This process of forward propagating the input through a neural network, performing all computational operations defined in the model, resulting in an output/prediction, is called inference.
 
 But since models often require the input to be of a certain shape and the input given by an application often does not match that shape, a preprocessing step is often needed before the actual inference can be performed.
 This preprocessing and inference process can also be seen in figure \ref{fig:InfProcess}.
@@ -185,7 +185,7 @@ Cloud-backends offer a huge amount of computational power, especially suitable f
 
 The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications like autonomous driving, where continuous and reliable predictions from deep learning models as critical for the.
 
-While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent unpreprocessed to the cloud. 
+While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there a two possibilities. Either the input data is preprocessed to the correct shape before getting sent to the cloud-backend, or the input is sent un-preprocessed to the cloud. 
 In the latter case the input gets preprocessed on the cloud. 
 This can be justified by the same reasons as for the cloud inference, more computational power for intensive preprocessing.
 Although slow network connection could diminish the speed up gained by the larger computational power, since non preprocessed input are most of the times larger in payload size and therefore more data has to be sent to the server, resulting in the need of faster network connections to achieve the same network latency as a preprocessed input would.
@@ -194,35 +194,43 @@ However in the case of compressed inputs as for example \emph{JPEG} images, if t
 
 
 \subsection{Deep Learning Inference Framework}
-For both edge and cloud inference the underlying inference framework is important for the inference performance, since optimised kernels/operators or support of accelerators like GPUs can lead to significant performance improvements.
-The framework needs to support the model operations as well as the hardware components to achieve a good performance.
+For both edge and cloud inference the underlying inference framework is important for the inference performance, since optimized model operations or support of accelerators like GPUs can lead to significant performance improvements.
+New hardware components like accelerators and new deep learning operations for example in the form of new activation functions are being developed at fast pace, therefore a well maintained and frequently updated framework is critical for the best inference performance possible.
+Another challenge is the support of the wide variety of different types of edge devices with different system architectures.
 
-%cloud inference network protocol
+An additional factor for cloud inference affecting performance is the network component and its impact on latency.
+Thus frameworks should implement low latency protocols with small payloads for environments with constrained networks.
 
-This is especially important for edge devices, where new accelerators are being developed at a fast pace.
+In this thesis we only evaluate the inference performance of a single client sending requests to a cloud-backend, but in reality most of the time each edge device does not have exclusive access to a cloud-backend, resulting in multiple client making inference request to a single server, possibility even at the same time.
+This raises questions on how to handle multiple requests coming from multiple sources in general and specifically how to handle multiple simultaneous requests and which requests should be prioritized.
 
-An additional factor for cloud inference affecting performance is the used network protocol.
-Low latency protocol can speed up inference time 
+Possible solutions include combining multiple requests and performing inference of multiple requests at once by combining them into a single batch.
+This approach requires a policy on how many request to combine at most and how long the interval is where the server waits on incoming requests, if the optimal batch size is not yet reached. 
+While this approach can increase throughput, it often comes at the cost of increased latency, thus negatively affecting the performance of real-time AI applications at the edge.
+
 %%reduce data consumption?
 %%REST vs gRPC
-
+%%cloud inference needs to support multiple client-> low latency vs throughput
 %%
-After analyzing the problem space of deep learning inference for real-time AI applications on edge devices we can propose a performance model, that maps the aspects of the problem space on the performance.
+
+
+After analyzing the problem space of deep learning inference for real-time AI applications on edge devices we can propose a performance model, that maps the aspects of the problem space on the metrics essential for assessing the performance.
 
 
 
 \section{Performance Model}
-All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors of the performance model (see figure \ref{fig:perfmodel}). 
+All the aspects of hardware, model and the used inference framework have an impact on the performance, thus are the influencing factors on the inference performance.
+Hence in figure \ref{fig:perfmodel} we propose a performance model that takes all performance influencing factors as its inputs and maps them to performance metrics, which are essential for assessing inference performance for real-time AI applications.
 These inputs affect various performance metrics, of which inference latency and throughput are the most important ones for real-time AI applications on the edge. However, as the hardware on edge devices is limited and most of the times more than one application needs to run in parallel, low usages of the other depicted metrics are vital as well.
 In the following we present performance metrics essential for the performance of real-time AI applications and the rationale behind them.
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.99\textwidth]{./Bilder/trade_offs.png}
-\caption{Performance Model}
+\includegraphics[width=0.99\textwidth]{./Bilder/PerformanceModel.png}
+\caption{Performance Model with factors influencing the inference performance and the for the inference performance essential performance metrics}
 \label{fig:perfmodel}
 \end{figure}
 
-Except the data consumption, which is only needed for cloud inference, because data is sent to a remote server, all metrics are relevant for both edge and cloud inference.
+Except for data consumption, which is the only metric exclusive for cloud inference, because data is sent to a remote server, all metrics are relevant for both edge and cloud inference.
 While accuracy is one of the most critical metrics for neural networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
 
 To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
@@ -233,11 +241,15 @@ Several metrics are important to measure the performance of the preprocessing an
 
 Note that we only measure the impact on inference/preprocessing on the resources on the edge devices, not the usage on the cloud-backend itself, as this theses focuses on optimal selection for real-time AI applications on edge devices.
 \subsubsection{Latency}
-Latencies are a essential to determine the performance, since AI application often need predictions in realtime, resulting in the need of low latencies.
+Latencies are a essential to determine the performance, since AI application often need predictions in real-time, resulting in the need of low latencies.
 The time needed to transform the original input to a shape fit for feeding into the deep learning model is called $Latency_{preprocessing}$.
 %%WALL CLOCK TIME ADD HERE
 $Latency_{inference}$ describes the time needed from requesting a prediction from a deep learning model given an specific input until getting the prediction.
 The latency needed to perform both preprocessing and inference for a given input is called $Latency_{total}$.
+
+For cloud inference, where network communication has to be done between a client (edge) and a server (cloud-backend), the network latency is an additional factor to the inference performance.
+Therefore we split $Latency_{inference}$ in two sub metrics, $Latency_{network}$ and $Latency_{server}$, which together sum up to $Latency_{inference}$.
+While $Latency_{server}$ denotes the time consumed by the cloud-backend to perform the inference on the given input, $Latency_{network}$ describes the time needed to send the inference input to the server and receive the prediction from the server.
 \subsubsection{Throughput}
 In order to accomplish realtime AI a certain level of throughput is essential. Therefore the number of predictions per second is a valuable metric. 
 Since preprocessing is a vital part of the inference process, the throughput impact caused by preprocessed is also of interest.
