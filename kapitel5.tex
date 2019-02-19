@@ -6,7 +6,7 @@
 %results mit related work vergleichen
 %
 We proposed a performance model for the deployment of deep learning models for inference on either edge or cloud devices for real-time AI applications running on edge devices.
-Using this performance model we conducted experiments using image classification as a use case.
+we backed up this performance model by real world measurements wee conducted experiments using image classification as a use case.
 
 The evaluation of our experiments show that edge inference provides better inference performance in the form of lower latencies and higher throughput, while having little no no impact on CPU and memory, for small deep learning models like MobileNetV2 than cloud inference, due to network and I/O constraints. 
 Our results show that techniques like quantization can increase throughput of these models by a factor of $X$, with little impact on accuracy.
@@ -14,6 +14,7 @@ Our results show that techniques like quantization can increase throughput of th
 
 While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of large deep learning models like InceptionV4.
 Therefore cloud inference is the prefered choice for large deep learning models at the moment.
+If edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and less data privacy concern apply.
 
 
 
