@@ -1,18 +1,61 @@
 \appendix
 \chapter{Appendix}
-\section{Results}
+\section{Additional Results}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_CPU.pdf}
-\caption{Edge Inference - Preprocessing $CPU_{preprocessing}$}
+\caption{Edge vs. Cloud Inference: $CPU_{preprocessing}$ - lower is better}
 \label{fig:CloudEdgePreproCPU}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_Latencies_WITHOUT_NETWORK.pdf}
+\caption{Edge vs. Cloud Inference: $Latency_{inference}$ without $Latency_{network}$ - lower is better}
+\label{fig:CloudEdgeInfLatWONetwork}
 \end{figure}
 
 
 
 
 
+
+
+\begin{figure}[!htb]
+\centering
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Received_Data.pdf}
+   \caption{$Data_{received}$}
+   \label{fig:BatchSizeReceivedData} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Transmitted_Data.pdf}
+   \caption{$Data_{transmitted}$}
+   \label{fig:BatchSizeTransmittedData}
+\end{subfigure}
+
+\caption{Edge vs.  Cloud Inference for larger Batch Sizes:  $Data_{received}$ vs. $Data_{transmitted}$ - lower is better}
+\end{figure}
+
+
+\begin{figure}[!htb]
+\centering
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_server_lat.pdf}
+   \caption{$Latency_{server}$}
+   \label{fig:BatchSizeServer} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.95\textwidth}
+   \includegraphics[width=1\linewidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_network_lat.pdf}
+   \caption{$Latency_{network}$}
+   \label{fig:BatchSizeNetwork}
+\end{subfigure}
+
+\caption{Edge vs.  Cloud Inference for larger Batch Sizes:  $Latency_{server}$ vs. $Latency_{network}$ - lower is better}
+\end{figure}
 
 
 
