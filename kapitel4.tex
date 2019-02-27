@@ -1,22 +1,21 @@
 \chapter{Methodology}
-%%WHAT Is inference3
 \label{chap:methodology}
 
 In this section we present a methodology for performance evaluation of deep learning inference, specifically for edge and cloud inference.
 To develop this methodology we make use of the best practices for performance evaluation by Ousterhout \cite{Ousterhout:2018:AMO:3234519.3213770} and Jain\cite{books/daglib/0076234}.
 
 The goal of the performance evaluation is to get a better understanding of deep learning inference, specifically the trade-offs between edge and cloud inference.
-Based on this understanding a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
+Based on this understanding we propose the design of a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
 
-In order to reach this goal, a systematic approach for the performance evaluation is needed.
-This methodology modeling this approach, consisting of a multiple-step process, can be seen in figure \ref{fig:Methodology}. 
+
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.7\textwidth]{./Bilder/Methodology.pdf}
-\caption{Methodology to help with the optimal selection of cloud and edge inference for real-time AI applications.}
+\caption{Methodology for the performance evaluation of deep learning inference.}
 \label{fig:Methodology}
 \end{figure}
-
+In order to reach this goal, a systematic approach for the performance evaluation is needed.
+This methodology modeling this approach, consisting of a multiple-step process, can be seen in figure \ref{fig:Methodology}. 
 
 
 
@@ -25,11 +24,12 @@ In order to model the performance of deep learning inference, it is crucial to u
 Understanding the system boundaries helps to choose the correct performance metrics, workloads and parameters affecting performance.
 Therefore the topic of deep learning in general, but specifically inference and the deployment of deep learning models on both edge and cloud-backends have to be studied.
 
-Based on the understanding of the problem space the performance metrics then can be derived, which are critical for assessing the inference performance of a deployment option.
+Based on the understanding of the problem space performance metrics, critical for assessing the inference performance of a system, can be derived.
 
-We will use measurements as the evaluation technique of this thesis. Therefore we have to develop a benchmark system support a concrete use case, that is used as a example system helping us to illustrate the trade-offs between edge and cloud inference for better system understanding.
+We will use measurements as the evaluation technique of this thesis. 
+Therefore we have to develop a benchmark system supporting a use case, that is used as an exemplary system helping illustrating the trade-offs between edge and cloud inference for better system understanding.
 
-First we have to select a infrastructure, that is representative for real life condition to achieve applicable measurements. 
+Therefore the next steps towards such a benchmark system is to select an infrastructure, that is representative for real life conditions to achieve applicable measurements. 
 This infrastructure consists of hardware components and frameworks supporting this hardware. 
 
 The next step is to define the parameters to be studied, which all affect performance.
@@ -40,17 +40,14 @@ This requests can come in different shapes, thus having different impact on perf
 
 
 
-After defining the infrastructure, parameters and performance metrics a benchmark system can be implemented as a framework for handling workload simulation, performance metrics instrumentation and data collection of the measurements.
+After defining the infrastructure, parameters and performance metrics the benchmark system can be implemented as a framework for handling workload simulation, performance metrics instrumentation and data collection of the measurements.
 This system then can be used to generate the benchmarks. 
 
-Afterwards the collected measurements can be used to evaluate the trade-offs between edge and cloud deployment.
-Depending on these trade-offs concrete recommendations can be given for the optimal deployment option in regard to the benchmarked infrastructure and workload.
+Afterwards the collected measurements can be used for evaluation and interpretation.
+Depending on the results of the evaluation concrete recommendations can be given for the optimal deployment option in regard to the benchmarked infrastructure and workload.
 
-
-
-
-Using the results of the evaluation and the gained system understanding we then can create a generic decision model for the optimal selection of deployment options for deep learning inference.
-This decision model is generic, as it can be applied to all decision processes where deep learning models have to deployed for real-time AI applications,  independent of deep learning model architecture, workload, infrastructure or framework.
+Afterwards this knowledge can be generalized to create a generic decision model for the optimal selection of deployment options for deep learning inference.
+This decision model is generic, as it can be applied to all decision processes where deep learning models have to deployed for real-time AI applications, independent of deep learning model architecture, workload, infrastructure or framework.
 
 
 

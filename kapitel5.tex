@@ -1,12 +1,13 @@
 \chapter{Methodology Instantiation}
 \label{chap:experiments}
-In this section we instantiate the methodology defined in the previous section step by step.
-We will use image classification as a use case.
+In this section we instantiate the methodology defined in the previous section step by step on an image classification use case.
 
-In section \ref{chap:problemSpace} the problem space will be defined, based on the fundamentals of deep learning deployment presented in \ref{chap:fundamentels}, followed by the performance metrics in section \ref{chap:metrics}.
-Section \ref{chap:workload} will cover the three deep learning models as well as the different types of input data used for the benchmarks.
+In section \ref{chap:problemSpace} the problem space will be defined, based on the fundamentals of deep learning deployment presented in chapter \ref{chap:fundamentels}, followed by the performance metrics in section \ref{chap:metrics}.
 
-The used infrastructure, presented in section \ref{chap:infrastructure}, present the used hardware components as the edge and the cloud-backend as well as the used inference frameworks for both edge and cloud inference.
+
+The used infrastructure is presented in section \ref{chap:infrastructure} and includes the used hardware components as the edge and the cloud-backend as well as the used inference frameworks for both edge and cloud inference.
+
+Section \ref{chap:parameters} will cover the three deep learning models as well as the different types of input data used for the benchmarks.
 
 Afterwards in section \ref{chap:androidApp} we design the Android benchmark system, which simulates a real-time AI application using the previous defined workloads and infrastructure. Additionally the Android application also handles instrumentation of the performance metrics and their collection for later evaluation.
 
@@ -27,7 +28,7 @@ The second aspect is the hardware available at the deployment environment.
 Memory constraints can prevent that the deep learning model can be loaded into memory, network latency can slow down inference too much or inference can take up too much CPU usages at the edge, resulting in the throttling of other running applications.
 Hardware accelerators like GPUs or TPUs can significantly speed up inference performance.
 
-The third and last influencing fact on inference performance is the used inference framework. 
+The third and last influencing factor on inference performance is the inference framework. 
 The framework is responsible to load the deep learning model, perform the operations of the deep learning model on the provided architecture and handle inference requests.
 Optimized operators by the framework can optimize performance severely as well as support of hardware accelerators.
 
@@ -200,7 +201,11 @@ This request and response process can also be seen in figure \ref{fig:cloud}
 
 \section{Parameters}
 \label{chap:parameters}
-
+There are two types of parameters, workload and factors.
+Factors are system parameters with various levels affecting system performance, as for example usage of an accelerator.
+Workloads are requests to the system by a user, in our case request with a given image to a specific deep learning model, that is hosted by the system.
+This requests can come in different shapes, thus having different impact
+on performance.
 \subsection{Workload}
 \label{chap:workload}
 The methodology of this thesis will be illustrated on the use case of image classification, as state of the art image classification deep learning models are demanding in computational power as well as of high interest for real-time AI applications using these models for inference purposes.
@@ -396,10 +401,11 @@ $16$MP  & $4899\times3266$ & $10077$KB \\ \bottomrule
 \end{figure}
 \paragraph{Batch Size}
 %%mathe defs of throughput?
-Batch Size denotes the number of images fed into the deep learning model in a single inference operation. 
+Another way to increase workload, except different images sizes, is to increase the batch size of a request.
+Batch size denotes the number of images fed into the deep learning model in a single inference operation. 
 Feeding more than one image to the network can lead to a higher throughput, if enough computational power is available. This increase in throughput often comes at the cost of increased latency and general resource consumption.
 
-To study these trade-offs we conduct experiments with the following batch sizes: 1, 2, 16, 32. Since at the point of these experiments a batch size greater than one is not supported for the TensorFlow Lite versions of MobileNetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference at this point.
+To study these trade-offs we conduct experiments with the following batch sizes: 1, 2, 16, 32. Since at the point of these benchmarks a batch size greater than one is not supported for the TensorFlow Lite versions of MobileNetV2 (both float and quantized), measurements with these batch sizes cannot be performed for the case of edge inference at this point.
 
 \subsection{Factors}
 Over the course of the benchmark execution we study the effect of multiple factors on performance with different levels.
@@ -475,11 +481,11 @@ The \emph{MainActivity} writes the collected measurements and the parameter conf
 
 \subsection{Preprocessing}
 %%mention png
-For the case of image classification, the images need to have the correct size ($224\times224$ for MobilenetV2 and $299\times299$ for InceptionV4) and the RGB values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are RGB)
+For the case of image classification, the images need to have the correct size ($224\times224$ for MobileNetV2 and $299\times299$ for InceptionV4) and the RGB values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the the first two dimensions represent the image height and width, while the last dimension represent the number of channels (3 since the images are RGB)
 \begin{figure}[H]
 \centering
 \input{Bilder/Preprocessing.tex}
-\caption{Preprocessing steps for image classifcation: Resizing to the model input size and normalization of the pixel values to $[-1,1]$}
+\caption{Preprocessing steps for image classification: Resizing to the model input size and normalization of the pixel values to $[-1,1]$}
 \label{fig:prepro}
 \end{figure}
 \subsubsection{Edge Preprocessing}
@@ -487,12 +493,12 @@ For the case of image classification, the images need to have the correct size (
 In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural network afterwards, either on the edge device itself or on a cloud-backend.
 We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we create a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$) by calling the \emph{createScaledBitmap} function. 
 Afterwards we normalize the RGB values to $[-1,1]$ during the conversion from the bitmap to a \emph{ByteBuffer}. 
-For the case of float models this buffer contains all the pixels in float format and for quantized model in bytes, since quantized models work with lower represenations.
+For the case of float models this buffer contains all the pixels in float format and for quantized model in bytes, since quantized models work with lower representations.
 %%%mehr erklären?
 We do this conversion since feeding \emph{ByteBuffers} to TensorFlow Lite is performance enhancing. %add cite here
 For cloud inference we then construct \emph{PredictRequest} object containing this \emph{ByteBuffer}.
 
-For batch size larger than one we parallize the preprocessing to speed up the proprocessing latency at the cost of higher maximum memory consumption. We start $n$ threads, where each thread is preprocessing one image in the way described above. After each image is preprocessed we concatenate all \emph{ByteBuffers} into a single one, which then can be fed to the TensorFlow Lite interpreter. Note that $n$ is determined by both batch size and available CPU cores on the edge device. There are never more threads than available cores, but if the batch size is smaller than the number of cores, we only start $n$ threads, where $n$ is the batch size. 
+For batch size larger than one we parallize the preprocessing to speed up the preprocessing latency at the cost of higher maximum memory consumption. We start $n$ threads, where each thread is preprocessing one image in the way described above. After each image is preprocessed we concatenate all \emph{ByteBuffers} into a single one, which then can be fed to the TensorFlow Lite interpreter. Note that $n$ is determined by both batch size and available CPU cores on the edge device. There are never more threads than available cores, but if the batch size is smaller than the number of cores, we only start $n$ threads, where $n$ is the batch size. 
 
 \subsubsection{Cloud Preprocessing}
 
@@ -503,7 +509,7 @@ To achieve this we again load the PNG image into an \emph{InputStream}, convert 
 
 
 \subsection{Inference}
-To get the predictions for our now preprocessed image we need to run the inference operation of the inference framework with the deep learning model laoded, which is loaded either directly on the edge or on the remote cloud-backend. 
+To get the predictions for our now preprocessed image we need to run the inference operation of the inference framework with the deep learning model loaded, which is loaded either directly on the edge or on the remote cloud-backend. 
 The inference is done using the steps described in section \ref{chap:TFLite} (TensorFlow Lite) and \ref{chap:TFServing} (TensorFlow Serving).
 \subsubsection{Edge Inference}
 To perform the inference operation we two things into the \emph{run} function of an interpreter of TensorFlow Lite: The \emph{ByteBuffer} created in the preprocessing step and an array (float models: \emph{FloatArray}, quantized models: \emph{ByteArray}) with the length 1001 (number of classes). TensorFlow lite then writes the confidence levels of the different classes to this array. We then sort the array for the five classes with the highest confidence and print them to the screen.
@@ -511,11 +517,8 @@ To perform the inference operation we two things into the \emph{run} function of
 \subsubsection{Cloud Inference}
 \label{chap:CloudInfImpl}
 
-For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server, where the inference (and in the case of cloud preprocessing also the preprocessing) computations are executed.
-To sent the \emph{PredictRequest} object to the server we call the \emph{predict} function of the previous created TensorFlow Serving gRPC stub.
-Afterwards the client receives the \emph{PredictResponse} from the server containing the predictions for the sent image. We configured the TensorFlow Serving models to return the five classes with the highest confidence, hence we extract these five classes from the \emph{PredictResponse} and print them to the screen.
-
-To preprocess the image on the cloud we add TensorFlows preprocessing functions to the model graphs before we export them to the TensorFlow Serving format. The images arrive at the server in the \emph{PNG} format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalize the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed on the edge can be fed to the actual model graphs.
+For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server over a plaintext gRPC channel, where the inference (and in the
+the server in the \emph{PNG} format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalize the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed on the edge can be fed to the actual model graphs.
 
 \subsection{Instrumentation}
 \label{chap:insta_measurements}
@@ -640,9 +643,8 @@ Data_{received} = \sum_{t_{startInference}}^{t_{endInference}} Data_{received}(t
 Using the benchmark system presented in the previous section, we now describe how the $1696$ benchmark measurements are executed including the different parameter configurations.
 
 
-The benchmarks are executed the following way: 
 Preprocessing is performed without any models loaded on the edge. but with the image loaded into memory before the start of preprocessing to prevent the I/O operations to influence the preprocessing performance.
-Edge Inference is done using a loaded deep learning model. 
+Edge inference is done using a loaded deep learning model. 
 We do not consider model loading latency in this thesis.
 
 All experiments are done using the eduroam Wi‑Fi, since the cloud-backend server hosted at the LRZ is only reachable within the Münchner Wissenschaftsnetz (MWN) and a VPN would have an impact on network latencies.
@@ -652,7 +654,7 @@ During the benchmarks no other applications are running on either the edge or th
 We run each parameter configuration listed in \ref{fig:tree} $15$ times to reduce variance and stabilize our results. Therefore we generate $1696$ in total.
 \section{Evaluation of the Benchmark Results}
 \label{chap:Evaluation}
-The previous section covered the design of the benchmark system, including used models, hardware devices and frameworks, as well as definition of performance metrics. Using this design specifications, we will now present and evaluate the results of the conducted experiments.
+The previous sections covered the design of the benchmark system, including used models, hardware devices and frameworks, as well as definition of performance metrics. Using this design specifications, we will now present and evaluate the results of the conducted experiments.
 For precise mean values and standard deviations of all measured metrics refer to tables \ref{measurementsInception} and \ref{measurementsMobilenet}.
 
 First, we take a look into the individual results of edge and cloud inference and afterwards compare them against each other. In each of these sections the preprocessing results are presented first, followed by the inference results.
@@ -1497,7 +1499,7 @@ Based on the results of the benchmark system and the gained system understanding
 
 This decision model, visualized in figure \ref{fig:DecisionModel}, can be applied to all types of deep learning models, not just image classification models.
 
-Note that this model is based on the assumption that edge deployment should be preferred deployment option if possible and cloud deployment should only be considered if the needed inference performance can not be achieved at the edge.
+Note that this model is based on the assumption that edge deployment should be preferred deployment option if possible and cloud deployment should only be considered if the required inference performance can not be achieved at the edge.
 
 
 If the deep learning model achieves the desired performance at the edge devices out of the box, edge deployment is the optimal choice as no network connection is needed as well as less security issues need to be solved.
@@ -1516,7 +1518,13 @@ In case of lossy compression it is essential to ensure that the compression does
 
 If inference performance still can not satisfy the needs of the real-time AI application, no deployment optional is feasible, hence the deep learning model architecture, the hardware at the edge or cloud or the inference framework has to be adjusted.
 
+%%%%%%%%%%%%%%%%%%%%%%
+%Überleitung
 
+
+
+
+%%%%%%%%%%%%%%%%
 \begin{comment}
 \section{Methodology Evaluation}
 %darlegen wie experimente zeigen dass influencing factors wirklich performance beinflussen
@@ -1547,5 +1555,9 @@ For edge inference we additionally evaluated the performance of the Android Neur
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %Überleitung
+
+
+%\vspace{15}
+%This chapter presented a instantiation of the proposed methodology in chapter \ref{chap:methodology}.
 
 \endinput 

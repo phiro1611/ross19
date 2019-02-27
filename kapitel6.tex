@@ -5,32 +5,34 @@
 %effect of NNAPI
 %results mit related work vergleichen
 %
-We proposed a performance model for the deployment of deep learning models for inference on either edge or cloud devices for real-time AI applications running on edge devices.
-we backed up this performance model by real world measurements wee conducted experiments using image classification as a use case.
+This thesis introduced methodology for performance evaluation of deep learning inference with the goal of better system understanding of deep learning inference.
 
-The evaluation of our experiments show that edge inference provides better inference performance in the form of lower latencies and higher throughput, while having little no no impact on CPU and memory, for small deep learning models like MobileNetV2 than cloud inference, due to network and I/O constraints. 
-Our results show that techniques like quantization can increase throughput of these models by a factor of $X$, with little impact on accuracy.
+We then instantiated this methodology step by step, started by defining the problem space and according performance metrics, followed by the design of a benchmark system supporting real life workloads, infrastructure and thus simulating a AI application.
+
+
+The evaluation of our benchmarks show, that edge inference compared to cloud inference achieves better inference performance in the form of lower latencies and higher throughput, while having little no no impact on CPU and memory, for small deep learning models like MobileNetV2, due to network and I/O constraints. 
+Our results show that model optimization techniques like quantization can increase edge inference throughput of these models by a factor of $X$, with little impact on accuracy.
 %edge inference prefered because of security and netowrk
 
-While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of large deep learning models like InceptionV4.
+While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of larger deep learning models like InceptionV4.
 Therefore cloud inference is the preferred choice for large deep learning models at the moment.
 If edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and less data privacy concern apply.
 
+Furthermore we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
+Hence preprocessing should be minimized.
 
 
-Furthermore we evaluated the impact of preprocessing on inference performance.
 
+Based on this knowledge we then proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises less concerns regarding network and security.
 
-
-We come to the conclusion that preprocessing of large images can can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
-Preprocessing should be minimized.
-
-
-On key lesson
+%On key lesson
 
 
 
 We believe that in the near future edge inference will be the preferred option for most model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
+
+
+%Therefore this thesis can be concluded
 \section{Future Work}
 While we proposed an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new research directions inspired by our results. 
 In this section we present possible ideas for future work.
