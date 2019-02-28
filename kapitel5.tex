@@ -19,10 +19,13 @@ Using the system understanding on the performance of edge and cloud inference we
 \section{Problem Space}
 \label{chap:problemSpace}
 %AI applications ins spiel bringen
-For real-time AI applications to be viable, real-prediction are essential, hence the inference performance is critical in the decision if the deep learning model can be deployed at the edge, or has to be out-sourced to a cloud-backend.
-Therefore the factors influencing this performance have to be examined to get a better understanding of deep learning inference.
+For real-time AI applications to be viable, real-prediction are essential, hence the inference performance of deep learning models is a key aspect.
+If they performance can not be achieved at the edge device itself, an alternative solution is the deployment of the deep learning model to a cloud-backend.
+To be able to help in this decision, the factors influencing this performance have to be examined to get a general understanding of deep learning inference.
+This section utilizes the in section \ref{chap:fundamentels} presented fundamentals of deep learning in general and specifically the aspects of deep learning deployment for inference.
 
 The first factor on performance is the architecture of the deep learning model itself, as the architecture dictates how many operations are required to perform the inference, how much memory is needed by the model, how the input data has to be preprocessed.
+Note that a big architecture if often needed for high accuracies, which are essential for the AI applications, but these large architectures result in high computational costs to perform the inference.
 
 The second aspect is the hardware available at the deployment environment. 
 Memory constraints can prevent that the deep learning model can be loaded into memory, network latency can slow down inference too much or inference can take up too much CPU usages at the edge, resulting in the throttling of other running applications.
@@ -31,10 +34,14 @@ Hardware accelerators like GPUs or TPUs can significantly speed up inference per
 The third and last influencing factor on inference performance is the inference framework. 
 The framework is responsible to load the deep learning model, perform the operations of the deep learning model on the provided architecture and handle inference requests.
 Optimized operators by the framework can optimize performance severely as well as support of hardware accelerators.
+Additionally for cloud inference low latency network protocols are a key aspect for low-latency AI applications.
 
 
 All aspects of the problem space, hardware, model architecture and the used inference framework, have an impact on the performance, thus are the influencing factors on the inference performance.
 In figure \ref{fig:perfmodel} we propose a performance model that takes all performance influencing factors as its inputs and maps them to performance metrics, which are essential for assessing inference performance for real-time AI applications.
+
+To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
+
 These inputs affect various performance metrics, of which inference latency and throughput are the most important ones for real-time AI applications on the edge. However, as the hardware on edge devices is limited and most of the times more than one application needs to run in parallel, low usages of the other depicted metrics are vital as well.
 In the following we present performance metrics essential for the performance of real-time AI applications and the rationale behind them.
 \begin{figure}[!htb]
@@ -46,7 +53,7 @@ In the following we present performance metrics essential for the performance of
 
 
 
-To get the model output for a given model input two steps are needed. The first one is the preprocessing step and transforms a given input into the format that is required by the deep learning model. Only then the actual inference operation can be performed to obtain the model output. Therefore the preprocessing takes a vital part in the general inference process and should be included in the performance model.
+
 
 
 \section{Performance Metrics}
@@ -139,7 +146,7 @@ It supports acceleration with GPU or other accelerators as well was portability 
 
 \paragraph{Android NNAPI}
 \label{chap:NNAPI}
-TensorFlow Lite is also compatible with the Android Neural Networks API (NNAPI). This API
+TensorFlow Lite is also compatible with the Android Neural Networks API\footnote{https://developer.android.com/ndk/guides/neuralnetworks/} (NNAPI). This API
 is designed to speed up computationally intensive machine learning operations and can be used by TensorFlow Lite to improve inference performance. During inference NNAPI "can
 efficiently distribute the computation workload across available on-device processors, including dedicated neural network chips, GPUs and DSPs"\cite{DBLP:journals/corr/abs-1810-01109}.
 
@@ -233,7 +240,7 @@ MobileNetV2 also uses a smaller input sizes of $224\times224$ than InceptionV4's
 \toprule
 Model & Parameters & Top-5 Accuracy\cite{modelspecs} & Input Size & TF Lite Model Size \\
 \midrule
-InceptionV4 & $42.68$M & $95.1\%$ & $299\times299$ & $107.7$MB \\
+InceptionV4 & $42.68$M\cite{InceptionV4params} & $95.1\%$ & $299\times299$ & $107.7$MB \\
 MobileNetV2 1.0 & $3.47$M\cite{DBLP:journals/corr/abs-1801-04381} & $90.6\%$ & $224\times224$ & $14$MB \\
 \begin{tabular}[c]{@{}l@{}}MobileNetV2 1.0\\quantized\end{tabular}  & $3.47$M\cite{DBLP:journals/corr/abs-1801-04381} & $89.9\%$ & $224\times224$ & $3.4$MB\\
 \bottomrule
@@ -439,12 +446,10 @@ Therefore we omit the test of this new feature in our experimentation, but our i
 \end{figure}
 
 
-
-Figure \ref{fig:tree} shows a part of our parameter tree, including both workload and factors. In theory there would be 240 different parameter configurations, but due to a number of reasons the number of different configurations reduced to 113 in total.
-
+\vspace{15pt}
+Figure \ref{fig:tree} shows a part of our parameter tree, including both workload and factors. In theory there would be $240$ different parameter configurations, but due to a number of reasons the number of different configurations reduced to 113 in total.
 First, the Usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for a single image size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference, so we only carry out experiments without NNAPI for a batch size of one.
 We omit the cloud inference for the quantized MobileNetV2 because the model is so small the network overhead would be overwhelming.%INSERT REASON.
-
 %of limited capacity/time and
 Lastly due to lack of support certain operations in TensorFlow Lite for the MobileNetV2 models, we can not perform inference experiment for MobileNetV2 with a batch size larger than one.
 
@@ -523,7 +528,7 @@ the server in the \emph{PNG} format, therefore we first decode them with \emph{t
 \subsection{Instrumentation}
 \label{chap:insta_measurements}
 In the following section we describe how we measure the performance metrics defined in \ref{chap:metrics}.
-We conduct the measurements either directly in the source code or by using Android Studio Profiler (Version 3.3). Since Android Studio cannot collect all metrics the way we wanted, we wanted to used Trepn as a secondary profiling application. But since Trepn does not support our test device, we had to omit these metrics.
+We conduct the measurements either directly in the source code or by using Android Studio Profiler\footnote{https://developer.android.com/studio/profile/} (Version 3.3). Since Android Studio cannot collect all metrics the way we wanted, we wanted to used Trepn\footnote{https://developer.qualcomm.com/software/trepn-power-profiler} as a secondary profiling application. But since Trepn does not support our test device, we had to omit these metrics.
 
 In the following definitions $t_{start}$ denotes the starting point of either the preprocessing or inference, while $t_{end}$ denotes the end point of the respective process.
 \subsubsection{Latency}
@@ -630,7 +635,7 @@ Throughput_{total}  =\frac{1000}{(Latency_{total}) / batchsize}
 \end{gathered}
 \end{equation*}
 \subsubsection{Data Consumption}
-We measure both transmitted and received data by using the Android TrafficStats package (https://developer.android.com/reference/android/net/TrafficStats). We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. We report both $Data_{transmitted}$ and $Data_{received}$ in kilobytes(KB).
+We measure both transmitted and received data by using the Android TrafficStats package\footnote{https://developer.android.com/reference/android/net/TrafficStats}. We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. We report both $Data_{transmitted}$ and $Data_{received}$ in kilobytes(KB).
 \begin{equation*}
 \begin{gathered}
 Data_{transmitted} = \sum_{t_{startInference}}^{t_{endInference}} Data_{transmitted}(t)\\
@@ -640,7 +645,7 @@ Data_{received} = \sum_{t_{startInference}}^{t_{endInference}} Data_{received}(t
 
 \section{Benchmark Execution}
 \label{chap:benchmarkExec}
-Using the benchmark system presented in the previous section, we now describe how the $1696$ benchmark measurements are executed including the different parameter configurations.
+Using the benchmark system presented in the previous section, we now describe how the benchmark measurements are executed including the different parameter configurations.
 
 
 Preprocessing is performed without any models loaded on the edge. but with the image loaded into memory before the start of preprocessing to prevent the I/O operations to influence the preprocessing performance.
@@ -1099,14 +1104,15 @@ This infers that the preprocessing uses $100\%$ of a single core, especially for
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_Memory.pdf}
-\caption{Edge vs. Cloud Inference:  $Memory_{preprocessing}$ - lower is better}
+\caption[Edge vs. Cloud Inference:  $Memory_{preprocessing}$ - lower is better]{Edge vs. Cloud Inference:  $Memory_{preprocessing}$ - lower is better -
+While for small images sizes difference between preoprocessing options are small, the larger the difference becomes in factor of cloud preprocessing.}
 \label{fig:EdgeVsCloudPreproMemory}
 \end{figure}
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_Latencies.pdf}
-\caption{Edge vs. Cloud Inference:  $Latency_{preprocessing}$ - lower is better}
+\caption[Edge vs. Cloud Inference:  $Latency_{preprocessing}$ - lower is better]{Edge vs. Cloud Inference:  $Latency_{preprocessing}$ - lower is better - Cloud preprocessing is significantly faster than edge preprocessing, as preprocessing step is outsourced to the cloud, minimizing $Latency_{preprocessing}$ at the edge.}
 \label{fig:EdgeVsCloudPreproLat}
 \end{figure}
 
@@ -1130,7 +1136,7 @@ The quantization of MobileNetV2 has no significant impact on memory consumption.
 
 %inception on egde much more, mobilenet nearly equal (more for small images, less forlarge images than cloud prepro)
 \paragraph{$\mathbf{Latency_{inference}}$}
-Results for $Latency_{inference}$ can be seen in figures \ref{fig:EdgeVsCloudInferenceLat} and \ref{fig:EdgeVsCloudInferenceLatNR}, while the latter only contains the latency results for the $224^2/299^2$ size for better readability and the first one for all images sizes.
+Results for $Latency_{inference}$ can be seen in figures \ref{fig:EdgeVsCloudInferenceLat} and \ref{fig:EdgeVsCloudInferenceLatNR}, while the latter only contains the latency results for the $224^2/299^2$ size for better legibility and the first one for all images sizes.
 These figures show the substantial difference in latency between the different deployment options, models and image sizes.
 Recall that the cloud inference results include the network latency $Latency_{network}$, because this factor would also be present in real world AI applications.  In our case we have a high speed connection with low network latency, thus being a lower bound for real-time AI applications. 
 The same plot without $Latency_{network}$ can be seen in figure \ref{fig:CloudEdgeInfLatWONetwork}.
@@ -1197,14 +1203,16 @@ Even tough cloud inference with preprocessing has the lowest preprocessing laten
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_Latencies.pdf}
-\caption{Edge vs. Cloud Inference:  $Latency_{inference}$ - lower is better}
+\caption[Edge vs. Cloud Inference:  $Latency_{inference}$ - lower is better]{Edge vs. Cloud Inference:  $Latency_{inference}$ - lower is better -
+While for $224^2/299^2$ images cloud inference with cloud preprocessing is the fastest options, for larger images the impact of preprocessing makes it the slowest option.}
 \label{fig:EdgeVsCloudInferenceLat}
 \end{figure}
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_CPU.pdf}
-\caption[Edge vs. Cloud Inference:  $CPU_{inference}$ - lower is better]{Edge vs. Cloud Inference:  $CPU_{inference}$ - lower is better}
+\caption[Edge vs. Cloud Inference:  $CPU_{inference}$ - lower is better]{Edge vs. Cloud Inference:  $CPU_{inference}$ - lower is better -
+CPU usages across all inference modes, image sizes and models are below $10\%$.}
 \label{fig:EdgeVsCloudInferenceCPU}
 \end{figure}
 
@@ -1212,14 +1220,16 @@ Even tough cloud inference with preprocessing has the lowest preprocessing laten
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Throughput_without_Preprocessing.pdf}
-\caption{Edge vs. Cloud Inference:  $Throughput_{inference}$ - higher is better}
+\caption[Edge vs. Cloud Inference:  $Throughput_{inference}$ - higher is better]{Edge vs. Cloud Inference:  $Throughput_{inference}$ - higher is better -
+The quantized version of MobileNetV2 achieves $2.3$ times higher throughput than the highest MobileNetV2 option and $7.75$ times more than the highest InceptionV4 option.}
 \label{fig:EdgeVsCloudinferneceThroughput}
 \end{figure}
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Throughput_with_Preprocessing.pdf}
-\caption{Edge vs. Cloud Inference:  $Throughput_{total}$ (Inference + Preprocessing) - higher is better}
+\caption[Edge vs. Cloud Inference:  $Throughput_{total}$ - higher is better]{Edge vs. Cloud Inference:  $Throughput_{total}$ (Inference + Preprocessing) - higher is better - 
+When looking at the $Throughput_{total}$ results compared to the $Throughput_{inference}$ results, it can be seen that preprocessing has severe impact on edge preprocessing options, especially for large images, as the $Latency_{preprocessing}$ increases.}
 \label{fig:EdgeVsCloudTotalThroughput}
 \end{figure}
 
@@ -1292,7 +1302,7 @@ While CPU usages of the cloud preprocessing options also rise for increasing ima
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_CPU_Usage.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $CPU_{preprocessing}$ - lower is better}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{preprocessing}$ - lower is better}
 \label{fig:BatchSizePreproCPU}
 \end{figure}
 
@@ -1310,7 +1320,7 @@ For cloud preprocessing there is no difference in memory consumption between the
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_Memory.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Memory_{preprocessing}$ - lower is better}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{preprocessing}$ - lower is better}
 \label{fig:BatchSizePreproMemory}
 \end{figure}
 
@@ -1332,7 +1342,7 @@ For batch size $16$ the gap grows as follows: $92.3$ms ($224^2/299^2$), $297.6$m
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_Latencies.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Latency_{preprocessing}$ - lower is better}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{preprocessing}$ - lower is better}
 \label{fig:BatchSizePreproLatency}
 \end{figure}
 
@@ -1363,7 +1373,7 @@ Therefore it can be stated that cloud inference consumes way less CPU resources 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_CPU_Usage.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $CPU_{inference}$ - lower is better}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{inference}$ - lower is better}
 \label{fig:BatchSizeInferenceCPU}
 \end{figure}
 
@@ -1377,14 +1387,15 @@ The value for a batch size of $32$ is therefore more than $3$ times higher than 
 %The worst cloud inference results for batch sizes $16$ and $32$ are still $x/s$ times better than the edge inference results.
 
 Cloud preprocessing again uses more than cloud inference with edge preprocessing, since the preprocessed images are smaller in sizes (except for $224^2/299^2$) images than the large un-preprocessed \emph{PNG} images.
-
+For a batch size of $32$ and $16$ megapixel images the difference between the two cloud inference options is $446.6$MB for Inception and $527.16$MB for MobileNetV2.
+Hence cloud preprocessing uses $4.2$ times more memory for MobileNetV2 and $3$ times more for InceptionV4.
 
 
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Memory.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Memory_{inference}$ - lower is better}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{inference}$ - lower is better}
 \label{fig:BatchSizeInferenceMemory}
 \end{figure}
 
@@ -1392,23 +1403,29 @@ Cloud preprocessing again uses more than cloud inference with edge preprocessing
 \paragraph{$\mathbf{Latency_{inference}}$}
 Figure \ref{fig:BatchSizeInferenceLatency} reports the $Latency_{inference}$ results for the difference inference modes, batch and image sizes.
 
-For a detailed view with more readability of the cloud inference results for the $224^2/299^2$ images please refer to figure \ref{fig:BatchSizeLatenciesCloud}.
+For a detailed view of the cloud inference results for the $224^2/299^2$ images with more legibility please refer to figure \ref{fig:BatchSizeLatenciesCloud}.
 
 Inference modes with edge preprocessing again have the same performance across all image sizes, hence only cloud inference with cloud preprocessing is affected by the various image sizes.
+The larger the image sizes get, the closer the performance of the cloud preprocessing options get to the edge inference performance.
 
-The larger the image size get, the closer the performance of the cloud preprocessing options gets to the edge inference performance
+When comparing the results for the $224^2/299^2$ images, InceptionV4 edge inference $Latency_{inference}$ increases by $11843.4$ms (factor $1.84$), when doubling the batch size from $16$ to $32$.
+Meanwhile in case of cloud inference the latency only increases by $383.1$ms (factor $1.88$) for cloud preprocessing and $1898.7$ms (factor $2.3$) for edge preprocessing.
+This shows the superiority of cloud inference in terms of computational power.
+
+Like for the batch size one results, cloud inference with cloud preprocessing is superior to cloud inference with edge preprocessing  for $224^2/299^2$ images, but worse for all other image sizes.
+We believe the reason behind this is the reduced I/O cost in case of the smaller $224^2/299^2$ image, but for the larger images this advantages vanishes as the un-preprocessed images causes higher I/O costs as well as higher preprocessing costs, than the preprocessed counterparts.
 
 MobileNetV2 cloud inference with cloud preprocessing starts to perform worse than InceptionV4 in case of cloud preprocessing starting from $8$MP images for large batch sizes and even worse than edge inference of InceptionV4 for $16$MP images.
 Since images for MobileNetV2 have to be resized to $224\times224$ and for InceptionV4 to $299\times299$, we believe the that the increased cost of resizing the images to $224\times224$ instead of $299\times299$ outweighs the performance advantages gained by the smaller architecture of MobileNetV2.
 
 Plots showing $Latency_{network}$ and $Latency_{server}$ divided can be seen in figures \ref{fig:BatchSizeServer} and \ref{fig:BatchSizeNetwork}.
 The variance of $Latency_{network}$ across all images size and batch sizes is relatively high, but even in case of cloud preprocessing with batch size $32$ and a $16$MP images, where in total more than $300$MB are transmitted to the cloud backend (see figure \ref{fig:BatchSizeTransmittedData}), the mean $Latency_{network}$ is below $200$ms. 
-Therefore for example in the case of InceptionV4,batch size $32$, $16MP$ images, cloud inference with cloud preprocessing the latency of the network is accountable for less than $1\%$ of the total inference latency, confirming the speed of our network.
+Therefore for example in the case of InceptionV4, batch size $32$, $16MP$ images, cloud inference with cloud preprocessing the latency of the network is accountable for less than $1\%$ of the total inference latency, supporting the claim that our network can be seen as lower bound for cloud inference, at least for current network speeds.
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Latencies.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Latency_{inference}$ - lower is better}
+\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{inference}$ - lower is better}
 \label{fig:BatchSizeInferenceLatency}
 \end{figure}
 
@@ -1425,7 +1442,7 @@ The throughput of the edge inference results show that the edge devices does not
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Throughput.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Throughput_{inference}$ - higher is better - Only cloud inference with cloud preprocessing benefits from larger batch sizes.}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $Throughput_{inference}$ - higher is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $Throughput_{inference}$ - higher is better - Only cloud inference with cloud preprocessing benefits from larger batch sizes.}
 \label{fig:BatchSizeInferenceThroughput}
 \end{figure}
 
@@ -1439,11 +1456,15 @@ $Data_{received}$ also increases with increasing batch sizes and images sizes (i
 
 
 \paragraph{$\mathbf{Throughput_{total}}$}
-\ref{fig:BatchSizeTotalThroughput}
+When combining preprocessing and inference to $Throughput_{total}$, as can be seen in figure \ref{fig:BatchSizeTotalThroughput}, the throughput for $224^2/299^2$ images is very close to the $throughput_{inference}$ results, as the throughput reduces by $2$ at most.
+But when looking at the larger image sizes, the impact of preprocessing can be observed, especially for the edge preprocessing option, where preprocessing has a larger impact on overall latency, thus lowering throughput.
+
+For $16$ megapixel images the highest total throughput across all inference modes is $7.4$, achieved by cloud inference with edge preprocessing of MobileNetV2 for the batch sizes $16$ and $32$.
+This is only $36\%$ of the highest $Throughput_{inference}$ achieved for the same image and batch size.
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Total_Throughput_(Preprocessing_+_Inference).pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes -  $Throughput_{total}$ - higher is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $Throughput_{total}$ - higher is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $Throughput_{total}$ - higher is better - Compared to the $Throughput_{inference}$ results the impact of preprocessing can be seen particular on the edge preprocessing option for larger images sizes.}
 \label{fig:BatchSizeTotalThroughput}
 \end{figure}
 
@@ -1456,28 +1477,31 @@ After comparing the results edge and cloud inference of batch sizes larger than 
 But since computational power is available at the cloud-backend, large batch size increase performance of cloud inference in the form of throughput under the right circumstances, specifically if the inefficient preprocessing steps are minimized as well as I/O costs.
 Although this increased throughput comes at the cost of higher latencies, hence a balance between throughput and latency needs to be found that satisfies the requirements of a real-time AI application.
 
-\paragraph{Effect of larger Batch Sizes - Key Takeaways}
+\paragraph{Edge vs. Cloud - Effect of larger Batch Sizes - Key Takeaways}
 \emph{
 \subparagraph*{Preprocessing}
 \begin{itemize}
-    \item B
+    \item $CPU_{preprocessing}$ of edge preprocessing options increases up to $92\%$ for large batch and images sizes, as parallel preprocessing kicks in.
+    \item $CPU_{preprocessing}$ of cloud preprocessing stays below $20\%$.
+    \item As image and batch sizes grow $Memory_{preprocessing}$ gap between the two preprocessing options grows up to $842.2$MB, where edge preprocessing uses $2.88\times$ more memory than cloud preprocessing. 
+    \item As images and batch sizes grow, the $Latency_{preprocessing}$ gap between the two preprocessing options grows up to $1375.3$ms, where edge preprocessing uses $2\times$ more memory than cloud preprocessing.
     \begin{itemize}
         \item  x
 \end{itemize}
-    \item x
+    \item There are no significant performance difference between the different models for large batch sizes.
 \end{itemize}
 \subparagraph*{Inference}
 \begin{itemize}
-    \item x
-    \begin{itemize}
-        \item  x
-    \end{itemize}
-    \item x
+    \item Edge inference with large batch sizes causes up to $92\%$ $CPU_{inference}$ usages, while cloud inference causes at maximum $18\%$.
+    \item Edge inference with large batch sizes causes up to $2132.3$MB $Memory_{inference}$ consumption, $3\times$ more than the highest cloud inference result.
+    \item Cloud inference with cloud preprocessing uses up to $4.2\times$ more $Memory_{inference}$ for large image and batch sizes.
+    \item By increasing batch size, the cloud inference $Throughput_{inference}$ of MobileNetV2/InceptionV4 can be increased from $16.2/10.6$ to $93.24/39.8$.
+    \item Edge inference $Throughput_{inference}$ decreases for larger batch sizes.
 \end{itemize}
 \begin{itemize}[leftmargin=4em]
  \renewcommand{\labelitemi}{$\Rightarrow$}
- \item Cloud inference throughput can be increased by increasing batch sizes, but not edge inference throughput
- \item Cloud inference outperforms edge inference for all model types for batch sizes larger than one
+ \item Cloud inference throughput can be increased by increasing batch sizes, but not edge inference throughput.
+ \item Cloud inference outperforms edge inference for all model types for batch sizes larger than one.
  \item Current edge devices not enough computational power for large batch sizes.
 \end{itemize}
 }
@@ -1492,7 +1516,7 @@ Based on the results of the benchmark system and the gained system understanding
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/DecisionModel.pdf}
-\caption{Generic decision model for optimal deployment selection}
+\caption{Generic decision model for optimal deployment of deep learning models}
 \label{fig:DecisionModel}
 \end{figure}
 
