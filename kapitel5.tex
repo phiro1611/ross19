@@ -124,12 +124,11 @@ An overview over the used infrastructure can be seen in figure \ref{fig:expDesig
 In this thesis we will benchmark one edge devices as well as one server, which will serve as the cloud-backend.
 \subsubsection{Edge}
 \label{chap:hardwareEdge}
-As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to 2.8 GHz), Adreno 630 GPU, 8 GB of memory and runs on OxygenOS 9.0.11, which is based on Android 9.
+As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to $2.8$ GHz), Adreno $630$ GPU, $8$ GB of memory and runs on OxygenOS $9.0.11$, which is based on Android $9$.
 %%Cite from AI bechmark paper
 \subsubsection{Cloud}
 %The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 GB system memory.
 We use a virtual server hosted at the LRZ, which has 32 cores (16 real cores with hyperthreading), 240 GB of memory, a Tesla P100 16 GB PCIe GPGPU and a 800 PCIe SSD.
-
 The server runs on Ubuntu 16.04 CUDA 9.1 PGI 17.9 nvidia-docker 2.0.3+docker18.03.1-1.
 \subsection{Inference Framework}
 We use two open source machine learning frameworks, both based on TensorFlow, for the experiments, TensorFlow Lite and TensorFlow Serving. We decided to use these framework, because they are open source and support, at the point of this theses, most of the operations needed for the popular image classification models as well as an increasing number of hardware accelerators and operating systems for both edge and cloud inference.
@@ -1302,7 +1301,7 @@ While CPU usages of the cloud preprocessing options also rise for increasing ima
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_CPU_Usage.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{preprocessing}$ - lower is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{preprocessing}$ - lower is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{preprocessing}$ - lower is better}
 \label{fig:BatchSizePreproCPU}
 \end{figure}
 
@@ -1320,7 +1319,7 @@ For cloud preprocessing there is no difference in memory consumption between the
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_Memory.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{preprocessing}$ - lower is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{preprocessing}$ - lower is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{preprocessing}$ - lower is better}
 \label{fig:BatchSizePreproMemory}
 \end{figure}
 
@@ -1342,7 +1341,7 @@ For batch size $16$ the gap grows as follows: $92.3$ms ($224^2/299^2$), $297.6$m
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Preprocessing_Latencies.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{preprocessing}$ - lower is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{preprocessing}$ - lower is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{preprocessing}$ - lower is better}
 \label{fig:BatchSizePreproLatency}
 \end{figure}
 
@@ -1373,7 +1372,7 @@ Therefore it can be stated that cloud inference consumes way less CPU resources 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_CPU_Usage.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{inference}$ - lower is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{inference}$ - lower is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $CPU_{inference}$ - lower is better}
 \label{fig:BatchSizeInferenceCPU}
 \end{figure}
 
@@ -1395,7 +1394,7 @@ Hence cloud preprocessing uses $4.2$ times more memory for MobileNetV2 and $3$ t
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Memory.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{inference}$ - lower is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{inference}$ - lower is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $Memory_{inference}$ - lower is better}
 \label{fig:BatchSizeInferenceMemory}
 \end{figure}
 
@@ -1425,7 +1424,7 @@ Therefore for example in the case of InceptionV4, batch size $32$, $16MP$ images
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Latencies.pdf}
-\caption{Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{inference}$ - lower is better}
+\caption[Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{inference}$ - lower is better]{Edge vs. Cloud Inference for larger Batch Sizes:  $Latency_{inference}$ - lower is better}
 \label{fig:BatchSizeInferenceLatency}
 \end{figure}
 
