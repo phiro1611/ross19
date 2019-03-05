@@ -7,23 +7,23 @@
 %
 This thesis introduced methodology for performance evaluation of deep learning inference with the goal of better system understanding of deep learning inference.
 
-We then instantiated this methodology step by step, started by defining the problem space and according performance metrics, followed by the design of a benchmark system supporting real life workloads, infrastructure and thus simulating a AI application.
+We then instantiated this methodology step by step, started by defining the problem space and according performance metrics, followed by the design of a benchmark system supporting real-life workloads, infrastructure and thus simulating an AI application.
 
 
-The evaluation of our benchmarks show, that edge inference compared to cloud inference achieves better inference performance in the form of lower latencies and higher throughput, while having little no no impact on CPU and memory, for small deep learning models like MobileNetV2, due to network and I/O constraints. 
+The evaluation of our benchmarks show, that edge inference compared to cloud inference achieves better inference performance in the form of lower latencies and higher throughput, while having little no impact on CPU and memory, for small deep learning models like MobileNetV2, due to network and I/O constraints. 
 Our results show that model optimization techniques like quantization can increase edge inference throughput of these models by a factor of $X$, with little impact on accuracy.
 %edge inference prefered because of security and netowrk
 
 While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of larger deep learning models like InceptionV4.
 Therefore cloud inference is the preferred choice for large deep learning models at the moment.
-If edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and less data privacy concern apply.
+If edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and less data privacy concerns apply.
 
-Furthermore we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
+Furthermore, we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
 Hence preprocessing should be minimized.
 
 
 
-Based on this knowledge we then proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises less concerns regarding network and security.
+Based on this knowledge we then proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
 
 %On key lesson
 
@@ -35,25 +35,25 @@ We believe that in the near future edge inference will be the preferred option f
 %Therefore this thesis can be concluded
 \section{Future Work}
 While we proposed an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new research directions inspired by our results. 
-In this section we present possible ideas for future work.
+In this section, we present possible ideas for future work.
 \paragraph{Inference Performance Prediction}
-Furthermore the data containing the measurements can be used to design a machine learning model.
+Furthermore, the data containing the measurements can be used to design a machine learning model.
 Such a machine learning could take information about the deep learning models to deployed as its input (e.g.\, number of parameters) as well as hardware specifications of both cloud and edge devices.
 Using this input data the model could predict metrics such as inference time, throughput or memory consumption at the edge.
 \paragraph{Mixed Inference}
 An idea for a future study would be the combination of both cloud and edge inference to a mixed inference method for use cases of continuous inference.
 This would combine both the advantages of both cloud and edge inference, as fast continuous predictions could be provided by a relatively small model on the edge device, and high accuracy predictions could be delivered by a large model hosted on a cloud-backend if demanded. 
 
-Two event could trigger the start of the cloud inference: 
+Two events could trigger the start of the cloud inference: 
 Either the edge device sends requests in periodic intervals to the cloud-backend, where the model accuracy is higher, to verify the prediction of the model on the edge devices.
 
-The second event would be triggered by a change in prediction on the edge device. If the prediction of the edge model changes after predicting the same class/value for a extended period of time, a request could be made to the cloud-backend for reassurance. For this approach a threshold for triggering the cloud inference would be needed (e.\,g. difference between the prediction at time $t$ and the prediction at time $t-1$).
+The second event would be triggered by a change in prediction on the edge device. If the prediction of the edge model changes after predicting the same class/value for an extended period of time, a request could be made to the cloud-backend for reassurance. For this approach a threshold for triggering the cloud inference would be needed (e.\,g. the difference between the prediction at time $t$ and the prediction at time $t-1$).
 
 
 
 \paragraph{Retraining}
-A challenge not covered in this theses  is the retraining of the model. After the model is used in production, delivering inference predictions, new training data is available. This data can be used to retrain the model to achieve higher accuracy of the model and maybe account for a concept drift, since in a dynamic environment the data distribution changes continuously.
-In case of edge inference these models often get deployed to multiple edge devices with the same use case, in most cases it is more efficient to retrain the model on a cloud-backend, using the new data of all edge devices with the same use case. Another reason to retrain on the cloud is that retraining is most of the time even more computational intensive than the inference.
-In the case of cloud inference, this retraining would be easier, as the data of the many clients is already at the cloud, where it can be collectively be used to retrain the network(although some privacy issues may occur).
-Note that the ground truth labels for the new data needs to acquired at some point in order to retrain a model in the case of supervised learning.
+A challenge not covered in this thesis is the retraining of the model. After the model is used in production, delivering inference predictions, new training data is available. This data can be used to retrain the model to achieve higher accuracy of the model and maybe account for a concept drift since in a dynamic environment the data distribution changes continuously.
+In case of edge inference these models often get deployed to multiple edge devices with the same use case, in most cases it is more efficient to retrain the model on a cloud-backend, using the new data of all edge devices with the same use case. Another reason to retrain on the cloud is that retraining is most of the time even more computationally intensive than the inference.
+In the case of cloud inference, this retraining would be easier, as the data of the many clients are already at the cloud, where it can be collectively be used to retrain the network(although some privacy issues may occur).
+Note that the ground truth labels for the new data need to be acquired at some point in order to retrain a model in the case of supervised learning.
 \endinput 

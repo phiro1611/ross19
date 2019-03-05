@@ -29,8 +29,8 @@ Based on this performance model, the most essential trade-offs of the different 
 While edge devices often lack computational power to provide high inference throughput, outsourcing the inference to a cloud-backend raises concerns regarding security and reliability.
 Although low-latencies and throughput are the most critical inference performance metric for real-time applications, other metrics like CPU usage, data-, memory- or energy-consumption are affected by both cloud and edge inference and hence vital for the model deployment to consider.
 
-All these performance metrics are mainly affected by three factors: The model architecture, the inference framework and the hardware constraints.
-Significant research is being done in all three areas influencing the deployment question, resulting in the release of optimized frameworks (TensorFlow Lite, NNAPI, TensorFlow Serving), hardware accelerators (GPU, TPU, neuromorphic co-processors, FPGA) and models dedicated for edge devices (MobileNet).
+All these performance metrics are mainly affected by four factors: The model architecture ,hardware, inference framework and the shape of the inference input.
+Significant research is being done in all these areas influencing the deployment question, resulting in the release of optimized frameworks (TensorFlow Lite, NNAPI, TensorFlow Serving), hardware accelerators (GPU, TPU, neuromorphic co-processors, FPGA) and models dedicated for edge devices (MobileNet).
 
 
 In order to help with the optimal selection of cloud and edge inference to achieve real-time AI, this thesis proposes a methodology for performance evaluation of deep learning inference.
