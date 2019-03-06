@@ -36,7 +36,8 @@ For the benchmarks, we will use a OnePlus 6T, a state of the art smartphone, as 
 TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these benchmarks, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks supported many of the above mentioned hardware accelerators as well as providing optimized operators used by image classification models.
 
 Based on this infrastructure and workload we then design and implement an Android benchmark system simulating a real-time AI application.
-We then execute this system to generate benchmarks, we which will then analyze for better system understanding and lastly result in a decision model.
+We then execute this system to generate benchmarks, we which will then analyze for better system understanding and lastly result in a performance model as well as a decision model.
+This performance model will predict the optimal deployment solution for a given system configuration.
 
 Another aspect, aside from the actual inference, is the preprocessing step, which is needed to transform the input into the format required by the model. 
 In the case of CNNs these steps often consist of image resizing and normalization.
@@ -46,6 +47,6 @@ Since this step is vital for the inference, our benchmarks will also include a s
 The rest of this thesis is structured as follows: 
 Chapter \ref{chap:fundamentels} gives a brief overview of the fundamentals of deep learning and model deployment, both at the edge and the cloud-backend for inference purposes, as this understanding is crucial for evaluating the inference performance later on.
 Chapter \ref{chap:relatedWork} provides an outline and evaluation of existing related work on this topic. 
-Next, we propose a methodology towards a systematic approach towards performance evaluation of deep learning inference, starting by analyzing the problem space and ending with a decision model supporting the optimal selection of deep learning deployment.
+Next, we propose a methodology towards a systematic approach towards performance evaluation of deep learning inference, starting by analyzing the problem space and ending with a performance as well as a decision model supporting the optimal selection of deep learning deployment.
 Chapter \ref{chap:experiments} deals with the step by step instantiation of the defined methodology.
 Finally, this thesis closes with a conclusion and possible future work topics inspired by this thesis.

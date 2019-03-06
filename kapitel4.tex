@@ -4,13 +4,10 @@
 In this section, we present a methodology for performance evaluation of deep learning inference, specifically for edge and cloud inference.
 To develop this methodology we make use of the best practices for performance evaluation by Ousterhout \cite{Ousterhout:2018:AMO:3234519.3213770} and Jain\cite{books/daglib/0076234}.
 
-The goal of the performance evaluation is to get a better understanding of deep learning inference, specifically the trade-offs between edge and cloud inference.
-Based on this understanding we propose the design of a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
-
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.7\textwidth]{./Bilder/Methodology.pdf}
+\includegraphics[width=0.65\textwidth]{./Bilder/Methodology.pdf}
 \caption{Methodology for the performance evaluation of deep learning inference.}
 \label{fig:Methodology}
 \end{figure}
@@ -18,6 +15,8 @@ In order to reach this goal, a systematic approach for performance evaluation is
 This methodology modeling this approach, consisting of a multiple-step process, can be seen in figure \ref{fig:Methodology}. 
 
 
+The goal of the performance evaluation is to get a better understanding of deep learning inference, specifically the trade-offs between edge and cloud inference.
+Based on this understanding we propose the design of a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
 
 
 In order to model the performance of deep learning inference, it is crucial to understand the underlying problem space in the first place.
@@ -46,7 +45,10 @@ This system then can be used to generate the benchmarks.
 Afterwards, the collected measurements can be used for evaluation and interpretation.
 Depending on the results of the evaluation concrete recommendations can be given for the optimal deployment option in regard to the benchmarked infrastructure and workload.
 
-Then, this knowledge can be generalized to create a generic decision model for the optimal selection of deployment options for deep learning inference.
+Next, we use the collected benchmarks to build performance model, predicting the system run-time including preprocessing, inference and network latencies for a given system configuration.
+These predictions then can be used to generate recommendations for the optimal deployment option.
+
+Finally, the knowledge from the previous steps can be generalized to create a generic decision model for the optimal selection of deployment options for deep learning inference.
 This decision model is generic, as it can be applied to all decision processes where deep learning models have to deployed for real-time AI applications, independent of deep learning model architecture, workload, infrastructure or framework.
 
 

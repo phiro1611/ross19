@@ -37,9 +37,14 @@ We believe that in the near future edge inference will be the preferred option f
 While we proposed an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new research directions inspired by our results. 
 In this section, we present possible ideas for future work.
 \paragraph{Inference Performance Prediction}
-Furthermore, the data containing the measurements can be used to design a machine learning model.
-Such a machine learning could take information about the deep learning models to deployed as its input (e.g.\, number of parameters) as well as hardware specifications of both cloud and edge devices.
-Using this input data the model could predict metrics such as inference time, throughput or memory consumption at the edge.
+The performance model defined in section \ref{chap:perfModel} can be enhanced in various ways, as we simplified the models.
+
+
+Instead of one hot encoded different models, metrics describing the complexity such as number of parameters can be developed.
+The difficulty in the definition of such metrics is, that different neural network types behave very different, as they use different operators like LTSMs with different impact on performance. 
+This makes general applicable metrics very hard to define.
+
+However the advantages of such metrics, if they are expressive enough, is that the performance of unknown deep learning models can be predicted, as long as their metrics are known.
 \paragraph{Mixed Inference}
 An idea for a future study would be the combination of both cloud and edge inference to a mixed inference method for use cases of continuous inference.
 This would combine both the advantages of both cloud and edge inference, as fast continuous predictions could be provided by a relatively small model on the edge device, and high accuracy predictions could be delivered by a large model hosted on a cloud-backend if demanded. 
