@@ -5,46 +5,62 @@
 %effect of NNAPI
 %results mit related work vergleichen
 %
-This thesis introduced methodology for performance evaluation of deep learning inference with the goal of better system understanding of deep learning inference.
+This thesis presented a methodology for performance evaluation of deep learning inference with the goal of better system understanding of deep learning inference.
 
-We then instantiated this methodology step by step, started by defining the problem space and according performance metrics, followed by the design of a benchmark system supporting real-life workloads, infrastructure and thus simulating an AI application.
+Step by step we instantiated this methodology, started by defining the problem space and with it the according performance metrics, followed by the design of a benchmark system supporting real-life workloads, infrastructure and thus simulating an AI application.
 
+The evaluation of our benchmarks show, that edge inference can achieve a better inference performance than cloud inference, at least for deep learning models with smaller architectures like MobileNetV2.
+This better performance is characterized by lower latencies and higher throughput, while having little no impact on CPU and memory.
 
-The evaluation of our benchmarks show, that edge inference compared to cloud inference achieves better inference performance in the form of lower latencies and higher throughput, while having little no impact on CPU and memory, for small deep learning models like MobileNetV2, due to network and I/O constraints. 
-Our results show that model optimization techniques like quantization can increase edge inference throughput of these models by a factor of $X$, with little impact on accuracy.
+Our results show the potential model optimization techniques like quantization, as these techniques can decrease the latency of these models by a significant factor, with little impact on accuracy.
+Therefore it can be stated that these model optimization techniques should be considered for model deployment and will probably be improved in the near future.
 %edge inference prefered because of security and netowrk
 
 While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of larger deep learning models like InceptionV4.
 Therefore cloud inference is the preferred choice for large deep learning models at the moment.
-If edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and less data privacy concerns apply.
+Also if edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and less data privacy concerns apply.
+
+We believe that in the near future edge inference will be the preferred option for most model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
 
 Furthermore, we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
 Hence preprocessing should be minimized.
 
+Our first steps towards a performance model predicting the optimal deployment given the system configuration showed considerable accuracy, given the usage of a simple multiple linear regression trained with to some extent small training sets.
+This performance model can be enhanced to model not only the inference performance of image classification models, but deep learning models in general.
 
-
-Based on this knowledge we then proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
+Based on this system understanding we then finally proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
 
 %On key lesson
 
+The aim of this thesis was to get a better understanding of deep learning inference and helping the optimal selection of deployment option for deep learning inference.
+This goal was fulfilled, as the results of the instantiated methodology illustrate the trade-offs between edge and cloud inference, but also in deep learning inference in general.
 
 
-We believe that in the near future edge inference will be the preferred option for most model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
 
 
 %Therefore this thesis can be concluded
 \section{Future Work}
 While we proposed an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new research directions inspired by our results. 
 In this section, we present possible ideas for future work.
+
+\paragraph{More Benchmarks}
+Due to the time constraints of this thesis only a limited number of hardware component, deep learning models and inference frameworks have been benchmarked.
+
+There are a wide variety of edge devices with different hardware components like FPGAs, thus having varying impact on inference.
+This thesis studied image classification models, but the deep learning field consists of many more model types with different operators with different performance characteristics.
+Examples for other popular types are object detection models, recurrent neural networks and generative adversarial networks.
+
+Benchmarking different configuration of all these factors would help in getting a even better and more general understanding of deep learning inference.
+
 \paragraph{Inference Performance Prediction}
-The performance model defined in section \ref{chap:perfModel} can be enhanced in various ways, as we simplified the models.
+The performance model defined in section \ref{chap:perfModel} can be enhanced in various ways, as our performance model used simplifications, which reduced the number of factors to only two.
+In order to generate a performance model that take these additional factors into account, more benchmarks with different configurations of these factors needs to be executed.
 
-
-Instead of one hot encoded different models, metrics describing the complexity such as number of parameters can be developed.
+To make this performance model applicable to various types of deep learning model, a metric describing the complexity of the model such as number of parameters has to be developed.
 The difficulty in the definition of such metrics is, that different neural network types behave very different, as they use different operators like LTSMs with different impact on performance. 
 This makes general applicable metrics very hard to define.
 
-However the advantages of such metrics, if they are expressive enough, is that the performance of unknown deep learning models can be predicted, as long as their metrics are known.
+However the advantages of such metrics, if they are expressive enough, is that the performance of unknown deep learning models can be predicted, as long as their characteristics are known.
 \paragraph{Mixed Inference}
 An idea for a future study would be the combination of both cloud and edge inference to a mixed inference method for use cases of continuous inference.
 This would combine both the advantages of both cloud and edge inference, as fast continuous predictions could be provided by a relatively small model on the edge device, and high accuracy predictions could be delivered by a large model hosted on a cloud-backend if demanded. 
