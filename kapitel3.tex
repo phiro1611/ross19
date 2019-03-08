@@ -14,7 +14,7 @@ This chapter will give a brief outline and evaluation of related work on the top
 An Empirical Study of Mobile Deep Inference}
 Guo "evaluate[s] the inference performance of three Convolutional Neural Networks
 (CNNs) using a benchmark Android application" \cite{DBLP:conf/ic2e/Guo18} for both cloud and edge inference. The hardware and frameworks used to conduct the experiments leading to this evaluation can be seen in table \ref{frameworks_hardware_1}. The three tested CNNs are image classification models (AlexNet, NIN and SqueezeNet) with an image input size of $224\times224$.
-They divided the experiment into 4 steps and measured the executing time of each step: 
+They divided the experiment into four steps and measured the executing time of each step: 
 The model loading time (1.\,Load model), the time needed to resize the image into a $224\times224$ bitmap (2.\,Rescale bitmap), the time needed to upload the bitmap to the server in case of cloud inference (3.\,Upload bitmap) and the inference time (4.\,Compute probability).
 Additional to the latencies they measured the CPU usage, battery and memory consumption during these 4 steps using Trepn Profiler.
 They used 15 images in total, divided into three different image size groups ($540\times960$, $108\times1920$, $2160\times3840$) with the same 5 scaled images in each group.
@@ -34,7 +34,7 @@ Also, it is more efficient to upload the $540\times960$ images directly to the c
  & Frameworks & Hardware \\
  \midrule
 Edge & Caffe Android Lib; CNNDroid & Nexus 5 \\
-Cloud & Caffe & Intel Xeon E5-2670, Nvidia Grid K520, 15GB Memory\\
+Cloud & Caffe & \begin{tabular}[c]{@{}l@{}}Intel Xeon E5-2670, Nvidia Grid K520,\\ 15GB Memory\end{tabular}\\
 \bottomrule
 
 \end{tabular}
