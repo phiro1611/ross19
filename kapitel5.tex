@@ -527,7 +527,9 @@ To perform the inference operation we two things into the \emph{run} function of
 \subsubsection{Cloud Inference}
 \label{chap:CloudInfImpl}
 
-For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server over a plaintext gRPC channel, where the inference (and in the server in the \emph{PNG} format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalize the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed at the edge can be fed to the actual model graphs.
+For the cloud inference we send the \emph{PredictRequest} object created in the preprocessing process to the TensorFlow Serving server over a plaintext gRPC channel.
+If the input has been preprocessed at the edge beforehand, Tensorflow Serving can perform the model inference directly.
+If the input has not been preprocessed beforehand, the input arrives at the server in the \emph{PNG} format, therefore we first decode them with \emph{tf.image.decode\_jpeg}, then resize with \emph{tf.image.resize\_bilinear} and finally normalize the tensor values to $[-1,1]$ using the the \emph{subtract} and \emph{multiply} functions. Now the input has the same shape as if they would have been preprocessed at the edge can be fed to the actual model graphs.
 
 \subsection{Instrumentation}
 \label{chap:insta_measurements}
@@ -565,7 +567,7 @@ These latencies are illustrated in figure \ref{fig:serverLat}.
 
 Similar to the edge inference, $Latency_{inference}$ is being measured by calculating the time difference between starting the inference process and receiving the prediction for the given inference request. This whole process is covered by the \emph{predict} function of TensorFlow Serving. Therefore we measure the wall clock time of this function.
 
-Since TensorFlow Serving does not output the server latency, we needed to tweak the source code of gRPC, which is the underlying protocol of TensorFlow Serving. gRPC already logs this latency, so we adjust the source code to output this latency when a call to TensorFlow Serving is finished, repackage the source code and change to dependencies of TensorFlow Serving pointing to the adjusted packages.
+Since TensorFlow Serving does not output the server latency, we needed to tweak the source code of gRPC, which is the underlying protocol of TensorFlow Serving. gRPC already logs this latency, so we adjusted the source code to output this latency when a call to TensorFlow Serving is finished, repackage the source code and changed to dependencies of TensorFlow Serving pointing to the adjusted packages.
 
 We then calculate $Latency_{network}$ implicitly by subtracting $Latency_{server}$ from $Latency_{inference}$.
 
@@ -658,9 +660,9 @@ We do not consider model loading latency in this thesis.
 
 All benchmarks are done using the eduroam Wi‑Fi since the cloud-backend server hosted at the LRZ is only reachable within the Münchner Wissenschaftsnetz (MWN) and a VPN would have an impact on network latencies.
 We conducted the experiments in multiple sessions, where each session consists of around  $100$ experiments distributed over about two hours, thus preventing the results to be skewed by thermal throttling.
-During the benchmarks, no other applications are running on either the edge or the cloud device.
+During the benchmarks, no other applicat,ions are running on either the edge or the cloud device.
 
-We run each parameter configuration listed in \ref{fig:tree} $15$ times to reduce variance and stabilize our results. Therefore we generate $1696$ in total.
+We run each parameter configuration listed in \ref{fig:tree} $15$ times to reduce variance and stabilize our results. In total we generate $1696$ in total.
 \section{Evaluation of the Benchmark Results}
 \label{chap:Evaluation}
 The previous sections covered the design of the benchmark system, including used models, hardware devices and frameworks, as well as the definition of performance metrics. Using these design specifications, we will now present and evaluate the results of the conducted experiments.
@@ -822,25 +824,30 @@ For the MobileNetV2 even $224\times224$ images take longer to preprocess than to
 This section deals with the results of the cloud inference experiments and their evaluation, divided into preprocessing and inference.
 Note that this section only covers the results for a batch size of one, for the results of larger batch sizes please refer to subsection \ref{chap:resultsBatchSize}.
 We are evaluating $Latency_{inference}$ for the most cloud inference results, thus including the network component $Latency_{network}$, because this factor would also be present in real-world AI applications. In our case we have a high-speed connection with low network latency, thus the network latency represents a lower bound for real-time AI applications.
-\begin{lstlisting}[label = network, caption = Network connection test to cloud-backend with iperf]
-[ID] Interval           Transfer     Bandwidth
-[ 4] 0.00-1.01   sec  18.3 MBytes   152 Mbits/sec                  
-[ 4] 1.01-2.02   sec  15.7 MBytes   130 Mbits/sec                  
-[ 4] 2.02-3.03   sec  16.8 MBytes   138 Mbits/sec                  
-[ 4] 3.03-4.01   sec  15.8 MBytes   136 Mbits/sec                  
-[ 4] 4.01-5.00   sec  16.9 MBytes   142 Mbits/sec                  
-[ 4] 5.00-6.01   sec  16.5 MBytes   137 Mbits/sec                  
-[ 4] 6.01-7.04   sec  17.0 MBytes   139 Mbits/sec                  
-[ 4] 7.04-8.02   sec  15.7 MBytes   134 Mbits/sec                  
-[ 4] 8.02-9.01   sec  16.7 MBytes   142 Mbits/sec                  
-[ 4] 9.01-10.03  sec  16.7 MBytes   138 Mbits/sec                  
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ID] Interval           Transfer     Bandwidth
-[ 4] 0.00-10.03  sec   166 MBytes   139 Mbits/sec     sender
-[ 4] 0.00-10.03  sec   163 MBytes   137 Mbits/sec     receiver
+Listing \ref{lst:network} shows a network bandwidth test done with iperf3\footnote{https://github.com/esnet/iperf} between the Android phone and the cloud-backend. This test confirms the assumption about the network speed, as we achieved up to $5.77 Gbits/sec$.
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[label = lst:network, caption = Network connection test to cloud-backend with iperf, escapeinside={(*}{*)}]
+iperf3 -c 10.155.47.236 -P 70 -w 90000000 -t 2
+Connecting to host 10.155.47.236, port 8500
+[  4] local 10.181.61.49 port 43574 connected to ...
+[  6] local 10.181.61.49 port 43576 connected to ...
+[  8] local 10.181.61.49 port 43578 connected to ...
+ ...
+[142] local 10.181.61.49 port 43712 connected to ...
+[ ID] Interval           Transfer     Bandwidth
+[  4]   0.00-1.00   sec  9.95 MBytes  83.5 Mbits/sec                  
+[  6]   0.00-1.00   sec  9.90 MBytes  83.0 Mbits/sec                  
+[  8]   0.00-1.00   sec  9.92 MBytes  83.2 Mbits/sec                  
+ ...     
+[138]   0.00-1.00   sec  9.74 MBytes  81.7 Mbits/sec                  
+[140]   0.00-1.00   sec  9.72 MBytes  81.5 Mbits/sec                  
+[142]   0.00-1.00   sec  9.71 MBytes  81.4 Mbits/sec                  
+(*\bfseries[SUM]   0.00-1.00   sec   688 MBytes  5.77 Gbits/sec  *)  
 
 \end{lstlisting}
-
+\end{tabular}
+\end{center}
 %%add network proof (ping and upload)
 \subsubsection{Preprocessing}
 Cloud Inference allows two preprocessing methods, either on the edge beforehand or directly on the cloud (edge preprocessing and cloud preprocessing).
@@ -1588,7 +1595,7 @@ Note that in case of cloud inference with cloud preprocessing, the ImageSize als
 
 
 These factors now can be used to generate a multiple linear regression model, which aims to predict the $Latency_{total}$.
-We decided to use multiple linear regression with ordinary least squares for this task, as we think, based on the previously evaluated benchmarks, that there is a linear relationship between the latency and the above mentioned factors.
+
 
 To predict the total latency ($Latency_{total}^{pred}$), we used the following multiple linear regression formula:
 \begin{equation} \label{eq:regression}
@@ -1603,6 +1610,9 @@ To predict the total latency ($Latency_{total}^{pred}$), we used the following m
 \end{gathered}
 \end{equation}
 where $\beta_0$ is the intercept, $(\beta_1,...,\beta_p)$ are the coefficients and $X$ is the vector with all influencing factors.
+
+We decided to use multiple linear regression with ordinary least squares for this task, since we think, based on the previously evaluated benchmarks, that there is a linear relationship between the latency and the above mentioned factors.
+Another advantage of multiple linear regression is its interpretability.
 
 %quantized omit ,batch size = 1
 %Since in we benchmark only a single network, hardware components for edge and cloud, we can simplify the regression
@@ -1643,7 +1653,7 @@ Cloud_{CloudPrepro} & \hat{Y}_{Cloud_{CloudPrepro}} < \hat{Y}_{Edge} \And \hat{Y
 \end{equation*}
 
 \subsection{Evaluation}
-Based on the previous defined regression formulas, we can now use the generated benchmark to fit those models using the ordinary least squares approach.
+Based on the previous defined regression formulas, we can now use the generated benchmark data to fit those models using the ordinary least squares approach.
 We split the benchmark data into a training and test set, as we fit the model using the training set and evaluate it using the test set.
 The data set is split $70\%$ training and $30\%$ test.
 %%sum of sqaured
@@ -1654,7 +1664,7 @@ The data set is split $70\%$ training and $30\%$ test.
 %Length cloud cloud prepro test data:32
 %Summary of model_edge
 The summaries of the three models can be seen in listings \ref{lst:edgeModelSummary}, \ref{lst:CloudEdgePreproModelSummary} and \ref{lst:CloudCloudPreproModelSummary}.
-After fitting the coefficients and intercept of the model look as follows:
+After fitting, the coefficients and intercept of the model look as follows:
 \begin{equation*}
 \begin{split}
 \hat{Y}_{Edge} =& 124.1744      -39.9870\cdot MobileNetV2 + 164.1614\cdot InceptionV4\\
@@ -1676,17 +1686,15 @@ After fitting the coefficients and intercept of the model look as follows:
 \end{split}
 \end{equation*}
 
-The coefficient of the $ImageSize$ predictor for $\hat{Y}_{Cloud_{CloudPrepro}}$ is more than $3$ times higher than for the other models, signaling the high impact of cloud preprocessing on latency.
-This coefficient is relatively similar between both edge preprocessing options $\hat{Y}_{Edge}$ and $\hat{Y}_{Cloud_{EdgePrepro}}$, as both use the same preprocessing methods on the edge.
+The coefficient of the $ImageSize$ predictor for $\hat{Y}_{Cloud_{CloudPrepro}}$ is more than $3$ times higher than for the other models, confirming the high impact of cloud preprocessing on latency.
+This coefficient is relatively similar between both edge preprocessing options $\hat{Y}_{Edge}$ and $\hat{Y}_{Cloud_{EdgePrepro}}$, as both use the same preprocessing method.
 
-
+\paragraph{Coefficient of Determination}
 A metric for the goodness of a regression is the coefficient of determination, also called $R^2$.
 If the regression model predicts all observed value perfectly, this $R^2$ values is $1$, else it is below $1$.
 
-The following equations shows the $R^2$ values for all three regression models.
-The best model is $\hat{Y}_{Cloud_{EdgePrepro}}$ with $0.964$, meaning that the fitted regression model explains $96.4\%$ of the variation.
-The worst model is the $Cloud_{CloudPrepro}$ with a $R^2$ of $0.897$.
-While this model performs worse than the other models, it still has a relatively high $R^2$, indicating that  image sizes have a linear impact on the total latency.
+The following equations show the $R^2$ values for all three regression models.
+
 \begin{equation*}
 \begin{split}
 R^2(\hat{Y}_{Cloud_{EdgePrepro}}) = 0.964\\
@@ -1694,9 +1702,68 @@ R^2(\hat{Y}_{Edge}) = 0.948\\
 R^2(\hat{Y}_{Cloud_{CloudPrepro}}) = 0.897
 \end{split}
 \end{equation*}
+The best model is $\hat{Y}_{Cloud_{EdgePrepro}}$ with $0.964$, meaning that the fitted regression model explains $96.4\%$ of the variation.
+The worst model is the $Cloud_{CloudPrepro}$ with a $R^2$ of $0.897$.
+While this model performs worse than the other models, it still has a relatively high $R^2$, indicating that  image sizes have a linear impact on the total latency.
+The worse fit of the $Cloud_{CloudPrepro}$ model could be due to the fact the bigger the images sizes get, the bigger the uncertainty of the factor shared network becomes, as more data has to be transmitted from the server to the client.
+\paragraph{Confidence Intervals for Regression Parameters}
+Table \ref{table:confidence} shows the $95\%$ confidence intervals across all regression models and their coefficients.
+If a confidence interval of a coefficient includes zero, the coefficient is not significantly different from zero at the confidence level \cite{books/daglib/0076234}.
+
+Out of the three models, only one includes a confidence interval, where the interval includes zero.
+This model is $\hat{Y}_{Cloud_{CloudPrepro}}$ and the coefficient concerned is MobileNetV2.
+Except for this coefficient of this single model, all other parameters of all models are significant at the $95\%$ confidence level.
+
+
+
+%%confidence intervals here
+\begin{table}[!htb]
+\centering
+\caption{$95\%$ Confidence Intervals for all three regression models}
+\label{table:confidence}
+\begin{center}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\multicolumn{1}{c}{$\mathbf{\hat{Y}_{Edge}}$} & \multicolumn{2}{c}{Conf. Interval} \\ 
+\cmidrule(l){2-3}
+Coefficient & $[0.025$ & $0.975]$ \\\midrule
+$Intercept$ & $116.227$ & $132.122$ \\
+$MobileNetV2$ & $-48.846$ & $-31.128$ \\
+$InceptionV$4 & $154.731$ & $173.592$ \\
+$ImageSize$ & $2.41\mathrm{e}{-05}$ & $2.7\mathrm{e}{-05}$ \\\bottomrule
+\end{tabular}
+\end{center}
+\vspace*{0.3cm}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\multicolumn{1}{c}{$\mathbf{\hat{Y}_{Cloud_{EdgePrepro}}}$} & \multicolumn{2}{c}{Conf. Interval} \\ 
+\cmidrule(l){2-3}
+Coefficient & $[0.025$ & $0.975]$ \\\midrule
+$Intercept$ & $130.284$ & $141.136$ \\
+$MobileNetV2$ & $21.102$ & $32.632$ \\
+$InceptionV4$ & $102.487$ & $115.199$ \\
+$ImageSize$ & $2.34\mathrm{e}{-05}$ & $2.54\mathrm{e}{-05}$ \\\bottomrule
+\end{tabular}
+\quad
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\multicolumn{1}{c}{$\mathbf{\hat{Y}_{Cloud_{CloudPrepro}}}$} & \multicolumn{2}{c}{Conf. Interval} \\ 
+\cmidrule(l){2-3}
+Coefficient & $[0.025$ & $0.975]$ \\\midrule
+$Intercept$ & $125.807$ & $191.533$ \\
+$MobileNetV2$ & $-13.700$ & $58.431$ \\
+$InceptionV4$ & $97.585$ & $175.023$ \\
+$ImageSize $& $8.72\mathrm{e}{-05}$ & $9.98\mathrm{e}{-05}$ \\\bottomrule
+\end{tabular}
+
+\end{table}
 
 Figure \ref{fig:regression} shows the regression lines for the three different inference modes.
 For better legibility the different deep learning models are shown on side by side plots.
+
+This plot confirms the $R^2$ values of the models, as the lines of the $\hat{Y}_{Edge}$ and $\hat{Y}_{Cloud_{EdgePrepro}}$ model are fitted very close to the points of the test data set, while the $\hat{Y}_{Cloud_{CloudPrepro}}$ line has relatively large distances to the data points.
+This distance is especially visible for $224^2/299^2$ images, where $\hat{Y}_{Cloud_{CloudPrepro}}$ is the best deployment solution, but the fitted line does not reflect this at all.
+
 
 \begin{figure}[!htb]
 \centering
@@ -1707,8 +1774,9 @@ For better legibility the different deep learning models are shown on side by si
 
 Table \ref{table:perfmofelpred} presents the actual optimal choices for the given model and image size and the choice predicted by the performance model.
 The only wrong prediction is for InceptionV4 and $299\times299$ images, where the optimal choice is cloud inference with cloud preprocessing instead of cloud inference with edge inference.
-This results in an accuracy of $90\%$.
-\begin{table}[H]
+This wrong prediction is not surprising, since the regression model for $Cloud_{CloudPrepro}$ does not represent the results of the benchmarks well.
+This still results in an overall accuracy of $90\%$.
+\begin{table}[!htb]
 \centering
 \caption{Predictions for optimal deployment choice and respective ground truth.}
 \label{table:perfmofelpred}
@@ -1730,7 +1798,7 @@ MobileNetV2 & $224\times224$ & $Edge$ & $Edge$ \\
 
 
 
-
+\FloatBarrier
 \section{Decision Model}\label{chap:DecisionModel}
 
 Based on the results of the benchmark system and the gained system understanding we can now create a generic decision model, that models the decision process regarding the optimal selection for edge and cloud inference.
