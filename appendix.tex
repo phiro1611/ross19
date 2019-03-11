@@ -1,28 +1,23 @@
 \appendix
 \chapter{Appendix}
 %\section{Additional Results}
-In this Appendix one can find additional plots of the benchmarks as well as tables with details about the benchmark measurements.
+%In this Appendix one can find additional plots of the benchmarks as well as tables with details about the benchmark measurements.
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_CPU.pdf}
+\includegraphics[width=0.71\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Preprocessing_CPU.pdf}
 \caption[Edge vs. Cloud Inference: $CPU_{preprocessing}$ - lower is better]{Edge vs. Cloud Inference: $CPU_{preprocessing}$ - lower is better - 
-All $CPU_{preprocessing}$ usages are around $12.5\%$, cloud inference with cloud preprocessing has tendencies to a slightly lower usage.}
+All $CPU_{preprocessing}$ usages are around $12.5\%$, cloud inference with cloud preprocessing having tendencies to a slightly lower usage.}
 \label{fig:CloudEdgePreproCPU}
 \end{figure}
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.8\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_Latencies_WITHOUT_NETWORK.pdf}
-\caption{Edge vs. Cloud Inference: $Latency_{inference}$ without $Latency_{network}$ - lower is better}
+\includegraphics[width=0.71\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Inference_Latencies_WITHOUT_NETWORK.pdf}
+\caption{Edge vs. Cloud Inference: $Latency_{inference}$ without $Latency_{network}$ - lower is better - The network has little impact on the total inference latency.}
 \label{fig:CloudEdgeInfLatWONetwork}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{./Bilder/single_plots/batch_size_plots/Effects_of_Batch_size_Inference_Latencies_only_CLOUD_NR.pdf}
-\caption{Edge vs.  Cloud Inference for larger Batch Sizes: $Latency_{inference}$ result of cloud inference and $224^2/299^2$ images - lower is better}
-\label{fig:BatchSizeLatenciesCloud}
-\end{figure}
+
 
 
 
@@ -43,7 +38,7 @@ All $CPU_{preprocessing}$ usages are around $12.5\%$, cloud inference with cloud
    \label{fig:BatchSizeTransmittedData}
 \end{subfigure}
 
-\caption{Edge vs.  Cloud Inference for larger Batch Sizes:  $Data_{received}$ vs. $Data_{transmitted}$ - lower is better}
+\caption{Edge vs.  Cloud Inference for larger Batch Sizes:  $Data_{received}$ vs. $Data_{transmitted}$ - lower is better - Increasing batch and image sizes result in more data transmitted and received.}
 \end{figure}
 
 
@@ -61,7 +56,7 @@ All $CPU_{preprocessing}$ usages are around $12.5\%$, cloud inference with cloud
    \label{fig:BatchSizeNetwork}
 \end{subfigure}
 
-\caption{Edge vs.  Cloud Inference for larger Batch Sizes:  $Latency_{server}$ vs. $Latency_{network}$ - lower is better}
+\caption{Edge vs.  Cloud Inference for larger Batch Sizes:  $Latency_{server}$ vs. $Latency_{network}$ - lower is better - While server latency increases over rising image and batch sizes, network latency stays nearly constant.}
 \end{figure}
 
 

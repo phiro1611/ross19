@@ -16,7 +16,7 @@ This methodology modeling this approach, consisting of a multiple-step process, 
 
 
 The goal of the performance evaluation is to get a better understanding of deep learning inference, specifically the trade-offs between edge and cloud inference.
-Based on this understanding we propose the design of a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
+Based on this understanding we can, in a last step, propose a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
 
 
 In order to model the performance of deep learning inference, it is crucial to understand the underlying problem space in the first place.
@@ -33,7 +33,7 @@ This infrastructure consists of hardware components and frameworks supporting th
 
 The next step is to define the parameters to be studied, which all affect performance.
 There can be differentiated between two types of parameters, workloads and factors.
-Factors are parameters of the system with various levels, that will be varied in the evaluation. An example for a factor would be if the system performs the inference at the edge or at the cloud-backend.
+Factors are parameters of the system with various levels, that will be varied in the evaluation. An example for a factor would be if the inference is done at the edge or at the cloud-backend
 Workloads are requests to the system, in our case a deployed deep learning model, by a user.
 This requests can come in different shapes, thus having a different impact on performance.
 
@@ -45,7 +45,7 @@ This system then can be used to generate the benchmarks.
 Afterwards, the collected measurements can be used for evaluation and interpretation.
 Depending on the results of the evaluation concrete recommendations can be given for the optimal deployment option in regard to the benchmarked infrastructure and workload.
 
-Next, we use the collected benchmarks to build performance model, predicting the system run-time including preprocessing, inference and network latencies for a given system configuration.
+Next, we use the collected benchmarks to create a performance model, predicting the system run-time including preprocessing, inference and network latencies for a given system configuration.
 These predictions then can be used to generate recommendations for the optimal deployment option.
 
 Finally, the knowledge from the previous steps can be generalized to create a generic decision model for the optimal selection of deployment options for deep learning inference.
@@ -53,8 +53,8 @@ This decision model is generic, as it can be applied to all decision processes w
 
 
 
-
-%In the next section, we instantiate the presented methodology 
+\vspace{0.5cm}
+In the next section, we instantiate the presented methodology step by step.
 
 
 

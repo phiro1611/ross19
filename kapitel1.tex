@@ -4,13 +4,13 @@
 %%ADD: android application
 The last few years have been marked by tremendous successes in the field of deep learning.
 Deep learning models have become very accurate at complex tasks such as image classification, object recognition or natural language processing. 
-With this success, the number of possible AI application using these models increased rapidly, especially on edge devices such as cars, smartphones or IoT devices.
+With this success, the number of possible AI applications using these models increased rapidly, especially on edge devices such as cars, smartphones or IoT devices.
 These applications have a broad scope, ranging from industry to scientific applications, but often all have in common that they need predictions at real-time to unfold their full potential while maintaining highly accurate.
 This process of getting predictions from a neural network for a given input, for example getting the probability that a given image contains a cat, is called inference.
 The strength of deep learning models is to generate accurate and reliable predictions, without human help, but if the inference takes too long or consumes too many other resources, the model becomes infeasible for the usage in real-time AI applications.
-Therefore it is critical for AI application to ensure that inference can be done in real-time, but maintaining their accuracy.
+Therefore it is critical for AI application to ensure that inference can be done in real-time..
 
-However, as the accuracy of these models have risen, the computational demands of them have also due to their increasing architectural size, and this has taken a toll on the performance on these models apart from the accuracy, in particular on performance aspects such as inference latency, memory consumption, energy consumption, CPU usage and throughput. 
+However, as the accuracies of these models have risen, the computational demands of them have also due to their increasing architectural size, and this has taken a toll on the performance on these models apart from the accuracy, in particular on performance aspects such as inference latency, memory consumption, energy consumption, CPU usage and throughput. 
 While inference time and throughput are the essential metrics to ensure real-time AI, memory usage, energy consumption and CPU usage are also crucial in order to avoid that the inference consumes the majority of the system resources.
 This is a concern especially for latency-sensitive AI application on edge devices, as edge computing often is constrained by limited computational power. 
 That is why the question arose whether a deep learning model can be deployed to the edge, or has to be deployed to cloud-backend where more computational power is available.
@@ -18,13 +18,13 @@ However, edge inference and edge computing in general offers many advantages com
 Therefore edge deployment should be the preferred option for deep learning inference if the desired inference performance can be achieved.
 
 
-In order to support users with the optimal selection of deployment for deep learning inference, this thesis proposes a methodology for the performance evaluation of deep learning inference, applicable to both edge and cloud inference.
+In order to support users with the optimal selection of deployment for deep learning inference, this thesis introduces a methodology for the performance evaluation of deep learning inference, applicable to both edge and cloud inference.
 The goal of this performance evaluation is a better understanding of deep learning inference, helping us to design a performance model predicting the optimal deployment solution, as well as generic decision model for the deployment of deep learning models.
 To achieve this goal this methodology presents a systematic approach towards the performance evaluation for deep learning inference, started by the definition of the problem space and performance metrics, followed by designing a use case using real-life workloads and infrastructure, that is used to generate benchmarks using a benchmark system.
-This benchmarks then can be used for evaluation, and thus contribute to a better understanding of deep learning inference.
+This benchmarks then can be used for evaluation, resulting in a performance model as well as a decision model. Thus this benchmarks contribute to a better understanding of deep learning inference.
 
 This methodology then gets instantiated step by step.
-We identified three factors influencing the inference performance: the hardware specification of the deployment environment, the architecture of the deep learning model and the framework responsible for performing the inference operations of the deep learning model on the hardware components.
+We identified four factors influencing the inference performance: the hardware specification of the deployment environment, the architecture of the deep learning model and the framework responsible for performing the inference operations of the deep learning model on the hardware components. The fourth factor is the inference input to the system, that is provided by the AI application.
 
 There exists a rich variety of different neural network types, with the most popular being convolutional neural networks(CNNs) and recurrent neural networks(RNNs).
 Many of these models use unique operators with different impact on inference performance.
@@ -33,7 +33,7 @@ Since it is not feasible to benchmark all these different network types, this th
 This rich variety of configurations also applies to the hardware aspects, where in addition to better CPUs and GPUs a rising number of specific accelerators such as TPUs, neuromorphic co-processors, FPGA have been developed for both edge and cloud.
 For the benchmarks, we will use a OnePlus 6T, a state of the art smartphone, as our edge device and a server with an Nvidia Tesla P100 as the cloud-backend.
 
-TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example frameworks for these benchmarks, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks supported many of the above mentioned hardware accelerators as well as providing optimized operators used by image classification models.
+TensorFlow Serving and TensorFlow Lite, both open-source, will serve as the example inference frameworks for these benchmarks, as they support the deployment the deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks support many of the above mentioned hardware accelerators and provide optimized operators used by image classification models.
 
 Based on this infrastructure and workload we then design and implement an Android benchmark system simulating a real-time AI application.
 We then execute this system to generate benchmarks, we which will then analyze for better system understanding and lastly result in a performance model as well as a decision model.
