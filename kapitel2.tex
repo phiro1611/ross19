@@ -28,11 +28,11 @@ These deep architectures with often millions of parameters lead to a significant
 \end{figure}
 
 Figure \ref{fig:simpleNN} shows the structure of a simple neural network with input $\mathbf{X}$ and output $\mathbf{\Hat{Y}}$, where $\mathbf{X}$ is a vector of size four, meaning the neural network takes four features as its input. 
-The output $\mathbf{\Hat{Y}}$ for this example is a vector of only size one, hence the network predicts one value.
+The output $\mathbf{\Hat{Y}}$ for this example is a vector of only size one, hence the network predicts $1$ value.
 Between the input and output of this example network lay three fully connected hidden layers, also called dense layers, with five, three and again five hidden units.
 Each of these hidden layers has a weight matrix $\mathbf{W\in\mathbb{R}^{m\times n}}$, where $\mathbf{m}$ is the number of hidden units and $\mathbf{n}$ the number of hidden units in the previous layer.
 This weight matrices are needed to compute the state of each hidden layer by calculating the weighted sum of all its inputs.
-For example, the state of the first hidden layer is calculated by multiplying $\mathbf{W_1X}$, where $\mathbf{W_1}$ is the weight matrix of layer one and $\mathbf{X}$ the output of the previous layer, in this case, the input layer.
+For example, the state of the first hidden layer is calculated by multiplying $\mathbf{W_1X}$, where $\mathbf{W_1}$ is the weight matrix of layer $1$ and $\mathbf{X}$ the output of the previous layer, in this case, the input layer.
 To calculate  $\mathbf{\Hat{Y}}$ in the output layer using $\mathbf{W_O}$, all previous states need to calculated consecutively. 
 This chain of calculations needed to get from input $\mathbf{X}$ to output $\mathbf{\Hat{Y}}$ is also called forward-propagation because the values of the input vector get passed through all layers by multiplication.
 For the example network in figure \ref{fig:simpleNN} all computations can be seen in equation \ref{eq:1}, with the shapes of all input/output vectors and weight matrices depicted in equation \ref{eq:2}.
@@ -83,7 +83,7 @@ Activation functions are needed to decide if a neuron (hidden unit) fires or not
 
 
 This simple network only contains three hidden layers with at most five hidden layers and thus 45 parameters in total, but in practice state of the art deep learning models often contain millions of parameters. 
-The forward propagation of such models often causes the need for more than one GFLOPS, leading to high computational demands for real-time AI applications.
+The forward propagation of such models often causes the need for more than $1$ GFLOPS, leading to high computational demands for real-time AI applications.
 
 %15+5+15+20 = 45 parameters
 %large network >10 000 000 param

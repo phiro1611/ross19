@@ -7,7 +7,7 @@
 %
 This thesis presented a methodology for performance evaluation of deep learning inference with the goal of better system understanding of deep learning inference.
 
-Step by step we instantiated this methodology, started by defining the problem space and with it the according performance metrics, followed by the design of a benchmark system supporting real-life workloads, infrastructure and thus simulating an AI application.
+Step by step we instantiated this methodology, started an analysis of the problem space and with it the definition of according performance metrics, followed by the design of a benchmark system supporting real-life workloads, infrastructure and thus simulating an AI application.
 
 The evaluation of our benchmarks show, that edge inference can achieve a better inference performance than cloud inference, at least for deep learning models with smaller architectures like MobileNetV2.
 This better performance is characterized by lower latencies and higher throughput, while having little to no neagtive impact on CPU and memory compared to cloud inference.
@@ -16,23 +16,23 @@ Furthermore, our results show the potential model optimization techniques like q
 Therefore it can be stated that these model optimization techniques should be considered for model deployment and will probably be improved even more in the near future.
 %edge inference prefered because of security and netowrk
 
-While we come to the conclusion that edge inference can provide better performance for small models, the current hardware components available for edge devices do not provide enough computational power for high inference performance of larger deep learning models like InceptionV4.
-Therefore cloud inference is the preferred choice for large deep learning models at the moment.
-Also, if edge inference and cloud inference have the same performance, edge inference should be the favored choice as no network connection is needed and fewer data privacy concerns apply.
+While we come to the conclusion that edge inference can provide better performance for small models, the benchmarked hardware components at the edge do not provide enough computational power for high inference performance of larger deep learning models like InceptionV4.
+Therefore cloud inference is the preferred choice for large deep learning models, at least for the moment.
+Also, if edge inference and cloud inference achieve the same performance, edge inference should be the favored choice as no network connection is needed and fewer data privacy concerns apply.
 
 We believe that in the near future edge inference will be the preferred option for most model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
 
 Furthermore, we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
-Hence preprocessing should be minimized.
+Hence a key aspect in model deployment is the minimization of preprocessing.
 
-Our performance model made the first step towards predicting the optimal deployment given the system configuration and showed considerable accuracy, given the usage of a simple multiple linear regression trained with to some extent small training sets.
+Our performance model made the first step towards predicting the optimal deployment option given the system configuration and showed considerable accuracy, given the usage of a simple multiple linear regression trained with to some extent small training sets.
 This performance model can be enhanced to model not only the inference performance of image classification models, but deep learning models in general.
 
 Based on this system understanding we then finally proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
 
 %On key lesson
 
-The aim of this thesis was to get a better understanding of deep learning inference and helping the optimal selection of deployment option for deep learning inference.
+The aim of this thesis was to get a better understanding of deep learning inference to support the optimal selection of deployment option for deep learning inference.
 This goal was fulfilled, as the results of the instantiated methodology illustrate the trade-offs between edge and cloud inference, but also in deep learning inference in general.
 
 
@@ -52,7 +52,7 @@ Examples for other popular types are object detection models, recurrent neural n
 
 Benchmarking different configuration of all these factors would help in getting a even better and more general understanding of deep learning inference.
 
-\paragraph{Inference Performance Prediction}
+\paragraph{Enhance Performance Model}
 The performance model defined in section \ref{chap:perfModel} can be enhanced in various ways, as our performance model used simplifications, which reduced the number of factors to only two.
 In order to generate a performance model that take these additional factors into account, more benchmarks with different configurations of these factors needs to be executed.
 
