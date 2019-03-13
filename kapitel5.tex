@@ -387,7 +387,7 @@ Besides dropout InceptionV4 also benefits from the use of batch normalization du
 \end{figure}
 
 \subsubsection{Input data}
-We evaluate the performance of 2, 4, 8 and 16  megapixels (MP) PNG images, as state of the art edge devices are capable of taking pictures with such high amounts of megapixels. This way the effect of different image sizes on the performance of the preprocessing step can be assessed. We also evaluate an image where no resizing is needed ($224\times224$ and $299\times299$ depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
+We evaluate the performance of $2$, $4$, $8$ and $16$  megapixels (MP) \emph{PNG} images, as state of the art edge devices are capable of taking pictures with such high amounts of megapixels. This way the effect of different image sizes on the performance of the preprocessing step can be assessed. We also evaluate an image where no resizing is needed ($224\times224$ and $299\times299$ depending on the model) to study the impact of image resizing. A picture of a cat (see figure \ref{fig:cat}) scaled to the different sizes will serve as the picture for the experiments.
 The sizes of the images in kilobytes as well as the according resolutions can be seen in table \ref{table:imagesOverview}. In the following, when we speak of $224^2/299^2$ or $0.05$MP images, we mean both $224\times224$ and $299\times299$ images.
 
 \begin{table}[!htb]
@@ -398,7 +398,7 @@ The sizes of the images in kilobytes as well as the according resolutions can be
 \label{table:imagesOverview}
 \begin{tabular}{@{}lll@{}}
 \toprule
-Image   & Resolution       & PNG Size  \\ \midrule
+Image   & Resolution       & \emph{PNG} Size  \\ \midrule
 $224^2$ & $224\times224$   & $83$KB    \\
 $299^2$ & $299\times299$   & $141$KB   \\
 $2$MP   & $1732\times1155$ & $2411$KB  \\
@@ -466,7 +466,7 @@ To conduct the benchmarks for both edge and cloud inference we developed and imp
 This system implements all functionality needed to simulate the defined workloads and parameters and perform the inference on either the Android device itself or send the image to a cloud-backend.
 For both preprocessing and inference the application logs metrics such as inference latency and time of the experiments and stores them to a \emph{CSV} file, which then can be used to evaluation purposes.
 
-Both edge and cloud inference implementations are based on the example implementations in the respective GitHub repositories to ensure optimal performance. 
+Both edge and cloud inference implementations are based on the example implementations in the respective GitHub repositories\footnote{https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/java/demo}\footnote{https://github.com/tensorflow/serving/blob/master/tensorflow\_serving/example/resnet\_client\_grpc.py} to ensure optimal performance. 
 
 
 \begin{figure}[!htb]
@@ -493,7 +493,7 @@ The \emph{MainActivity} writes the collected measurements and the parameter conf
 
 \subsection{Preprocessing}
 %%mention png
-For the case of image classification, the images need to have the correct size ($224\times224$ for MobileNetV2 and $299\times299$ for InceptionV4) and the RGB values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the first two dimensions represent the image height and width, while the last dimension represents the number of channels (3 since the images are RGB).
+For the case of image classification, the images need to have the correct size ($224\times224$ for MobileNetV2 and $299\times299$ for InceptionV4) and the \emph{RGB} values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the first two dimensions represent the image height and width, while the last dimension represents the number of channels (3 since the images are \emph{RGB}).
 \begin{figure}[H]
 \centering
 \input{Bilder/Preprocessing.tex}
@@ -503,8 +503,8 @@ For the case of image classification, the images need to have the correct size (
 \subsubsection{Edge Preprocessing}
 \label{chap:preproImpl}
 In the case of edge preprocessing all preprocessing steps are done on the edge device, meaning that the input can be fed directly into the neural network afterwards, either on the edge device itself or on a cloud-backend.
-We perform these steps the following way: After loading the PNG image into an \emph{InputStream} we create a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$) by calling the \emph{createScaledBitmap} function. 
-Afterwards, we normalize the RGB values to $[-1,1]$ during the conversion from the bitmap to a \emph{ByteBuffer}. 
+We perform these steps the following way: After loading the \emph{PNG} image into an \emph{InputStream} we create a scaled Bitmap of the image (scaled to either $224\times224$ or $299\times299$) by calling the \emph{createScaledBitmap} function. 
+Afterwards, we normalize the \emph{RGB} values to $[-1,1]$ during the conversion from the bitmap to a \emph{ByteBuffer}. 
 For the case of float models, this buffer contains all the pixels in float format and for the quantized model in bytes since quantized models work with lower representations.
 %%%mehr erklären?
 We do this conversion since feeding \emph{ByteBuffers} to TensorFlow Lite is performance enhancing. %add cite here
@@ -515,7 +515,7 @@ For batch size larger than one we parallelize the preprocessing to speed up the 
 \subsubsection{Cloud Preprocessing}
 
 In the case of cloud inference, the images can also be preprocessed directly at the cloud, resulting in nearly no preprocessing done at the edge. While the resizing and scaling steps are no longer done on the edge, the image still needs to be converted into a \emph{PredictRequest} object that TensorFlow Serving can handle.
-To achieve this we load the PNG image into an \emph{InputStream}, convert it to a \emph{ByteArray} which then can be feed to the \emph{PredictRequest} object as a \emph{ByteString}. 
+To achieve this we load the \emph{PNG} image into an \emph{InputStream}, convert it to a \emph{ByteArray} which then can be feed to the \emph{PredictRequest} object as a \emph{ByteString}. 
 
 %Add TensorFlow Serving preprocessing here
 
@@ -660,7 +660,7 @@ Preprocessing is performed without any models loaded at the edge. But with the i
 Edge inference is executed using a loaded deep learning model. 
 We do not consider model loading latency in this thesis.
 
-All benchmarks are done using the eduroam Wi‑Fi since the cloud-backend server hosted at the LRZ is only reachable within the Münchner Wissenschaftsnetz (MWN) and a VPN would have an impact on network latencies.
+All benchmarks are done using the eduroam \emph{Wi‑Fi} since the cloud-backend server hosted at the \emph{LRZ} is only reachable within the "Münchner Wissenschaftsnetz" (\emph{MWN}) and a \emph{VPN} would have an impact on network latencies.
 We conducted the benchmarks in multiple sessions, where each session consists of around  $100$ measurements distributed over two hours, thus preventing the results to be skewed by thermal throttling.
 During the benchmarks, no other applications are running on either the edge or the cloud device.
 
@@ -675,8 +675,8 @@ Afterwards compare them against each other in section \ref{chap:EdgeCloudResults
 In the last subsection, we take a separate look at batch sizes larger than one.
 
 To visualize the results we mostly use bar and line plot, which report the average values.
-The black bar on top of each bar of the following bar charts and translucent areas around the lines of the line plots represent the standard deviation.
-Stacked bar plots do not show the standard deviations, as the they already are represented in the single plots of the individual results.
+The error bar on top of each bar of the following bar charts and translucent areas around the lines of the line plots represent the $95\%$ confidence intervals.
+Stacked bar plots do not show the error bars, as the they already are represented in the single plots of the individual results.
 
 %die 83mb aufschlüsseln in GUI etc 
 Note that the Android application consumes around 83MB in memory and 0\% CPU during idle. The logger, which is used to save the measurements of the experiments consumes memory as well, has an additional impact on the memory consumption as well, hence the memory consumption shown in the results include both logger and other memory overhead may be caused by aspects like the graphical interface.
@@ -1072,9 +1072,9 @@ The legend used in all those plots in explained in table \ref{table:legendPlots}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Inference on & Description & Color \\ \midrule
-\begin{tabular}[c]{@{}l@{}}Inf on:CLOUD;\\ Prepro on:CLOUD\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference as well as preprocessing is done on the\\ cloud-backend.\end{tabular} &  \crule[gruen]{0.8cm}{0.8cm}\\
-\begin{tabular}[c]{@{}l@{}}Inf on:CLOUD;\\ Prepro on:EDGE\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference is done on cloud-backend, but images are \\ preprocessed on edge beforehand.\end{tabular} &  \crule[orangedunkel]{0.8cm}{0.8cm}\\
-\begin{tabular}[c]{@{}l@{}}Inf on:EDGE;\\ Prepro on:EDGE\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference as well as preprocessing is done on the\\ edge.\end{tabular} & \crule[lila]{0.8cm}{0.8cm} \\ \bottomrule
+\begin{tabular}[c]{@{}l@{}}Inf on:CLOUD;\\ Prepro on:CLOUD\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference as well as preprocessing is done on the\\ cloud-backend\end{tabular} &  \crule[gruen]{0.8cm}{0.8cm}\\
+\begin{tabular}[c]{@{}l@{}}Inf on:CLOUD;\\ Prepro on:EDGE\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference is done on cloud-backend, but images are \\ preprocessed on edge beforehand\end{tabular} &  \crule[orangedunkel]{0.8cm}{0.8cm}\\
+\begin{tabular}[c]{@{}l@{}}Inf on:EDGE;\\ Prepro on:EDGE\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inference as well as preprocessing is done on the\\ edge\end{tabular} & \crule[lila]{0.8cm}{0.8cm} \\ \bottomrule
 \end{tabular}
 \end{table}
 
@@ -1818,7 +1818,7 @@ At the last step of the proposed methodology, the next section utilizes the know
 \FloatBarrier
 \section{Decision Model}\label{chap:DecisionModel}
 
-Based on the results of the benchmark system and the gained system understanding we can now create a generic decision model, that models the decision process regarding the optimal selection for edge and cloud inference.
+Based on the results of the benchmark system and the gained understanding of deep learning inference we can now create a generic decision model, that models the decision process of selecting the optimal deployment option for edge and cloud inference.
 
 \begin{figure}[!htb]
 \centering
