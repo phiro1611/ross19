@@ -1,6 +1,6 @@
 \chapter{Methodology Instantiation}
 \label{chap:experiments}
-In this section, we instantiate the methodology defined in the previous section step by step on an image classification use case.
+In this chapter, we instantiate the methodology defined in the previous section step by step on an image classification use case.
 
 In section \ref{chap:problemSpace} the problem space will be defined, based on the fundamentals of deep learning deployment presented in chapter \ref{chap:fundamentels}, followed by the performance metrics in section \ref{chap:metrics}.
 
@@ -11,11 +11,11 @@ Section \ref{chap:parameters} will cover the three deep learning models as well 
 
 Afterwards in section \ref{chap:androidApp} we design a Android benchmark system, which simulates a real-time AI application using the previously defined workloads and infrastructure. Additionally, the Android application also handles instrumentation of the performance metrics and their collection for later evaluation.
 
-Using this benchmark system section \ref{chap:benchmarkExec} describes the execution of the benchmark, which results then get evaluated in \ref{chap:Evaluation}.
+Using this benchmark system section \ref{chap:benchmarkExec} describes the execution of the benchmark system, which benchmarks then get evaluated in \ref{chap:Evaluation}.
 
 The benchmarks then get used to train a performance model in section \ref{chap:perfModel}, predicting the runtime latencies of the different deployment options and thus enable the performance model to give recommendations for the deployment.
 
-Finally in chapter \ref{chap:DecisionModel}, the system understanding gained from all the previous steps of the methodology can be used to generate a decision model helping in the decision of optimal deployment option selection for deep learning inference.
+Finally in chapter \ref{chap:DecisionModel}, the gain understanding of deep learning inference from all the previous steps of the methodology can be used to generate a decision model helping in the decision of optimal deployment option selection for deep learning inference.
 
 
 \section{Problem Space}
@@ -186,7 +186,7 @@ TensorFlow Serving (Release 1.11.1) will be used as the cloud inference framewor
 
 
 \paragraph{Hosting Models}
-In order to host a model as a Servable in TensorFlow Serving, first a TensorFlow model needs to exported using TensorFlow's \emph{SavedModelBuilder}, resulting in a \emph{SavedModel protocol} buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
+In order to host a model as a \emph{Servable} in TensorFlow Serving, first a TensorFlow model needs to exported using TensorFlow's \emph{SavedModelBuilder}, resulting in a \emph{SavedModel protocol} buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
 %%Wieviel schreiben über signature, predict function etc?
 
 Now the exported model can be loaded by an instance of Tensorflow Serving.
@@ -456,7 +456,7 @@ Therefore we omit the test of this new feature in our experimentation, but our i
 
 \vspace{15pt}
 Figure \ref{fig:tree} shows a part of our parameter tree, including both workload and factors. In theory, there would be $240$ different parameter configurations, but due to a number of reasons, the number of different configurations reduced to 113 in total.
-First, the Usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for one image size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference, so we only carry out experiments without NNAPI for a batch size of one.
+First, the usage of NNAPI is independent of the image size hence we only perform experiments without NNAPI for one image size. Also the usage of NNAPI leads to a way better performance for edge inference and we want to compare edge and cloud inference, so we only carry out experiments without NNAPI for a batch size of one.
 We omit the cloud inference for the quantized MobileNetV2 because the model is so small the network overhead would be overwhelming.
 Lastly, due to lack of support certain operations in TensorFlow Lite for the MobileNetV2 models, we can not perform inference experiment for MobileNetV2 with a batch size larger than one.
 
@@ -571,7 +571,7 @@ Similar to the edge inference, $Latency_{inference}$ is being measured by calcul
 
 Since TensorFlow Serving does not output the server latency, we needed to tweak the source code of gRPC, which is the underlying protocol of TensorFlow Serving. gRPC already logs this latency, so we adjusted the source code to output this latency when a call to TensorFlow Serving is finished, repackage the source code and changed to dependencies of TensorFlow Serving pointing to the adjusted packages.
 
-We then calculate $Latency_{network}$ implicitly by subtracting $Latency_{server}$ from $Latency_{inference}$.
+Afterwards we can calculate $Latency_{network}$ implicitly by subtracting $Latency_{server}$ from $Latency_{inference}$.
 
 \begin{equation*}
 \begin{gathered}
@@ -656,7 +656,7 @@ Data_{received} = \sum_{t_{startInference}}^{t_{endInference}} Data_{received}(t
 Using the benchmark system presented in the previous section, we now describe how the benchmark measurements are executed.
 
 
-Preprocessing is performed without any models loaded at the edge. But with the image loaded into memory before the start of preprocessing to prevent the I/O operations from influencing the preprocessing performance.
+Preprocessing is performed without any models loaded at the edge. However, we load the images into memory before the start of preprocessing to prevent the I/O operations from influencing the preprocessing performance.
 Edge inference is executed using a loaded deep learning model. 
 We do not consider model loading latency in this thesis.
 
@@ -708,7 +708,7 @@ These small differences are expected, since both all three models require roughl
 While the different models have little difference in memory and latency, the image size has a significant impact on both of these metrics.
 A $0.05$MP image consumes on average $114.5$MB memory and takes $38.2$ms to preprocess, whilst  $16$MP images consume $177.8$MB and last $430.8$ms.
 Therefore $16$ megapixel images take on average more than $11$ times as long to preprocess across all models, as well as using $1.55$ times more memory in comparison to a $0.05$MP image.
-Figure \ref{fig:EdgePrepro} shows a steady increase in $Latency_{preprocessing}$ and $Memory_{preprocessing}$ across the increasing image sizes.
+Figure \ref{fig:EdgePrepro} shows a steady increase in $Latency_{preprocessing}$ and $Memory_{preprocessing}$ across increasing image sizes.
 Preprocessing large images is therefore mainly affected by the resizing process, not the pixel normalization or conversion to a \emph{ByteBuffer}, since these steps are performed after the resizing, thus having the same impact on performance as they would have on a $0.05$MP image.
 
 The standard deviation of both memory and latency are both low, indicating a stable resource consumption.
@@ -745,7 +745,7 @@ Hence we do not consider the different image sizes in the majority of this secti
 \subsubsection{Effect of NNAPI}
 %%effcient
 The Android Neural Network API (NNAPI) is supposed to speed up inference of neural network on Android by introducing optimized kernels/operators. 
-The effect of this framework can be seen in figure \ref{fig:NNAPI} and show the significant performance improvement caused by the NNAPI, not only affecting $Latency_{inference}$, but also $Memory_{inference}$ and $CPU_{inference}$.
+The effect of this framework can be seen in figure \ref{fig:NNAPI} and show the significant performance improvements caused by the NNAPI, not only affecting $Latency_{inference}$, but also $Memory_{inference}$ and $CPU_{inference}$.
 In general, the usage of NNAPI leads to $4$ times lower inference latencies, $1.2$ times less memory consumption as well as $3$ times lower CPU usages.
 
 This effect can be observed across all tested models, but especially on the InceptionV4 network, as this large model especially benefits from the optimized operations.
@@ -827,12 +827,12 @@ For the MobileNetV2 even $224\times224$ images take longer to preprocess than to
 \label{chap:CloudResults}
 This section deals with the results of the cloud inference benchmarks and their evaluation, divided into preprocessing and inference.
 Note that the first subsections only cover the results for a batch size of one, for the results of larger batch sizes please refer to subsection \ref{chap:resultsBatchSize}.
-We are evaluating $Latency_{inference}$ for the most cloud inference results, thus including the network component $Latency_{network}$, because this factor would also be present in real-world AI applications. In our case we have a high-speed connection with low network latency, thus the network latency represents a lower bound for real-time AI applications.
+We are evaluating $Latency_{inference}$ for the most cloud inference results, thus including the network component $Latency_{network}$, because this factor would also be present in real-world AI applications. In our case we have a high-speed connection with low network latency, thus the network latency can be seen as a lower bound for real-time AI applications.
 Listing \ref{lst:network} shows a network bandwidth test done with iperf3\footnote{https://github.com/esnet/iperf} between the Android phone and the cloud-backend. This test confirms the assumption about the network speed, as we achieved up to $5.77 Gbits/sec$.
 \begin{center}
 \begin{tabular}{c}
 \begin{lstlisting}[label = lst:network, caption = iperf3 network connection test between cloud and edge, escapeinside={(*}{*)}]
-iperf3 -c 10.155.47.236 -P 70 -w 90000000 -t 2
+iperf3 -c 10.155.47.236 -P 70 -w 90000000 
 Connecting to host 10.155.47.236, port 8500
 [  4] local 10.181.61.49 port 43574 connected to ...
 [  6] local 10.181.61.49 port 43576 connected to ...
@@ -860,7 +860,7 @@ This section presents the results of these two methods, especially their impact 
 \paragraph{$\mathbf{Latency_{preprocessing}}$ \& $\mathbf{Memory_{preprocessing}}$}
 Figures \ref{fig:cloudInferencePreproLat} and \ref{fig:cloudInferencePreproMemory} display the effect of preprocessing on either edge or cloud on the preprocessing latencies and memory consumption at the edge in respect to the different deep learning models and image sizes.
 
-For Edge preprocessing, $Memory_{preprocessing}$ and $Latency_{preprocessing}$ are heavily affected by rising image sizes, but not by the different models and their different image input sizes.
+For edge preprocessing, $Memory_{preprocessing}$ and $Latency_{preprocessing}$ are heavily affected by rising image sizes, but not by the different models and their different image input sizes.
 Since preprocessing at the edge is very similar as in the edge inference case, please refer to section \ref{chap:edgePrepro} for full details on the edge preprocessing results.
 
 Preprocessing on the cloud leads to a significant decrease in $Latency_{preprocessing}$, which is expected since nearly no preprocessing steps are done at the edge except building a \emph{PredictRequest} object for TensorFlow Serving.
@@ -1052,7 +1052,7 @@ For both edge and cloud preprocessing the $Data_{received}$ rises for rising $Da
 \end{itemize}
 \begin{itemize}[leftmargin=4em]
  \renewcommand{\labelitemi}{$\Rightarrow$}
- \item Edge Preprocessing has faster $Latency_{total}$ latencies for all image sizes except $0.05$MP.
+ \item Cloud inference with edge preprocessing has faster $Latency_{total}$ latencies for all image sizes except $0.05$MP.
 \end{itemize}
 }%emph end
 
@@ -1107,7 +1107,7 @@ When differentiating between the different image sizes and inference modes the d
 
 %Latency
 \paragraph{$\mathbf{Latency_{preprocessing}}$}
-The preprocessing latency results (see figure \ref{fig:EdgeVsCloudPreproLat}) are similar to the memory results. Both edge preprocessing options are very similar in performance, while cloud preprocessing performs better, but in case of latency the difference is larger.
+The preprocessing latency results (see figure \ref{fig:EdgeVsCloudPreproLat}) are similar to the memory results. Both edge preprocessing options are very similar in performance, while cloud preprocessing performs better, but in case of latency the difference becomes larger.
 
 \begin{figure}[!htb]
 \centering
@@ -1218,7 +1218,7 @@ CPU usages across all inference modes, image sizes and models are below $10\%$}
 
 
 \paragraph{$\mathbf{Throughput_{inference}}$}
-Since $Throughput_{inference}$ is directly computed from $Latency_{inference}$, the results for this metric in figure \ref{fig:EdgeVsCloudinferneceThroughput} have the same tendencies as the latencies.
+Since $Throughput_{inference}$ is derive from $Latency_{inference}$, the results for this metric in figure \ref{fig:EdgeVsCloudinferneceThroughput} have the same tendencies as the latencies.
 Hence cloud inference with cloud preprocessing is the best inference option for InceptionV4, at least in the case of $0.05$MP images with a mean throughput of $10.8$ predictions per second.
 Meanwhile for MobileNetV2 reaches up to $36.6$ predictions per second, when inference is done at the edge.
 The quantized version of MobileNetV2 can make up to $83.7$ predictions per second.
@@ -1253,7 +1253,7 @@ Even though cloud inference with preprocessing has the lowest preprocessing late
 \centering
 \includegraphics[width=0.95\textwidth]{./Bilder/single_plots/edge_vs_cloud_plots/Edge_vs_Cloud_Inference_Throughput_with_Preprocessing.pdf}
 \caption[Edge vs. Cloud Inference:  $Throughput_{total}$ - higher is better]{Edge vs. Cloud Inference:  $Throughput_{total}$ (Inference + Preprocessing) - higher is better - 
-When looking at the $Throughput_{total}$ results compared to the $Throughput_{inference}$ results, it can be seen that preprocessing has severe impact on edge preprocessing options, especially for large images, as the $Latency_{preprocessing}$ increases}
+When looking at the $Throughput_{total}$ results compared to the $Throughput_{inference}$ results, it can be seen that preprocessing has severe impact on edge preprocessing options, especially for large images, as $Latency_{preprocessing}$ increases}
 \label{fig:EdgeVsCloudTotalThroughput}
 \end{figure}
 

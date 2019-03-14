@@ -28,7 +28,7 @@ These deep architectures with often millions of parameters lead to a significant
 \end{figure}
 
 Figure \ref{fig:simpleNN} shows the structure of a simple neural network with input $\mathbf{X}$ and output $\mathbf{\Hat{Y}}$, where $\mathbf{X}$ is a vector of size four, meaning the neural network takes four features as its input. 
-The output $\mathbf{\Hat{Y}}$ for this example is a vector of only size one, hence the network predicts $1$ value.
+The output $\mathbf{\Hat{Y}}$ for this example is a vector of only size one, hence the network predicts one value.
 Between the input and output of this example network lay three fully connected hidden layers, also called dense layers, with five, three and again five hidden units.
 Each of these hidden layers has a weight matrix $\mathbf{W\in\mathbb{R}^{m\times n}}$, where $\mathbf{m}$ is the number of hidden units and $\mathbf{n}$ the number of hidden units in the previous layer.
 This weight matrices are needed to compute the state of each hidden layer by calculating the weighted sum of all its inputs.
@@ -92,13 +92,13 @@ There are many different operators and network architectures, all with different
 Since we will use image classification as a use case for the benchmarks in section \ref{chap:experiments}, we will now present the basics of Convolutional Neural Networks, which are used for this use case.
 
 \paragraph{Convolutional Neural Network}
-This specific class of neural network achieved wide success in the field of image classification and object detection in images.
+This specific class of neural network achieved wide success in the field of image classification and object detection.
 The strength of Convolutional Neural Networks (CNN) is the ability to extract features like complex shapes or colour patterns from images. Thus this network is particularly suitable for image classification.
 %Abschnitt über convolutions und pooling?
 
 Image classification networks classify the contents of an image by outputting classes for the image with respective confidence levels, for example, how likely an animal on a picture represents a cat.
 A simple architecture for this classification task can be seen in figure \ref{fig:simpleCNN}.
-The network expects input images as a three-dimensional tensor $h\times w\times c$, where $h$ and $w$ are the fixed height and width of the image and $c$ is the number of channels, which in most cases is $3$ for the $3$ RGB channels.
+The network expects input images as a three-dimensional tensor $h\times w\times c$, where $h$ and $w$ are the fixed height and width of the image and $c$ is the number of channels, which in most cases is $3$ for the $3$ \emph{RGB} channels.
 An image needs to be preprocessed to match these shape specifications before feeding it to the network.
 The fundamental building blocks of CNNs are multiple convolution layers, which extract features from the images. The first convolutional extract simple features like edges from the image, while the later convolutional layers combine these simple features to complex shapes like rectangles.
 To reduce the spatial dimension of the feature maps, outputted by the convolution, a popular layer type added to CNNs are pooling layers.
@@ -117,7 +117,7 @@ The last fully connected layer contains the output of the network, in this case,
 %Add calculation example
 \subsection{Training}
 Constructing the architecture of a model is the first step, but in order to enable models to make accurate predictions, they have to be trained, which means adjusting the weights of the network. 
-Since most neural networks are a type of supervised learning, training data set with ground truth labels $\mathbf{Y}$ is needed for the training.
+Since most neural networks are a type of supervised learning, training data with ground truth labels $\mathbf{Y}$ is needed for the training.
 This training is done with forward- and back-propagation, where one or more samples of the training set are forward propagated through the network until reaching the output layer. Afterwards, the $Loss\mathbf{(Y,\Hat{Y})}$ can be calculated, which measures the difference between the prediction $\mathbf{\Hat{Y}}$ and the ground truth $\mathbf{Y}$.
 
 To optimize the network, the loss needs to be minimized, meaning that the difference between prediction and ground truth is as small as possible and thus the accuracy as high as possible.
@@ -153,7 +153,7 @@ The difficulty in optimizing deep learning models is to improve inference perfor
 One technique is quantization, which we will briefly introduce in the following paragraph.
 \subsubsection{Quantization}
 \label{chap:quant}
-Quantization is a model optimization technique that trades in model precision for better inference latencies, memory consumption during inference and model sizes.
+Quantization is a model optimization technique that often trades in model precision for better inference latencies, memory consumption during inference and model sizes.
 Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
 The weights/activations are either quantized after training the model with floats (Post Training Quantization), or the model is trained with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
 efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these techniques with the following results:
@@ -161,7 +161,7 @@ efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these 
 
 
 \section{Deployment of Deep Learning Models}
-Deep learning deployment describes the process of deploying a trained machine learning model to a production environment for inference purposes. 
+Deep learning deployment describes the process of deploying a (trained) machine learning model to a production environment for inference purposes. 
 
 %%Write more here
 There can be differentiated between two different deployment methods. The first one is deploying the model directly to edge devices, while the second outsources the model to a cloud-backend, where the inference is performed, and the prediction is then sent back to the edge device.
@@ -170,7 +170,7 @@ Edge deployment describes the process of deploying deep learning models to edge 
 These edge devices are characterized by offering a limited amount of computational power as well as limited energy.
 This limited power often stands in contrast to the performance demands caused real-time AI applications using deep learning models.
 Despite its limits, edge deployment also has some advantages, particularly in reliability and security. 
-For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise a data privacy/security concern.
+For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise data privacy/security concerns.
 Therefore edge deployment should be the preferred choice if the inference performance is sufficient for the use case of real-time AI applications.
 
 In order to increase this performance, various accelerators like better GPUs, TPUs or other dedicated neural network hardware components have been developed for edge devices.
@@ -181,7 +181,7 @@ In order to increase this performance, various accelerators like better GPUs, TP
 \subsection{Cloud Deployment}
 While the breakthroughs in deep learning are very interesting for AI applications on edge devices, the computational demand needed for edge deployment often exceeds the available power to be viable.
 That is why the option of outsourcing the models to a cloud-backend has become a popular solution in recent years.
-Cloud-backends offer a huge amount of computational power, especially suitable for deep learning in the form large numbers of GPUs and TPUs.
+Cloud-backends offer a large amount of computational power, especially suitable for deep learning in the form large numbers of GPUs and TPUs.
 
 
 The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications like autonomous driving, where continuous and reliable predictions from deep learning models as critical for the applications feasibility.
