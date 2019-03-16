@@ -494,7 +494,7 @@ The \emph{MainActivity} writes the collected measurements and the parameter conf
 \subsection{Preprocessing}
 %%mention png
 For the case of image classification, the images need to have the correct size ($224\times224$ for MobileNetV2 and $299\times299$ for InceptionV4) and the \emph{RGB} values need to be normalized to the interval $[-1,1]$. After preprocessing the image has been transformed into the shape $224\times224\times3$ with all values between $[-1,1]$, where the first two dimensions represent the image height and width, while the last dimension represents the number of channels (3 since the images are \emph{RGB}).
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \input{Bilder/Preprocessing.tex}
 \caption{Preprocessing steps for image classification: Resizing to the model input size and normalization of the pixel values to $[-1,1]$}
