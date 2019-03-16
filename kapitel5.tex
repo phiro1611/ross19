@@ -9,9 +9,9 @@ The used infrastructure is presented in section \ref{chap:infrastructure} and in
 
 Section \ref{chap:parameters} will cover the three deep learning models as well as the different types of input data used for the benchmarks.
 
-Afterwards in section \ref{chap:androidApp} we design a Android benchmark system, which simulates a real-time AI application using the previously defined workloads and infrastructure. Additionally, the Android application also handles instrumentation of the performance metrics and their collection for later evaluation.
+Afterwards in section \ref{chap:androidApp} we design a Android benchmark framework, which simulates a real-time AI application using the previously defined workloads and infrastructure. Additionally, the Android application also handles instrumentation of the performance metrics and their collection for later evaluation.
 
-Using this benchmark system section \ref{chap:benchmarkExec} describes the execution of the benchmark system, which benchmarks then get evaluated in \ref{chap:Evaluation}.
+Using this benchmark framework section \ref{chap:benchmarkExec} describes the execution of the benchmark framework, which benchmarks then get evaluated in \ref{chap:Evaluation}.
 
 The benchmarks then get used to train a performance model in section \ref{chap:perfModel}, predicting the runtime latencies of the different deployment options and thus enable the performance model to give recommendations for the deployment.
 
@@ -82,7 +82,7 @@ For cloud inference, where network communication has to be done between a client
 Therefore we split $Latency_{inference}$ in two sub metrics, $Latency_{network}$ and $Latency_{server}$, which together sum up to $Latency_{inference}$.
 While $Latency_{server}$ denotes the time consumed by the cloud-backend to perform the inference on the given input, $Latency_{network}$ describes the time needed to send the inference input to the server and receive the prediction from the server.
 \subsubsection{Throughput}
-In order to accomplish real-time AI a certain level of throughput is essential. Therefore the number of predictions per second is a valuable metric. 
+To accomplish real-time AI a certain level of throughput is essential. Therefore the number of predictions per second is a valuable metric. 
 Since preprocessing is a vital part of the inference process, the throughput impact caused by preprocessed is also of interest.
 
 Therefore we differentiate between three types of throughput: $Throughput_{preprocessing}$, $Throughput_{inference}$ and $Throughput_{total}$.
@@ -116,7 +116,7 @@ This is in particular important for the case where the input data for the model 
 
 \section{Infrastructure}
 \label{chap:infrastructure}
-This section presents the infrastructure used for our benchmark system, specifically used hardware components and inference frameworks both at the edge and cloud.
+This section presents the infrastructure used for our benchmark framework, specifically used hardware components and inference frameworks both at the edge and cloud.
 An overview of the used infrastructure can be seen in figure \ref{fig:expDesign}.
 
 \begin{figure}[H]
@@ -132,7 +132,7 @@ In this thesis, we will benchmark one edge devices as well as one server, which 
 More devices would help illustrate the effect of different hardware environments better, but due to limited time, benchmarks for other devices are not possible.
 \subsubsection{Edge}
 \label{chap:hardwareEdge}
-As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU(Octa-core, up to $2.8$ GHz), Adreno $630$ GPU, $8$ GB of memory and runs on OxygenOS $9.0.11$, which is based on Android $9$.
+As the edge device we will use the OnePlus 6T (ONEPLUS A6013). This state of the art smartphone is powered by a Qualcomm Snapdragon 845 CPU (Octa-core, up to $2.8$ GHz), Adreno $630$ GPU, $8$ GB of memory and runs on OxygenOS $9.0.11$, which is based on Android $9$.
 %%Cite from AI bechmark paper
 \subsubsection{Cloud}
 %The Nvidia DGX-1 will serve as the cloud-backend for the experiments. This server consists of 8$\times$Tesla V100 providing 1000 TFLOPS as well as 256 GB GPU memory and 512 GB system memory.
@@ -186,7 +186,7 @@ TensorFlow Serving (Release 1.11.1) will be used as the cloud inference framewor
 
 
 \paragraph{Hosting Models}
-In order to host a model as a \emph{Servable} in TensorFlow Serving, first a TensorFlow model needs to exported using TensorFlow's \emph{SavedModelBuilder}, resulting in a \emph{SavedModel protocol} buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
+To host a model as a \emph{Servable} in TensorFlow Serving, a TensorFlow model needs to exported using TensorFlow's \emph{SavedModelBuilder}, resulting in a \emph{SavedModel protocol} buffer file along with the model’s variables and assets (Although TensorFlow Serving is optimized for TensorFlow models, the framework can be extended to serve other types of models).
 %%Wieviel schreiben über signature, predict function etc?
 
 Now the exported model can be loaded by an instance of Tensorflow Serving.
@@ -460,9 +460,9 @@ First, the usage of NNAPI is independent of the image size hence we only perform
 We omit the cloud inference for the quantized MobileNetV2 because the model is so small the network overhead would be overwhelming.
 Lastly, due to lack of support certain operations in TensorFlow Lite for the MobileNetV2 models, we can not perform inference experiment for MobileNetV2 with a batch size larger than one.
 
-\section{Android Benchmark System}
+\section{Android Benchmark Framework}
 \label{chap:androidApp}
-To conduct the benchmarks for both edge and cloud inference we developed and implemented an Android benchmark System using Kotlin.
+To conduct the benchmarks for both edge and cloud inference we developed and implemented an Android benchmark framework using Kotlin.
 This system implements all functionality needed to simulate the defined workloads and parameters and perform the inference on either the Android device itself or send the image to a cloud-backend.
 For both preprocessing and inference the application logs metrics such as inference latency and time of the experiments and stores them to a \emph{CSV} file, which then can be used to evaluation purposes.
 
@@ -633,7 +633,7 @@ Note that we report total memory consumption of the application, including memor
 Neither Android Studio nor Trepn can provide GPU metrics for the OnePlus 6T. Hence no GPU measurements can be conducted.
 \subsubsection{Throughput}
 We differentiate three types of throughput: the inference throughput, preprocessing throughput and the total throughput, which also includes preprocessing besides inference.
-We calculate throughput in operations per second by 
+We calculate throughput in frames per second (fps) by 
 
 \begin{equation*}
 \begin{gathered}
@@ -643,7 +643,7 @@ Throughput_{total}  =\frac{1000}{(Latency_{total}) / batchsize}
 \end{gathered}
 \end{equation*}
 \subsubsection{Data Consumption}
-We measure both transmitted and received data by using the Android TrafficStats package\footnote{https://developer.android.com/reference/android/net/TrafficStats}. We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. We report both $Data_{transmitted}$ and $Data_{received}$ in kilobytes(KB).
+We measure both transmitted and received data by using the Android TrafficStats package\footnote{https://developer.android.com/reference/android/net/TrafficStats}. We start measuring both transmitted and received bytes when the inference operation is started and stop when the response from the server is returned. We report both $Data_{transmitted}$ and $Data_{received}$ in kilobytes (KB).
 \begin{equation*}
 \begin{gathered}
 Data_{transmitted} = \sum_{t_{startInference}}^{t_{endInference}} Data_{transmitted}(t)\\
@@ -653,7 +653,7 @@ Data_{received} = \sum_{t_{startInference}}^{t_{endInference}} Data_{received}(t
 
 \section{Benchmark Execution}
 \label{chap:benchmarkExec}
-Using the benchmark system presented in the previous section, we now describe how the benchmark measurements are executed.
+Using the benchmark framework presented in the previous section, we now describe how the benchmark measurements are executed.
 
 
 Preprocessing is performed without any models loaded at the edge. However, we load the images into memory before the start of preprocessing to prevent the I/O operations from influencing the preprocessing performance.
@@ -667,7 +667,7 @@ During the benchmarks, no other applications are running on either the edge or t
 We run each parameter configuration listed in \ref{fig:tree} $15$ times to reduce variance and stabilize our results. In total we generate $1696$ in total.
 \section{Evaluation of the Benchmark Results}
 \label{chap:Evaluation}
-The previous sections covered the design of the benchmark system, including used models, hardware devices and frameworks, as well as the definition of performance metrics. Using these design specifications, we will now present and evaluate the results of the conducted experiments.
+The previous sections covered the design of the benchmark framework, including used models, hardware devices and frameworks, as well as the definition of performance metrics. Using these design specifications, we will now present and evaluate the results of the conducted experiments.
 For precise mean values and standard deviations of all measured metrics refer to tables \ref{measurementsInception} and \ref{measurementsMobilenet}.
 
 First, we take a look into the individual results of edge and cloud inference in sections \ref{chap:EdgeResults} and \ref{chap:CloudResults}.
@@ -1818,12 +1818,12 @@ At the last step of the proposed methodology, the next section utilizes the know
 \FloatBarrier
 \section{Decision Model}\label{chap:DecisionModel}
 
-Based on the results of the benchmark system and the gained understanding of deep learning inference we can now create a generic decision model, that models the decision process of selecting the optimal deployment option for edge and cloud inference.
+Based on the results of the benchmark framework and the gained understanding of deep learning inference we can now create a decision model, that models the decision process of selecting the optimal deployment option for edge and cloud inference.
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.8\textwidth]{./Bilder/DecisionModel.pdf}
-\caption{Generic decision model for optimal deployment of deep learning models}
+\caption{Decision model for optimal deployment of deep learning models}
 \label{fig:DecisionModel}
 \end{figure}
 

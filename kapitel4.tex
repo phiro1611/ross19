@@ -11,7 +11,7 @@ To develop this methodology we make use of the best practices for performance ev
 \caption{Methodology for the performance evaluation of deep learning inference}
 \label{fig:Methodology}
 \end{figure}
-In order to reach this goal, a systematic approach for performance evaluation is needed.
+To reach this goal, a systematic approach for performance evaluation is needed.
 This methodology modeling this approach, consisting of a multiple-step process, can be seen in figure \ref{fig:Methodology}. 
 
 
@@ -19,16 +19,16 @@ The goal of the performance evaluation is to get a better understanding of deep 
 Based on this understanding we can, in a last step, propose a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
 
 
-In order to model the performance of deep learning inference, it is crucial to understand the underlying problem space in the first place.
+To model the performance of deep learning inference, it is crucial to understand the underlying problem space in the first place.
 Understanding the system boundaries helps to choose the correct performance metrics, workloads and parameters affecting performance.
 Therefore the topic of deep learning in general, but specifically inference and the deployment of deep learning models on both edge and cloud-backends have to be studied.
 
 Based on the understanding of the problem space performance metrics, critical for assessing the inference performance of a system, can be derived.
 
 We will use measurements as the evaluation technique of this thesis. 
-Therefore we have to develop a benchmark system supporting a use case, that is used as an exemplary system helping to illustrate the trade-offs between edge and cloud inference for better system understanding.
+Therefore we have to develop a benchmark framework supporting a use case, that is used as an exemplary system helping to illustrate the trade-offs between edge and cloud inference for better system understanding.
 
-Therefore the next steps towards such a benchmark system are to select an infrastructure, that is representative of real-life conditions to achieve applicable measurements. 
+Therefore the next steps towards such a benchmark framework are to select an infrastructure, that is representative of real-life conditions to achieve applicable measurements. 
 This infrastructure consists of hardware components and frameworks supporting this hardware. 
 
 The next step is to define the parameters to be studied, which all affect performance.
@@ -39,7 +39,7 @@ This requests can come in different shapes, thus having a different impact on pe
 
 
 
-After defining the infrastructure, parameters and performance metrics, the benchmark system can be implemented as a framework for handling workload simulation, performance metrics instrumentation and data collection of the measurements.
+After defining the infrastructure, parameters and performance metrics, the benchmark framework can be implemented as a framework for handling workload simulation, performance metrics instrumentation and data collection of the measurements.
 This system then can be used to generate the benchmarks. 
 
 Afterwards, the collected measurements can be used for evaluation and interpretation.
@@ -48,8 +48,8 @@ Depending on the results of the evaluation concrete recommendations can be given
 Next, we use the collected benchmarks to create a performance model, predicting the system run-time including preprocessing, inference and network latencies for a given system configuration.
 These predictions then can be used to generate recommendations for the optimal deployment option.
 
-Finally, the knowledge from the previous steps can be generalized to create a generic decision model for the optimal selection of deployment options for deep learning inference.
-This decision model is generic, as it can be applied to all decision processes where deep learning models have to deployed for real-time AI applications, independent of deep learning model architecture, workload, infrastructure or framework.
+Finally, the knowledge from the previous steps can be generalized to create a decision model for the optimal selection of deployment options for deep learning inference.
+This decision model can be applied to all decision processes where deep learning models have to deployed for real-time AI applications, independent of deep learning model architecture, workload, infrastructure or framework.
 
 
 

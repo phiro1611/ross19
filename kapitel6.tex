@@ -7,9 +7,9 @@
 %
 This thesis presented a methodology for performance evaluation of deep learning inference to support the optimal selection of deployment options for deep learning inference.
 
-Step by step we instantiated this methodology, started by an analysis of the problem space and with it the definition of according performance metrics, followed by the design of a benchmark system supporting real-life workloads, infrastructure and thus simulating an AI application.
+Step by step we instantiated this methodology, started by an analysis of the problem space and with it the definition of according performance metrics, followed by the design of a benchmark framework supporting real-life workloads, infrastructure and thus simulating an AI application.
 
-The evaluation of our benchmarks show, that edge inference can achieve a better inference performance than cloud inference, at least for deep learning models with smaller architectures like MobileNetV2.
+Evaluation shows, that edge inference can achieve a better inference performance than cloud inference, at least for deep learning models with smaller architectures like MobileNetV2.
 This better performance is characterized by lower latencies and higher throughput, while having little to no negative impact on CPU and memory compared to cloud inference.
 
 Furthermore, our results show the potential of model optimization techniques like quantization, as these techniques can reduces the latencies of these models by a significant factor, with little impact on accuracy.
@@ -21,6 +21,8 @@ Therefore cloud inference is the preferred choice for large deep learning models
 Also, if edge inference and cloud inference achieve the same performance, edge inference should be the favored choice as no network connection is needed and fewer data privacy concerns apply.
 
 We believe that in the near future edge inference will be the preferred option for most model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
+For many future scenarios edge inference will be instrumental (e.\,g. autonomous driving) as more AI applications and more edge devices are emerging.
+
 
 Furthermore, we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
 Hence a key aspect in model deployment is the minimization of preprocessing.
@@ -28,14 +30,16 @@ Hence a key aspect in model deployment is the minimization of preprocessing.
 Our performance model made the first step towards predicting the optimal deployment option given the system configuration and showed considerable accuracy, given the usage of a simple multiple linear regression trained with to some extent small training sets.
 This performance model can be enhanced to model not only the inference performance of image classification models, but deep learning models in general.
 
-Based on this system understanding we then finally proposed a generic decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
+Based on this system understanding we then finally proposed a decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
 
 %On key lesson
+This thesis contributed a methodology for performance evaluation of deep learning inference including the design and execution of a benchmark framework for evaluation of edge and cloud inference deployment options and the design of a performance model utilizing the resulting benchmarks.
+This framework and performance model can easily extended to support different types of hardware and deep learning models and thus can be used as a baseline for future research on the topic of edge and cloud inference.
 
-The aim of this thesis was to get a better understanding of deep learning inference to support the optimal selection of deployment option for deep learning inference.
+The aim of this thesis was to get a better understanding of deep learning inference and in particular a qualitative and quantitative investigation of different edge and cloud deployment options.
 This goal was fulfilled, as the results of the instantiated methodology illustrate the trade-offs between edge and cloud inference, but also in deep learning inference in general.
 
-
+%ability to instrument down to latency, CPU and memory level.
 
 
 %Therefore this thesis can be concluded
@@ -44,17 +48,19 @@ While we proposed an extensive empirical study on the trade-offs between edge an
 In this section, we present possible ideas for future work.
 
 \paragraph{More Benchmarks}
-Due to the time constraints of this thesis only a limited number of hardware component, deep learning models and inference frameworks have been benchmarked.
+Due to the time constraints of this thesis only a limited number of hardware component, deep learning models and inference frameworks have been benchmarked, but the designed benchmark framework can easily be extended.
 
-There are a wide variety of edge devices with different hardware components like FPGAs, thus having varying impact on inference.
+
+There are a wide variety of emerging edge devices with different hardware components developed towards edge inference such as FPGAs, Edge TPUs or other AI chips \cite{AItrends}.
+All of these accelerators have its own unique characteristics, hence the impact of each component on inference performance needs to be studied.
 This thesis studied image classification models, but the deep learning field consists of many more model types with different operators with different performance characteristics.
 Examples for other popular types are object detection models, recurrent neural networks and generative adversarial networks.
-
 Benchmarking different configuration of all these factors would help in getting a even better and more general understanding of deep learning inference.
 
+
 \paragraph{Enhance Performance Model}
-The performance model defined in section \ref{chap:perfModel} can be enhanced in various ways, as our performance model used simplifications, which reduced the number of factors to only two.
-In order to generate a performance model that take these additional factors into account, more benchmarks with different configurations of these factors needs to be executed.
+The performance model can be enhanced in various ways, as our performance model used simplifications, which reduced the number of factors to only two.
+To generate a performance model that take these additional factors into account, more benchmarks with different configurations of these factors needs to be executed.
 
 To make this performance model applicable to various types of deep learning model, a metric describing the complexity of the model such as number of parameters has to be developed.
 The difficulty in the definition of such metrics is, that different neural network types behave very different, as they use different operators like LTSMs with different impact on performance. 
@@ -76,4 +82,12 @@ A challenge not covered in this thesis is the retraining of the model. After the
 In case of edge inference these models often get deployed to multiple edge devices with the same use case, in most cases it is more efficient to retrain the model on a cloud-backend, using the new data of all edge devices with the same use case. Another reason to retrain on the cloud is that retraining is most of the time even more computationally intensive than the inference.
 In the case of cloud inference, this retraining would be easier, as the data of the many clients are already at the cloud, where it can be collectively be used to retrain the network (although some privacy issues may occur).
 Note that the ground truth labels for the new data need to be acquired at some point in order to retrain a model in the case of supervised learning.
+
+\subparagraph{Federated Learning}
+One approach to retrain deep learning models on edge devices is federated learning.
+Federated learning decentralizes the training of deep learning models by distributing the learning process over edge devices  \cite{federateLearning,DBLP:journals/corr/KonecnyMYRSB16}.
+After a model is deployed to the edge for some time, the collected data is used to retrain the model on the edge device and results in a updated deep learning model. 
+A encrypted summary of this update is then sent to a cloud-backend, where it is averaged with the updates from other edge devices to improved a shared model.
+The advantage of this approach that all data stays on the edge devices, hence reducing privacy concerns.
+For the benchmark framework to support federated learning the collection of training data, the training itself and communication with the shared model needs to be implemented.
 \endinput 

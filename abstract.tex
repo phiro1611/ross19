@@ -13,7 +13,7 @@
 For the model inference various things need to be considered, among other things preprocessing, computational demands,
 specialized hardware (GPU, TPU, neuromorphic co-processors, FPGA),
 network latencies and energy consumption. Most of these aspects depend on both the model as well as the environment where the model is deployed. 
-In order to help with the optimal selection of cloud and edge inference to achieve real-time AI, this thesis proposes a performance model characterising the deployment of a deep learning model and the resulting trade-offs.
+In order to help with the optimal selection of cloud and edge inference to achieve real-time AI, this thesis proposes a performance model characterizing the deployment of a deep learning model and the resulting trade-offs.
 Based on this performance model, the most essential trade-offs of the different deployment options get demonstrated by conducting multiple experiments using image classification as a use case. After the evaluation of these experiments, recommendations for the deployment are proposed.
 
 
@@ -31,21 +31,23 @@ Although low-latencies and throughput are the most critical inference performanc
 
 
 
-\noindent In the wake of the recent achievements in the topic of deep learning, the number of possible real-time AI applications on edge devices has exploded.
-However, the deployment and execution of these models are often difficult as edge computing is often characterized by a lack of computational power and therefore edge devices struggle to provide high inference throughput at low latencies.
-Outsourcing the inference to a cloud-backend can provide more computational power, but raises concerns regarding security and reliability. 
+\noindent In the wake of the recent achievements in deep learning, the number of possible real-time AI applications on edge devices using deep learning models has exploded.
+However, the deployment and execution of these models are often difficult as edge devices are more resource constrained than clouds and cannot elastically scale on demand.
+%Therefore, edge devices struggle to provide high inference throughput at low latencies.
+Thus, understanding the performance and sizing hardware and find the optimal workload is crucial.
+Outsourcing the inference to a cloud-backend can provide more computational power, but raises challenges regarding security, reliability and bandwidth constraints on latency and throughput. 
 While latency and throughput are the most critical inference performance metrics for real-time applications on edge devices, other metrics like CPU usage, data-, memory- or energy-consumption are also affected by both cloud and edge inference and hence vital for the model deployment to consider.
 
-To help with the optimal selection of cloud and edge inference to achieve real-time AI, this thesis proposes a methodology for performance evaluation of deep learning inference.
-By instantiating this methodology we get a better understanding of deep learning inference including benchmarks of the above-mentioned performance metrics.
-
+To help with the optimal selection of deployment options for cloud and edge inference, this thesis proposes a methodology for performance evaluation of deep learning inference.
+This methodology investigates qualitative and quantitative differences of edge and cloud deployment options
+and by instantiating this methodology we get a better understanding of deep learning inference including benchmarks of the above-mentioned performance metrics.
 To generate these benchmarks we use image classification as a use case, supported by real-world workloads, hardware components and frameworks.
 The evaluation of these benchmarks shows, that edge inference can outperform cloud inference, given the right circumstances.
 These include optimization of deep learning model architectures, utilization of optimized inference frameworks and minimization of preprocessing.
 
 
 Based on these benchmarks we then develop a performance model, predicting the optimal deployment solution for a given system configuration using multiple linear regression.
-Finally, we utilize the gained system understanding to create a generic decision model that supports the deployment process for deep learning inference.
+Finally, we utilize the gained system understanding to create a decision model that supports the deployment process for deep learning inference.
 
 
 

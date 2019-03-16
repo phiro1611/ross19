@@ -124,7 +124,7 @@ Clipper supports multiple machine learning frameworks such as TensorFlow, Caffe 
 After a comparative evaluation of both Clipper and TensorFlow Serving, the authors come to the conclusion that both frameworks achieve comparable latency and throughput results, while Clipper additionally enables additional features such as caching and online learning.
 
 \section{Evaluation of the Related Work}
-For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova and others\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks, model and edge devices have been developed.
+For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks, model and edge devices have been developed.
 Frameworks like TensorFlow Lite in combination with Android Neural Networks API provide optimized operators/kernels along with accelerator support, which can speed up inference substantially while using less system resources.
 Also, more edge devices carrying these accelerators, some even dedicated for AI applications, are being released at a fast pace.
 Furthermore, deep learning models developed explicitly for edge deployment like MobileNet have been published. These models can even be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latencies and model sizes, while only taking little impact on model accuracy.
@@ -135,7 +135,7 @@ Although \cite{DBLP:conf/ic2e/Guo18} and \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}
 
 MLPerf looks to be a promising project, but it is still in an early phase with no inference results presented so far. Hence it is still unclear which metrics besides inference latency/throughput they measure and how they measure them.
 
-Therefore at the moment of writing it can be stated that no other published study covers the impact on preprocessing and inference performance at the cloud or the edge in a comparative manner with the selected combination of frameworks, models and hardware specifications. 
+Therefore at the moment of writing it can be stated that no other published study covers the end-to-end pipeline of preprocessing and inference at the cloud or the edge in a comparative manner with the selected combination of frameworks, workloads, models and hardware specifications. 
 Additionally, none of the analyzed publications propose a performance or a decision model for the optimal selection of deployment options for deep learning inference.
 
 \vspace{0.5cm}
