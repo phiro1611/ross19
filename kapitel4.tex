@@ -12,11 +12,11 @@ To develop this methodology we make use of the best practices for performance ev
 \label{fig:Methodology}
 \end{figure}
 To reach this goal, a systematic approach for performance evaluation is needed.
-This methodology modeling this approach, consisting of a multiple-step process, can be seen in figure \ref{fig:Methodology}. 
+This methodology can be seen in figure \ref{fig:Methodology} and consists of a multiple-step process.
 
 
 The goal of the performance evaluation is to get a better understanding of deep learning inference, specifically the trade-offs between edge and cloud inference.
-Based on this understanding we can, in a last step, propose a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
+Based on this understanding we can, in the last step, propose a decision model, that helps in the decision, whether a deep learning model should be deployed to the edge, to a cloud-backend or is not feasible for deployment at all.
 
 
 To model the performance of deep learning inference, it is crucial to understand the underlying problem space in the first place.
@@ -33,7 +33,7 @@ This infrastructure consists of hardware components and frameworks supporting th
 
 The next step is to define the parameters to be studied, which all affect performance.
 There can be differentiated between two types of parameters, workloads and factors.
-Factors are parameters of the system with various levels, that will be varied in the evaluation. An example for a factor would be if the inference is done at the edge or at the cloud-backend
+Factors are parameters of the system with various levels, that will be varied in the evaluation. An example factor would be if the inference is performed at the edge or the cloud-backend.
 Workloads are requests to the system, in our case a deployed deep learning model, by a user.
 This requests can come in different shapes, thus having a different impact on performance.
 

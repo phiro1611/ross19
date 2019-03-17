@@ -1,6 +1,6 @@
 \chapter{Fundamentals}
 \label{chap:fundamentels}
-In this chapter we briefly cover the fundamentals of deep learning models and their deployment on edge devices and cloud-backends for inference purposes.
+In this chapter, we briefly cover the fundamentals of deep learning models and their deployment on edge devices and cloud-backends for inference purposes.
 
 
 %The inference performance of a deep learning model is mainly affected by three factors, the architecture of the deep learning model itself, the hardware environment where it gets deployed and the framework performing the operations of the model on the hardware environment.
@@ -169,7 +169,7 @@ Edge deployment describes the process of deploying deep learning models to edge 
 These edge devices are often characterized by offering a limited amount of computational power as well as limited energy.
 This limited power often stands in contrast to the performance demands caused real-time AI applications using deep learning models.
 Despite its limits, edge deployment also has some advantages, particularly in reliability and security. 
-For example in the case of image classification images are needed for the inference, which often contain sensible information and thus raise data privacy/security concerns.
+For example in the case of image classification images are needed for the inference, which often contain sensitive information and thus raise data privacy/security concerns.
 Therefore edge deployment should be the preferred choice if the inference performance is sufficient for the use case of real-time AI applications.
 
 In order to increase this performance, various accelerators like better GPUs, TPUs or other dedicated neural network hardware components have been developed for edge devices.
@@ -180,15 +180,14 @@ In order to increase this performance, various accelerators like better GPUs, TP
 \subsection{Cloud Deployment}
 While the breakthroughs in deep learning are very interesting for AI applications on edge devices, the computational demand needed for edge deployment often exceeds the available power to be viable.
 That is why the option of outsourcing the models to a cloud-backend has become a popular solution in recent years.
-Cloud-backends offer a large amount of computational power, especially suitable for deep learning in the form large numbers of GPUs and TPUs.
+Cloud-backends offer a large amount of computational power, especially suitable for deep learning in the form of large numbers of GPUs, TPUs or other accelerators.
 
-
-The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications like autonomous driving, where continuous and reliable predictions from deep learning models as critical for the applications feasibility.
+The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications like autonomous driving, where continuous and reliable predictions from deep learning models as critical for the feasibility of the application.
 
 While for the edge deployment necessary preprocessing steps are always done on the edge, for the case of cloud inference there are two possibilities. Either the input data is preprocessed to the correct shape at the edge before getting sent to the cloud-backend, or the input is sent un-preprocessed to the cloud. 
 In the latter case, the input gets preprocessed on the cloud. 
 This can be justified by the same reasons as for the cloud inference, more computational power for intensive preprocessing.
-Although slow network connection could diminish the speedup gained by the larger computational power, since non preprocessed input are most of the times larger in payload size and therefore more data has to be sent to the server, resulting in the need of faster network connections to achieve the same network latency as a preprocessed input would.
+Although slow network connection could diminish the speedup gained by the larger computational power, since un-preprocessed inputs are most of the times larger in payload size and therefore more data has to be sent to the server, resulting in the need of faster network connections to achieve the same network latency as a preprocessed input would.
 However in the case of compressed inputs as for example \emph{JPEG} images, if the \emph{JPEG} and the preprocessed image have the same input size, the \emph{JPEG} image could lead to faster latencies, as less data has to be sent to the server and the I/O overhead at the server is minimized, as the server has to load a smaller image into memory assuming \emph{JPEG} decoding is faster than the I/O overhead of load a larger image. 
 
 

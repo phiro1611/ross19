@@ -57,13 +57,13 @@ In the case of the Android experiments, $480\times640$ \emph{JPG} images get cap
 
 
 
-For edge inference the authors also experiment with running two neural network instances simultaneously in separate threads instead of one. 
+For edge inference, the authors also experiment with running two neural network instances simultaneously in separate threads instead of one. 
 These two neural network instances lead to a higher throughput in the case of the Android phone, but to a decrease for the Jetson TX 2. They claim this decrease originates from the "context switch overhead of scheduling
 the two processes"\cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
 
 For both cloud inference frameworks, TensorFlow Serving and TensorRT throughput increase with increasing batch size until a saturation point, that depends on factors such as the model, hardware and the configuration.
 
-Like Guo they also identify the model loading process as a bottleneck on the Android phone, contrary to the inference time, which they call "comparatively fast"\cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
+Like Guo, they also identify the model loading process as a bottleneck on the Android phone, contrary to the inference time, which they call "comparatively fast"\cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
 
 \begin{table}[H]
 \centering
@@ -116,7 +116,7 @@ speed/memory/accuracy balance for a given application and platform"\cite{DBLP:jo
 In \cite{jiang2018efficient} Jiang and others present a pipeline for optimization of edge inference performance.
 Their approach consists of a two-step process, where they first optimize the computation graph as much as possible e.g. by applying quantization.
 The second step is called kernel optimization and proposes a search for the optimal kernel implementation for the operations of the deep learning model.
-This search heavily depends on the hardware specification on the edge device, for example different instruction sets allow different kernel optimizations.
+This search heavily depends on the hardware specification on the edge device, for example, different instruction sets allow different kernel optimizations.
 
 In \cite{201468} Crankshaw et al. present the Clipper framework for deploying machine learning models at the cloud.
 The proposed framework, with a focus on low-latency, integrates among other things caching, dynamic batch sizes, delayed batching and online model selection.
@@ -126,7 +126,7 @@ After a comparative evaluation of both Clipper and TensorFlow Serving, the autho
 \section{Evaluation of the Related Work}
 For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks, model and edge devices have been developed.
 Frameworks like TensorFlow Lite in combination with Android Neural Networks API provide optimized operators/kernels along with accelerator support, which can speed up inference substantially while using less system resources.
-Also, more edge devices carrying these accelerators, some even dedicated for AI applications, are being released at a fast pace.
+Also, more edge devices carrying these accelerators, some even dedicated to AI applications, are being released at a fast pace.
 Furthermore, deep learning models developed explicitly for edge deployment like MobileNet have been published. These models can even be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latencies and model sizes, while only taking little impact on model accuracy.
 
 Another aspect essential for the inference performance, that is not studied in depth by most publications, is the impact of preprocessing on performance.
@@ -136,7 +136,7 @@ Although \cite{DBLP:conf/ic2e/Guo18} and \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}
 MLPerf looks to be a promising project, but it is still in an early phase with no inference results presented so far. Hence it is still unclear which metrics besides inference latency/throughput they measure and how they measure them.
 
 Therefore at the moment of writing it can be stated that no other published study covers the end-to-end pipeline of preprocessing and inference at the cloud or the edge in a comparative manner with the selected combination of frameworks, workloads, models and hardware specifications. 
-Additionally, none of the analyzed publications propose a performance or a decision model for the optimal selection of deployment options for deep learning inference.
+Additionally, none of the analyzed publications proposes a performance or a decision model for the optimal selection of deployment options for deep learning inference.
 
 \vspace{0.5cm}
 This chapter gave an outline and evaluation of publication on the topics related to this thesis, which will be useful when we evaluate the results of our own benchmarks, which will be presented in a section \ref{chap:Evaluation}.
