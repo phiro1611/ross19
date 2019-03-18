@@ -22,7 +22,7 @@ They used 15 images in total, divided into three different image size groups ($5
 After analyzing their measurements, they present the following results:
 Cloud inference "exhibits substantial benefits
 in terms of inference response time and mobile energy savings
-over on-device inference, in this case by two orders of magnitude"\cite{DBLP:conf/ic2e/Guo18}. As the responsible bottleneck for this conclusion, they identify the model loading and inference times during edge inference.
+over on-device inference, in this case by two orders of magnitude" \cite{DBLP:conf/ic2e/Guo18}. As the responsible bottleneck for this conclusion, they identify the model loading and inference times during edge inference.
 Also, it is more efficient to upload the $540\times960$ images directly to the cloud without resizing them on the edge beforehand.
 
 
@@ -43,10 +43,10 @@ Cloud & Caffe & \begin{tabular}[c]{@{}l@{}}Intel Xeon E5-2670, Nvidia Grid K520,
 \end{table}
 
 Finally, the authors conclude that edge inference is inferior to cloud inference by factor two for both inference time and energy consumption. Thus cloud inference delivers better performance for most cases. However due to improvements in models, hardware and frameworks, the authors "believe it is
-very likely that on-device[edge] inference can be done efficiently in the near future"\cite{DBLP:conf/ic2e/Guo18}. 
+very likely that on-device[edge] inference can be done efficiently in the near future" \cite{DBLP:conf/ic2e/Guo18}. 
 \section{Latency and Throughput Characterization of Convolutional
 Neural Networks for Mobile Computer Vision}
-Similar to Guo, the authors of this paper study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
+Similar to Guo, Hanhirova et al. \cite{DBLP:conf/mmsys/HanhirovaKSSHY18} study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
 The authors use image classification (MobileNetV1 and InceptionV2) as well as object detection models (SSD MobilenetV1 COCO, SSD InceptionV2 COCO,
 and VGG16 FasterRCNN PASCAL VOC) for their experiments, but we only cover the results of the image classification models, since these are more relevant for this thesis.
 The authors focus on the inference metrics latency and throughput, in particular with regard to various batch sizes, that they incrementally increase in the course of their experiments.
@@ -59,11 +59,11 @@ In the case of the Android experiments, $480\times640$ \emph{JPG} images get cap
 
 For edge inference, the authors also experiment with running two neural network instances simultaneously in separate threads instead of one. 
 These two neural network instances lead to a higher throughput in the case of the Android phone, but to a decrease for the Jetson TX 2. They claim this decrease originates from the "context switch overhead of scheduling
-the two processes"\cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
+the two processes" \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
 
 For both cloud inference frameworks, TensorFlow Serving and TensorRT throughput increase with increasing batch size until a certain saturation point, that depends on factors such as the model, hardware and the configuration.
 
-Like Guo, they also identify the model loading process as a bottleneck on the Android phone, contrary to the inference time, which they call "comparatively fast"\cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
+Like Guo, they also identify the model loading process as a bottleneck on the Android phone, contrary to the inference time, which they call "comparatively fast" \cite{DBLP:conf/mmsys/HanhirovaKSSHY18}.
 
 \begin{table}[H]
 \centering
@@ -81,12 +81,12 @@ Cloud & TensorFlow Serving; TensorRT & \begin{tabular}[c]{@{}l@{}}Intel i7 7700K
 \label{frameworks_hardware_2}
 \end{table}
 
-The authors conclude "that CNNs for mobile computer vision have significant latency– throughput trade-offs, but the behavior is very complex"\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} caused by a number of different factors affecting the performance. This indicates that performance results cannot be transferred to different model/hardware/framework settings.
+The authors conclude "that CNNs for mobile computer vision have significant latency– throughput trade-offs, but the behavior is very complex" \cite{DBLP:conf/mmsys/HanhirovaKSSHY18} caused by a number of different factors affecting the performance. This indicates that performance results cannot be transferred to different model/hardware/framework settings.
 
 
 
 \section{MLPerf}
-MLPerf is a project that strives to create a "common set of benchmarks that enables the machine learning (ML) field to measure system performance for both training and inference from mobile devices to cloud services"\cite{mlperfWebsite}.
+MLPerf is a project that strives to create a "common set of benchmarks that enables the machine learning (ML) field to measure system performance for both training and inference from mobile devices to cloud services" \cite{mlperfWebsite}.
 They want to create these benchmarks with fair, useful and replicable  measurements using representative workloads \cite{mlperf}. 
 
 They aim to benchmark a wide variety of model types (image classification, translation, reinforcement learning, ...), different models for each type (ResNet50, MobileNet, ...), hardware and frameworks (Caffe2, TensorFlow Lite, ...).
@@ -124,7 +124,7 @@ Clipper supports multiple machine learning frameworks such as TensorFlow, Caffe 
 After a comparative evaluation of both Clipper and TensorFlow Serving, the authors come to the conclusion that both frameworks achieve comparable latency and throughput results, while Clipper additionally enables additional features such as caching and online learning.
 
 \section{Evaluation of the Related Work}
-For both the works of Guo\cite{DBLP:conf/ic2e/Guo18} and Hanhirova\cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks, model and edge devices have been developed.
+For both the works of Guo \cite{DBLP:conf/ic2e/Guo18} and Hanhirova \cite{DBLP:conf/mmsys/HanhirovaKSSHY18} it can be stated that meanwhile better frameworks, model and edge devices have been developed.
 Frameworks like TensorFlow Lite in combination with Android Neural Networks API provide optimized operators/kernels along with accelerator support, which can speed up inference substantially while using less system resources.
 Also, more edge devices carrying these accelerators, some even dedicated to AI applications, are being released at a fast pace.
 Furthermore, deep learning models developed explicitly for edge deployment like MobileNet have been published. These models can even be further optimized with the help of techniques like quantization, that severely lead to improved speedup inference latencies and model sizes, while only taking little impact on model accuracy.

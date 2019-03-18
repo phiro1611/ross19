@@ -32,20 +32,20 @@ Although low-latencies and throughput are the most critical inference performanc
 
 
 \noindent In the wake of the recent achievements in deep learning, the number of possible real-time AI applications on edge devices using deep learning models has exploded.
-However, the deployment and execution of these models are often difficult as edge devices are more resource constrained than clouds and cannot elastically scale on demand.
+However, deployment and execution of these models are often difficult as edge devices are more resource constrained than cloud-backends and cannot elastically scale on demand.
 %Therefore, edge devices struggle to provide high inference throughput at low latencies.
 Thus, understanding inference performance, sizing hardware and finding the optimal workload is crucial.
 Outsourcing the inference to a cloud-backend can provide more computational power, but raises challenges regarding security, reliability and bandwidth constraints. 
 While latency and throughput are the most critical inference performance metrics for real-time applications on edge devices, other metrics like CPU usage, data-, memory- or energy-consumption are also affected by both cloud and edge inference and hence vital for the model deployment to consider.
 
 To help with the optimal selection of deployment options for deep learning inference, this thesis proposes a methodology for performance evaluation of deep learning inference.
-This methodology investigates qualitative and quantitative differences of edge and cloud deployment options.
-By instantiating this methodology, we get a better understanding of deep learning inference including benchmarks of the above-mentioned performance metrics.
+This methodology investigates qualitative and quantitative differences between edge and cloud deployment options.
+By instantiating this methodology, we get a better understanding of deep learning inference including benchmarks of the performance metrics mentioned above.
 To generate these benchmarks we use image classification as a use case, supported by real-world workloads, hardware components and frameworks.
 Evaluation shows, that edge inference can outperform cloud inference, given the right circumstances.
 These include optimization of deep learning model architectures, utilization of optimized inference frameworks and minimization of preprocessing.
 Based on these benchmarks we then develop a performance model, predicting the optimal deployment solution for a given system configuration using multiple linear regression.
-Finally, we utilize the gained understanding to create a decision model that supports the deployment process for deep learning inference.
+Finally, we utilize the gained understanding to create a decision model supporting the deployment process for deep learning inference.
 
 
 

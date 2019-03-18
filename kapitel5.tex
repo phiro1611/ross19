@@ -69,7 +69,7 @@ Several metrics are important to measure the performance of the preprocessing an
 Except for data consumption, which is the only metric exclusive for cloud inference, because data is sent to a remote server, all metrics are relevant for both edge and cloud inference.
 While accuracy is one of the most critical metrics for neural networks, it is only affected by the characteristics of the model and not by the deployment environment. Therefore we do not focus on accuracy in this thesis.
 
-Note that we only measure the impact on inference/preprocessing on the resources on the edge devices, not the usage on the cloud-backend itself, as this thesis focuses on optimal selection for real-time AI applications on edge devices.
+Note that we only measure the impact on inference/preprocessing on the edge device resources, not the usage on the cloud-backend itself, as this thesis focuses on optimal selection for real-time AI applications on edge devices.
 \subsubsection{Latency}
 \label{chap:latency}
 Latency is essential to determine the performance, since AI application often need predictions in real-time, resulting in need of low latencies.
@@ -117,7 +117,7 @@ This is in particular important for the case where the input data for the model 
 \section{Infrastructure}
 \label{chap:infrastructure}
 This section presents the infrastructure used for our benchmark framework, specifically used hardware components and inference frameworks both at the edge and cloud.
-An overview of the used infrastructure can be seen in figure \ref{fig:expDesign}.
+An overview of the used infrastructure (including used image classification models) can be seen in figure \ref{fig:expDesign}.
 
 \begin{figure}[!htb]
 \centering
@@ -142,7 +142,7 @@ The server runs on Ubuntu 16.04 CUDA 9.1 PGI 17.9 nvidia-docker 2.0.3+docker18.0
 We use two open source machine learning frameworks, both based on TensorFlow, for the experiments, TensorFlow Lite and TensorFlow Serving. We decided to use these frameworks, because they are open source and support, at the point of this theses, most of the operations needed for the popular image classification models as well as an increasing number of hardware accelerators and operating systems for both edge and cloud inference.
 TensorFlow provides official releases of deep learning models, that are well maintained and tested, including the ones we use in this thesis.
 
-This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite\cite{tfLite}  and TensorFlow Serving\cite{tfServing} websites, on which this section is partly based on, or the corresponding GitHub repositories.
+This section only gives a brief overview of the most important aspects of the frameworks, for detailed information consider the TensorFlow Lite \cite{tfLite}  and TensorFlow Serving \cite{tfServing} websites, on which this section is partly based on, or the corresponding GitHub repositories.
 \subsubsection{TensorFlow Lite}
 \label{chap:TFLite}
 TensorFlow Lite (Release 1.12.0) was developed for mobile and embedded devices and is a lightweight solution of TensorFlow and thus will be used for the edge inference experiments.
@@ -235,7 +235,7 @@ To study the impact of these various shapes on the preprocessing step, we presen
 \subsubsection{Image Classification Models}
 \label{chap:models}
 We will benchmark three different image classification models in this thesis, MobileNetV2, InceptionV4 and quantized MobileNetV2. The first is optimized for mobile deployment, the second towards high accuracy and the last one is a further optimized version of the first model.
-All models are trained on the ImageNet dataset consisting of 1001 image classes (1000 image classes + 1 class for unknown image classes).
+All models are trained on the ImageNet dataset consisting of 1000 image classes.
 An overview of the models can be seen in table \ref{table:modelOverview} in the form of top-5 accuracy (a prediction is classified as accurate if the five labels with the highest confidence contain the real class of the input image), the input size of the model, the number of parameters in millions and the model size in the TensorFlow Lite format.
 InceptionV4 has $4.5\%$ more accuracy than MobileNetV2, but also more than $12$ times more parameters and $7.5$ times larger TensorFlow Lite model size.
 MobileNetV2 also uses a smaller input sizes of $224\times224$ than InceptionV4's $299\times299$ input size.
@@ -246,11 +246,11 @@ MobileNetV2 also uses a smaller input sizes of $224\times224$ than InceptionV4's
 \label{table:modelOverview}
 \begin{tabular}{@{}lllll@{}}
 \toprule
-Model & Parameters & Top-5 Accuracy\cite{modelspecs} & Input Size & \emph{.tflite} Model Size \\
+Model & Parameters & Top-5 Accuracy \cite{modelspecs} & Input Size & \emph{.tflite} Model Size \\
 \midrule
-InceptionV4 & $42.68$M\cite{InceptionV4params} & $95.1\%$ & $299\times299$ & $107.7$MB \\
-MobileNetV2 1.0 & $3.47$M\cite{DBLP:journals/corr/abs-1801-04381} & $90.6\%$ & $224\times224$ & $14$MB \\
-\begin{tabular}[c]{@{}l@{}}MobileNetV2 1.0\\quantized\end{tabular}  & $3.47$M\cite{DBLP:journals/corr/abs-1801-04381} & $89.9\%$ & $224\times224$ & $3.4$MB\\
+InceptionV4 & $42.68$M \cite{InceptionV4params} & $95.1\%$ & $299\times299$ & $107.7$MB \\
+MobileNetV2 1.0 & $3.47$M \cite{DBLP:journals/corr/abs-1801-04381} & $90.6\%$ & $224\times224$ & $14$MB \\
+\begin{tabular}[c]{@{}l@{}}MobileNetV2 1.0\\quantized\end{tabular}  & $3.47$M \cite{DBLP:journals/corr/abs-1801-04381} & $89.9\%$ & $224\times224$ & $3.4$MB\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -524,7 +524,7 @@ To achieve this we load the \emph{PNG} image into an \emph{InputStream}, convert
 To get the predictions for our now preprocessed image, we need to run the inference operation of the inference framework with the deep learning model loaded, which is loaded either directly at the edge or the remote cloud-backend. 
 The inference is done using the steps described in section \ref{chap:TFLite} (TensorFlow Lite) and \ref{chap:TFServing} (TensorFlow Serving).
 \subsubsection{Edge Inference}
-To perform the inference operation we need to pass two things to the \emph{run} function of an interpreter of TensorFlow Lite: The \emph{ByteBuffer} created in the preprocessing step and an array (float models: \emph{FloatArray}, quantized models: \emph{ByteArray}) with the length 1001 (number of classes). TensorFlow lite then writes the confidence levels of the different classes to this array. We then sort the array for the five classes with the highest confidence and print them to the screen.
+To perform the inference operation we need to pass two things to the \emph{run} function of an interpreter of TensorFlow Lite: The \emph{ByteBuffer} created in the preprocessing step and an array (float models: \emph{FloatArray}, quantized models: \emph{ByteArray}) with the length 1001 (number of classes + 1 class for unknown image classes). TensorFlow lite then writes the confidence levels of the different classes to this array. We then sort the array for the five classes with the highest confidence and print them to the screen.
 
 \subsubsection{Cloud Inference}
 \label{chap:CloudInfImpl}

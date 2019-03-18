@@ -108,7 +108,7 @@ The last fully connected layer contains the output of the network, in this case,
 \begin{figure}[!htb]
 %%bild mit simpler architecture? Bild->conv->pool->flatten->dense-> output
     \centering
-    \resizebox{.95\linewidth}{!}{\input{Bilder/simple_CNN.tex}}
+    \resizebox{.98\linewidth}{!}{\input{Bilder/simple_CNN.tex}}
     \caption{Simple CNN for image classification}
     \label{fig:simpleCNN}
 \end{figure}
@@ -155,7 +155,7 @@ One technique is quantization, which we will briefly introduce in the following 
 Quantization is a model optimization technique that often trades in model precision for better inference latencies, memory consumption during inference and model sizes.
 Quantization describes the process of reducing the "precision representations of weights and, optionally, activations" \cite{tfLiteQuant} from floating point precision to for example 8-bit.
 The weights/activations are either quantized after training the model with floats (Post Training Quantization), or the model is trained with quantized weights/activations from the start (Quantization Aware Training). In the paper "Quantizing deep convolutional networks for
-efficient inference"\cite{Quantizing} Krishnamoorthi performed a study on these techniques with the following results:
+efficient inference" \cite{Quantizing} Krishnamoorthi performed a study on these techniques with the following results:
 8-bit quantization can lead to a model size reduction by a factor of 4, a 2-3x latency speedup on CPUs and DSPs, while reducing the model accuracies by 1\%.
 
 
@@ -183,8 +183,8 @@ In order to increase this performance, various accelerators like better GPUs, TP
 
 \subsection{Cloud Deployment}
 While the breakthroughs in deep learning are very promising for AI applications on edge devices, the computational demand needed for edge deployment often exceeds the available power to be viable.
-That is why the option of outsourcing the models to a cloud-backend has become a popular solution in recent years.
-Cloud-backends offer a large amount of computational power, especially suitable for deep learning  as hardware accelerators like GPUs or TPUs can speed up inference severely.
+That is why the option of outsourcing the model inference to a cloud-backend has become a popular solution in recent years.
+Cloud-backends offer a large amount of computational power, especially suitable for deep learning as hardware accelerators like GPUs or TPUs can speed up inference severely.
 
 The big downside of cloud-based inference is the needed network connection, in particular for edge devices such as cars, where a reliable network connection can often not be guaranteed for example in rural areas. Hence this is not a viable solution for applications like autonomous driving, where continuous and reliable predictions from deep learning models as critical for the feasibility of the application.
 
