@@ -17,7 +17,7 @@ Therefore cloud inference is the preferred choice for large deep learning models
 Also, if edge inference and cloud inference achieve the same performance, edge inference should be the favored choice as no network connection is needed and fewer data privacy concerns apply.
 
 We believe that in the near future edge inference will be the preferred option for most model sizes, as new hardware components, inference frameworks and model optimization techniques are being developed and released.
-For many future scenarios edge inference will be instrumental (e.\,g. autonomous driving) as more AI applications and more edge devices are emerging.
+For many future scenarios edge inference will be instrumental (e.\,g. autonomous driving) as more AI applications and edge devices are emerging.
 
 
 Furthermore, we evaluated the impact of preprocessing on inference performance, resulting in the conclusion that preprocessing of large images can even take up more resources than the actual inference process does, hence becoming the bottleneck for high throughput applications.
@@ -29,7 +29,7 @@ This performance model can be enhanced to model not only the inference performan
 Based on this system understanding we then finally proposed a decision model for the deployment of deep learning models for inference purposes. The rationale behind this model is to deploy deep learning models to the edge if the performance is sufficient, with cloud deployment being the back-up option, as edge deployment raises fewer concerns regarding network and security.
 
 %On key lesson
-This thesis contributed a methodology for performance evaluation of deep learning inference including the design and execution of a benchmark framework for evaluation of edge and cloud inference deployment options and the design of a performance model utilizing the resulting benchmarks.
+This thesis contributed a methodology for performance evaluation of deep learning inference, including the design and execution of a benchmark framework for evaluation of edge and cloud inference deployment options, and the design of a performance model utilizing the resulting benchmarks.
 This framework and performance model can easily be extended to support different types of hardware and deep learning models and thus can be used as a baseline for future research on the topic of edge and cloud inference.
 
 The goal of this thesis was to get a better understanding of deep learning inference and in particular a qualitative and quantitative investigation of different edge and cloud deployment options.
@@ -40,7 +40,7 @@ This goal was fulfilled, as the results of the instantiated methodology illustra
 
 %Therefore this thesis can be concluded
 \section{Future Work}
-While we proposed an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new research directions inspired by our results. 
+While we conducted an extensive empirical study on the trade-offs between edge and cloud inference, there are still many aspects not covered in this thesis or new research directions inspired by our results. 
 In this section, we present possible ideas for future work.
 
 \paragraph{More Benchmarks}

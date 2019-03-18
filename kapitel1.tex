@@ -4,9 +4,10 @@
 %%ADD: android application
 The last few years have been marked by tremendous successes in the field of deep learning \cite{DBLP:journals/corr/abs-1807-08169,DBLP:journals/corr/abs-1806-08894}.
 Deep learning models have become very accurate at complex tasks such as image classification, object detection or natural language processing. 
-%These model have become so good at these complex tasks that 
-These tasks often fall into the category of pattern recognition, which is a branch of Artificial Intelligence (AI).
-John McCarthy defined AI as the "science and engineering of making intelligent machines" \cite{AI}, and since deep learning models have become very good in this field, they have become suitable for the use in AI applications.
+%These tasks can be categorized into the field pattern recognition, branch of Artificial Intelligence (AI).
+%These tasks often fall into the category of pattern recognition, which is a branch of Artificial Intelligence (AI).
+These tasks can be classified as pattern recognition, a branch of Artificial Intelligence (AI).
+John McCarthy defined Artificial Intelligence as the "science and engineering of making intelligent machines" \cite{AI}, and since deep learning models have become remarkable at mimicking human intelligence, at least for some specific tasks, they have become suitable for the use in AI applications.
 Hence with the success in deep learning, the number of possible AI applications using these models increased rapidly \cite{inproceedings, breadth}, especially on edge devices such as cars, smartphones or IoT devices \cite{futureMLtiny, MovingToEdge}.
 
 These AI applications have a broad range from industry to scientific applications and often have in common that they need predictions at real-time to unfold their full potential \cite{DBLP:journals/corr/NishiharaMWTPSL17, DBLP:journals/corr/CrankshawBGLZFGJ14}.
@@ -15,9 +16,10 @@ The strength of deep learning models is to generate accurate and reliable predic
 Therefore it is critical to ensure that inference can be done in real-time.
 
 However, as the accuracy of these models has risen, the computational demand has also due to the models increasing numbers of model parameters and complex operations.
-This has taken a toll on the performance of these models apart from the accuracy, in particular on performance aspects such as inference latency, memory consumption, energy consumption, CPU usage and throughput. 
+These larger architectures have taken a toll on the performance of these models apart from the accuracy, in particular on performance aspects such as inference latency, memory consumption, energy consumption, CPU usage and throughput. 
 While inference latency and throughput are the essential metrics to ensure real-time AI, memory usage, energy consumption and CPU usage are also crucial in order to avoid that the inference consumes the majority of the system resources.
-This is a concern especially for latency-sensitive AI application on edge devices, as edge computing is defined as the provision of computation power in close proximity to the data source \cite{DBLP:journals/corr/abs-1808-05283}, which often implies limited computing resources \cite{DBLP:journals/corr/abs-1811-11268}. 
+This is a concern especially for latency-sensitive AI application on edge devices.
+Edge computing is defined as the provision of computation power to applications in close proximity to the data source \cite{DBLP:journals/corr/abs-1808-05283}, which often implies limited computing resources \cite{DBLP:journals/corr/abs-1811-11268}. 
 That is why the question arose whether a deep learning model can be deployed to the edge or has to be deployed to cloud-backend where more computational power is available.
 However, edge inference, and edge computing in general offers many advantages compared to cloud computing such as low-latencies, improved reliability and fewer privacy concerns \cite{Mor:2018:EC:3305263.3313377}.
 Therefore, edge deployment should be the preferred option for deep learning inference if the desired inference performance can be achieved.
@@ -26,20 +28,20 @@ Therefore, edge deployment should be the preferred option for deep learning infe
 
 To support users with the optimal selection of deployment for deep learning inference, this thesis introduces a methodology for the performance evaluation of deep learning inference, applicable to both edge and cloud inference.
 The goal of this performance evaluation is a better understanding of deep learning inference and in particular a qualitative and quantitative investigation of different edge and cloud deployment options.
-Based on this understanding we can design a performance model predicting the optimal deployment solution, as well as a decision model for the deployment of deep learning models.
+Based on this understanding we can design a performance model predicting the optimal deployment solution, as well as a decision model supporting the deployment process of deep learning models.
 This methodology presents a systematic approach towards the performance evaluation for deep learning inference, started by the definition of the problem space and performance metrics, followed by the design of a use case using real-life workloads and infrastructure. This use case is then executed on a self-developed benchmark framework to create benchmarks.
 These benchmarks then can be used for evaluation, resulting in a performance model as well as a decision model. Therefore these benchmarks contribute to a better understanding of deep learning inference.
 
 
 This methodology then gets instantiated step by step, started by the analysis of the problem space.
-We identified four factors influencing the inference performance: (1) the hardware specification of the deployment environment, (2) the architecture of the deep learning model, (3) the framework responsible for performing the inference operations of the deep learning model on the hardware components, (4) the inference input, on which the inference is performed on, since preprocessing of these inputs is often necessary.
+We identified four factors influencing the inference performance: (1) the hardware specification of the deployment environment, (2) the architecture of the deep learning model, (3) the framework responsible for performing the inference operations of the deep learning model on the hardware components, and (4) the inference input, on which the inference is performed on, since preprocessing of these inputs is often necessary.
 There exists a rich variety of different neural network types, with the most popular being convolutional neural networks (CNNs) and recurrent neural networks (RNNs).
 Many of these models use unique operators with different impact on inference performance.
 This thesis will focus on CNNs as an exemplary use case, specifically image classification models classifying the contents of a given input image.
 This rich variety of configurations can also be observed in hardware, where in addition to better CPUs and GPUs a rising number of specific accelerators such as TPUs, neuromorphic co-processors and FPGAs have been developed for both edge and cloud.
 For the benchmarks, we will use the OnePlus 6T, a state of the art smartphone, as our edge device and a server with an Nvidia Tesla P100 as the cloud-backend.
 TensorFlow Serving \cite{tfServing} and TensorFlow Lite \cite{tfLite}, both open-source, will serve as the example inference frameworks for these benchmarks, as they support the deployment of deep learning models to a cloud-backend (TensorFlow Serving) or directly to edge devices (TensorFlow Lite). These frameworks support many of the above-mentioned hardware accelerators and provide optimized operators used by image classification models.
-Based on this infrastructure and workload we then design and implement an Android benchmark framework simulating a real-time AI application and with the ability to instrument inference performance.
+Based on this infrastructure and workload we then design and implement an Android benchmark framework simulating a real-time AI application with the ability to instrument inference performance.
 We then execute this system to generate benchmarks, which we will then analyze for better understanding of deep learning inference. Afterwards, the benchmarks will be used to create a performance model as well as a decision model.
 This performance model will predict the optimal deployment solution for a given system configuration.
 
@@ -47,7 +49,7 @@ Key findings resulting from this methodology instantiation are that (1) edge inf
 
 %%Add key contributon and findings
 Key contributions of this thesis include a methodology for performance evaluation of deep learning inference, design and execution of a benchmark framework for evaluation of edge and cloud inference deployment options, and the design of a performance model utilizing the resulting benchmarks.
-This framework and performance model can easily be extended to support different types of hardware and deep learning models and thus serves as a baseline for future research on the topic of edge and cloud inference as AI applications on edge devices will be instrumental for many future scenarios.
+This framework and performance model can easily be extended to support different types of hardware and deep learning models and thus serves as a baseline for future research on the topic of edge and cloud inference as AI applications on edge devices will be instrumental for many future scenarios \cite{futureMLtiny, MovingToEdge}.
 
 
 %Another aspect, aside from the actual inference, is the preprocessing step, which is needed to transform the input into the format required by the model. 
@@ -58,6 +60,6 @@ This framework and performance model can easily be extended to support different
 The rest of this thesis is structured as follows: 
 Chapter \ref{chap:fundamentels} gives a brief overview of the fundamentals of deep learning and model deployment, both at the edge and the cloud, as this understanding is crucial for evaluating the inference performance later on.
 Chapter \ref{chap:relatedWork} provides an outline and evaluation of existing related work on this topic. 
-Next, we propose a methodology towards a systematic approach towards performance evaluation of deep learning inference, starting by analyzing the problem space and ending with a performance as well as a decision model supporting the optimal selection of deep learning deployment.
+Next, we propose a methodology towards a systematic approach towards performance evaluation of deep learning inference, starting by analyzing the problem space and closing with a performance as well as a decision model supporting the optimal selection of deep learning deployment.
 Chapter \ref{chap:experiments} deals with the step by step instantiation of the defined methodology.
 Finally, this thesis closes with a conclusion and possible future work topics inspired by this thesis.
