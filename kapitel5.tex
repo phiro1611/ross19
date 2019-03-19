@@ -321,7 +321,7 @@ Quantization of MobileNetV2, using the techniques presented in section \ref{chap
 \paragraph{Inception V4}
 %%Add infos about stem and reduction
 InceptionV4, published in \cite{InceptionV4}, is a large image classification network with high accuracy, but also with a high number of parameters, leading to higher computational demands than MobileNetV2 and thus larger impact on inference performance.
-In comparison to its previous versions, InceptionV4 is built with "a more uniform simplified architecture and more inception modules"\cite{InceptionV4}. 
+In comparison to its previous versions, InceptionV4 is built with "a more uniform simplified architecture and more inception modules" \cite{InceptionV4}. 
 
 The general architecture of the network can be seen in figure \ref{fig:inceptionv4Archi} with the fundamental building blocks being multiple Inception (A-C) and Reduction (A-B) modules. 
 An example for both of these modules can be seen in figures \ref{fig:InceptionA} and \ref{fig:InceptionReduction}.
@@ -664,7 +664,7 @@ All benchmarks are done using the eduroam \emph{Wi‑Fi} since the cloud-backend
 We conducted the benchmarks in multiple sessions, where each session consists of around  $100$ measurements distributed over two hours, thus preventing the results to be skewed by thermal throttling.
 During the benchmarks, no other applications are running on either the edge or the cloud device.
 
-We run each parameter configuration listed in \ref{fig:tree} $15$ times to reduce variance and stabilize our results. In total, we generate $1696$ in total.
+We run each parameter configuration listed in \ref{fig:tree} $15$ times to reduce variance and stabilize our results. Therefore we generate around $1700$ measurements in total.
 \section{Evaluation of the Benchmark Results}
 \label{chap:Evaluation}
 The previous sections covered the design of the benchmark framework, including used models, hardware devices and frameworks, as well as the definition of performance metrics. Using these design specifications, we will now present and evaluate the results of the conducted experiments.
@@ -1554,6 +1554,7 @@ Although this increased throughput comes at the cost of higher latencies, hence 
 \section{Performance Model}
 \label{chap:perfModel}
 In this section, we use the benchmarks generated in the previous steps of the methodology to create a performance model predicting the optimal deployment selection for a given system configuration.
+Another motivation the performance model is to compare the fitted coefficients of the regression to the relations we observed in the evaluation of the benchmarks.
 Therefore, we first define regression models predicting the latency of a specific deployment solution and afterwards fit these regression models using the data from the benchmarks. Based on the predictions from these models we then can predict the optimal deployment solution.
 Finally, we evaluate these regression models and the resulting predictions.
 
@@ -1770,7 +1771,7 @@ Except for this coefficient of this single model, all other parameters of all mo
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.99\textwidth]{./Bilder/regression.pdf}
-\caption{Fitted regression line and scattered true measurements of the test set}
+\caption{Fitted regression line and scattered ground truth measurements of the test set}
 \label{fig:regression}
 \end{figure}
 
@@ -1783,7 +1784,7 @@ This distance is especially visible for $224^2/299^2$ images, where $\hat{Y}_{Cl
 
 \begin{table}[!htb]
 \centering
-\caption{Predictions for optimal deployment choice and respective ground truth.}
+\caption{Predictions for optimal deployment choice and respective ground truth}
 \label{table:perfmofelpred}
 \begin{tabular}{@{}llll@{}}
 \toprule

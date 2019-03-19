@@ -47,7 +47,7 @@ very likely that on-device[edge] inference can be done efficiently in the near f
 \section{Latency and Throughput Characterization of Convolutional
 Neural Networks for Mobile Computer Vision}
 Similar to Guo, Hanhirova et al. \cite{DBLP:conf/mmsys/HanhirovaKSSHY18} study the inference performance of CNNs on both edge devices and cloud backend, but use different hardware devices and frameworks as can be seen in table \ref{frameworks_hardware_2}. 
-The authors use image classification (MobileNetV1 and InceptionV2) as well as object detection models (SSD MobilenetV1 COCO, SSD InceptionV2 COCO,
+The authors use image classification (MobileNetV1 and InceptionV2) as well as object detection models (SSD MobilenetV1 COCO, SSD InceptionV2 COCO
 and VGG16 FasterRCNN PASCAL VOC) for their experiments, but we only cover the results of the image classification models, since these are more relevant for this thesis.
 The authors focus on the inference metrics latency and throughput, in particular with regard to various batch sizes, that they incrementally increase in the course of their experiments.
 
@@ -89,7 +89,7 @@ The authors conclude "that CNNs for mobile computer vision have significant late
 MLPerf is a project that strives to create a "common set of benchmarks that enables the machine learning (ML) field to measure system performance for both training and inference from mobile devices to cloud services" \cite{mlperfWebsite}.
 They want to create these benchmarks with fair, useful and replicable  measurements using representative workloads \cite{mlperf}. 
 
-They aim to benchmark a wide variety of model types (image classification, translation, reinforcement learning, ...), different models for each type (ResNet50, MobileNet, ...), hardware and frameworks (Caffe2, TensorFlow Lite, ...).
+They aim to benchmark a wide variety of model types (image classification, translation, reinforcement learning,\,...), different models for each type (ResNet50, MobileNet,\,...), hardware and frameworks (Caffe2, TensorFlow Lite,\,...).
 
 On December 12th 2018 the first results for model training were published, with results for inference yet to be released.
 
@@ -106,7 +106,7 @@ There are various other publications studying either cloud or edge inference or 
 %Clipper?
 
 \cite{DBLP:journals/corr/HuangRSZKFFWSG016} presents "a guide for selecting a detection architecture that achieves the right
-speed/memory/accuracy balance for a given application and platform"\cite{DBLP:journals/corr/HuangRSZKFFWSG016}.
+speed/memory/accuracy balance for a given application and platform" \cite{DBLP:journals/corr/HuangRSZKFFWSG016}.
 
 
 
